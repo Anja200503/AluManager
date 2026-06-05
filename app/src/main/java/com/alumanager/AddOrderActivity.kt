@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -144,7 +145,17 @@ class AddOrderActivity : AppCompatActivity() {
             setPadding(dp(12), 0, 0, 0)
             setOnClickListener { confirmDeleteProduct(prod) }
         }
-        header.addView(numBadge); header.addView(titleBox)
+        header.addView(numBadge)
+        val pimg = productImageRes(prod.productId)
+        if (pimg != 0) header.addView(ImageView(this).apply {
+            val s = dp(36)
+            layoutParams = LinearLayout.LayoutParams(s, s).apply { leftMargin = dp(8) }
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            background = strokedBg(Color.parseColor("#33FFFFFF"), 10, Color.parseColor("#66FFFFFF"))
+            clipToOutline = true
+            setImageResource(pimg)
+        })
+        header.addView(titleBox)
         header.addView(totalBadge); header.addView(delBtn)
         card.addView(header)
 
@@ -375,7 +386,7 @@ class AddOrderActivity : AppCompatActivity() {
         container.removeAllViews()
         container.addView(wizTitle("Choisissez le type de produit"))
         OrderData.productLabels.forEach { (id, label) ->
-            container.addView(optionCard(label, "") {
+            container.addView(productOptionCard(id, label) {
                 wizPid = id
                 wizRaw.clear(); wizLbl.clear()
                 wizStep = OrderData.visibleIndices(id, wizRaw).firstOrNull() ?: 0
@@ -453,6 +464,77 @@ class AddOrderActivity : AppCompatActivity() {
         textSize = 16f
         setTypeface(typeface, Typeface.BOLD)
         setPadding(0, 0, 0, dp(10))
+    }
+
+    /* ─── Images produit (fichiers res/drawable/prod_<id>.png|jpg|webp) ─── */
+    private val productEmoji = mapOf(
+        "fenetre" to "🪟", "lavarangana" to "🛡️", "porte" to "🚪",
+        "rideau" to "🏪", "vitrine" to "🏬"
+    )
+
+    private fun productImageRes(pid: String): Int =
+        resources.getIdentifier("prod_$pid", "drawable", packageName)
+
+    /** Carte de choix d'un produit avec sa photo (ou pastille de secours si absente). */
+    private fun productOptionCard(pid: String, label: String, onClick: () -> Unit): View {
+        val ll = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            background = strokedBg(Color.parseColor("#0E1730"), 16, Color.parseColor("#243456"))
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            lp.topMargin = dp(10)
+            layoutParams = lp
+            setOnClickListener { onClick() }
+        }
+        val box = dp(58)
+        val res = productImageRes(pid)
+        if (res != 0) {
+            ll.addView(ImageView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(box, box)
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                background = strokedBg(Color.parseColor("#0B1326"), 14, Color.parseColor("#2A3C66"))
+                clipToOutline = true
+                setImageResource(res)
+            })
+        } else {
+            ll.addView(TextView(this).apply {
+                text = productEmoji[pid] ?: "📦"
+                gravity = Gravity.CENTER
+                textSize = 26f
+                background = strokedBg(
+                    Color.parseColor(OrderData.productColor[pid] ?: "#1B2A4F"), 14,
+                    Color.parseColor("#33FFFFFF")
+                )
+                layoutParams = LinearLayout.LayoutParams(box, box)
+            })
+        }
+        val tb = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            setPadding(dp(14), 0, dp(8), 0)
+        }
+        tb.addView(TextView(this).apply {
+            text = label
+            setTextColor(Color.parseColor("#EAF2FF"))
+            textSize = 16f
+            setTypeface(typeface, Typeface.BOLD)
+        })
+        tb.addView(TextView(this).apply {
+            text = "Toucher pour configurer"
+            setTextColor(Color.parseColor("#8A97C2"))
+            textSize = 12f
+        })
+        ll.addView(tb)
+        ll.addView(TextView(this).apply {
+            text = "›"
+            setTextColor(Color.parseColor("#21E6FF"))
+            textSize = 24f
+            setPadding(dp(4), 0, dp(4), 0)
+        })
+        return ll
     }
 
     private fun optionCard(title: String, desc: String, selected: Boolean = false, onClick: () -> Unit): View {
