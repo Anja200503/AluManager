@@ -1,5 +1,6 @@
 package com.alumanager
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -159,9 +160,9 @@ class CommandeActivity : AppCompatActivity() {
         })
         // Footer : boutons
         val footer = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14) }
-        footer.addView(actionBtn("🗑️ Supprimer", "#FF4D9D") { showDeleteConfirm(c) })
+        footer.addView(actionBtn("🗑️ Suppr.", "#FF4D9D") { showDeleteConfirm(c) })
         footer.addView(spacer())
-        footer.addView(actionBtn("🪚 Coupe", "#FFC34D") { showCoupe(c) })
+        footer.addView(actionBtn("🔧 Zavatra", "#FFC34D") { openZavatra(c) })
         footer.addView(spacer())
         footer.addView(actionBtn("📄 Détail", "#21E6FF") { showDetail(c) })
         card.addView(footer)
@@ -293,6 +294,11 @@ class CommandeActivity : AppCompatActivity() {
             .setView(ScrollView(this).apply { addView(root) })
             .setPositiveButton("Fermer", null)
             .show()
+    }
+
+    /* ════════════ ZAVATRA (nécessaire de pièces) ════════════ */
+    private fun openZavatra(c: JSONObject) {
+        startActivity(Intent(this, ZavatraActivity::class.java).putExtra("cmd", c.toString()))
     }
 
     /* ════════════ COUPE (Gilmore-Gomory) ════════════ */

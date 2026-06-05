@@ -31,6 +31,9 @@
             android:name=".CommandeActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ZavatraActivity"
+            android:exported="false" />
 
     </application>
 
