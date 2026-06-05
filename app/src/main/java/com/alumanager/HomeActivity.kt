@@ -39,7 +39,9 @@ class HomeActivity : AppCompatActivity() {
         // Cartes du menu (les autres ecrans arrivent aux prochaines etapes)
         val soon = "Cet ecran arrive a la prochaine etape 🚧"
         binding.cardPlateaux.setOnClickListener { toast(soon) }
-        binding.cardCommande.setOnClickListener { toast(soon) }
+        binding.cardCommande.setOnClickListener {
+            startActivity(Intent(this, CommandeActivity::class.java))
+        }
         binding.cardPresence.setOnClickListener { toast(soon) }
         binding.cardAjoute.setOnClickListener {
             startActivity(Intent(this, AddOrderActivity::class.java))
