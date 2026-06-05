@@ -41,7 +41,9 @@ class HomeActivity : AppCompatActivity() {
         binding.cardCompter.setOnClickListener { toast(soon) }
         binding.cardVitre.setOnClickListener { toast(soon) }
         binding.cardCommande.setOnClickListener { toast(soon) }
-        binding.cardAjoute.setOnClickListener { toast(soon) }
+        binding.cardAjoute.setOnClickListener {
+            startActivity(Intent(this, AddOrderActivity::class.java))
+        }
         binding.cardPresence.setOnClickListener { toast(soon) }
     }
 
