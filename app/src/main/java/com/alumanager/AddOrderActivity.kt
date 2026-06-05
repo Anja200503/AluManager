@@ -592,14 +592,17 @@ class AddOrderActivity : AppCompatActivity() {
             var ok = false; var reference = ""; var err = ""
             try {
                 val body = payload.toString()
-                var resp = postJson(SAVE_URL, body, null)
-                // Challenge anti-bot de l'hebergeur (InfinityFree / aes.js) :
-                // on resout l'AES, on pose le cookie __test, puis on renvoie (2 essais max).
-                repeat(2) {
-                    if (isChallenge(resp.second)) {
-                        val cookie = solveAesChallenge(resp.second)
-                        if (cookie != null) resp = postJson(SAVE_URL, body, cookie)
-                    }
+                // 1) GET d'abord : openresty sert la page de challenge (un POST sans
+                //    cookie est rejete par le proxy avec 400). On resout le cookie __test.
+                var cookie: String? = null
+                val pre = getText(SAVE_URL)
+                if (isChallenge(pre.second)) cookie = solveAesChallenge(pre.second)
+                // 2) POST avec le cookie
+                var resp = postJson(SAVE_URL, body, cookie)
+                // 3) Si le cookie a expire entre-temps, re-resoudre et renvoyer une fois
+                if (isChallenge(resp.second)) {
+                    val c2 = solveAesChallenge(resp.second)
+                    if (c2 != null) resp = postJson(SAVE_URL, body, c2)
                 }
                 // Certains hebergeurs prefixent la reponse de notices/HTML : on extrait le JSON.
                 val jsonStr = extractJson(resp.second)
@@ -693,21 +696,40 @@ class AddOrderActivity : AppCompatActivity() {
     }
 
     /* ════════════ RESEAU + CHALLENGE ANTI-BOT ════════════ */
+    private val UA =
+        "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"
+
+    /** GET simple (sert a recuperer la page de challenge avant le POST). */
+    private fun getText(urlStr: String): Pair<Int, String> {
+        val conn = (URL(urlStr).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 20000; readTimeout = 20000
+            instanceFollowRedirects = true
+            setRequestProperty("Accept", "text/html,application/json,*/*")
+            setRequestProperty("User-Agent", UA)
+        }
+        val code = conn.responseCode
+        val text = (if (code in 200..299) conn.inputStream else conn.errorStream)
+            ?.bufferedReader()?.use { it.readText() } ?: ""
+        conn.disconnect()
+        return code to text
+    }
+
     private fun postJson(urlStr: String, body: String, cookie: String?): Pair<Int, String> {
+        val bytes = body.toByteArray(Charsets.UTF_8)
         val conn = (URL(urlStr).openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             doOutput = true
             connectTimeout = 20000; readTimeout = 20000
             instanceFollowRedirects = true
+            setFixedLengthStreamingMode(bytes.size)
             setRequestProperty("Content-Type", "application/json")
             setRequestProperty("Accept", "application/json, text/plain, */*")
-            setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"
-            )
+            setRequestProperty("User-Agent", UA)
+            setRequestProperty("Referer", urlStr)
             if (cookie != null) setRequestProperty("Cookie", "__test=$cookie")
         }
-        conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+        conn.outputStream.use { it.write(bytes) }
         val code = conn.responseCode
         val text = (if (code in 200..299) conn.inputStream else conn.errorStream)
             ?.bufferedReader()?.use { it.readText() } ?: ""
