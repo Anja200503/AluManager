@@ -36,15 +36,14 @@ class HomeActivity : AppCompatActivity() {
         // Panneau compte / deconnexion
         binding.btnAccount.setOnClickListener { showAccountDialog(name, user?.email ?: "—", societe) }
 
-        // Cartes (les ecrans arrivent aux prochaines etapes)
+        // Cartes du menu (les autres ecrans arrivent aux prochaines etapes)
         val soon = "Cet ecran arrive a la prochaine etape 🚧"
-        binding.cardCompter.setOnClickListener { toast(soon) }
-        binding.cardVitre.setOnClickListener { toast(soon) }
+        binding.cardPlateaux.setOnClickListener { toast(soon) }
         binding.cardCommande.setOnClickListener { toast(soon) }
+        binding.cardPresence.setOnClickListener { toast(soon) }
         binding.cardAjoute.setOnClickListener {
             startActivity(Intent(this, AddOrderActivity::class.java))
         }
-        binding.cardPresence.setOnClickListener { toast(soon) }
     }
 
     private fun decodeSociete(photoUrl: Uri?): String {
