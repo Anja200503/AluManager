@@ -83,7 +83,7 @@ class AddOrderActivity : AppCompatActivity() {
     private fun buildProductCard(prod: ProductItem, num: Int): View {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = roundedBg(Color.WHITE, 16)
+            background = strokedBg(Color.parseColor("#101A30"), 18, Color.parseColor("#2A3C66"))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -179,14 +179,14 @@ class AddOrderActivity : AppCompatActivity() {
         }
         val addRowBtn = TextView(this).apply {
             text = "+ Ajouter dimension"
-            setTextColor(Color.parseColor("#4A42D6"))
+            setTextColor(Color.parseColor("#21E6FF"))
             textSize = 13f
             setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         }
         val subTotal = TextView(this).apply {
             text = "Sous-total : ${fmt(OrderData.productTotal(prod))} Ar"
-            setTextColor(Color.parseColor("#333333"))
+            setTextColor(Color.parseColor("#EAF2FF"))
             textSize = 13f
         }
         footer.addView(addRowBtn); footer.addView(subTotal)
@@ -288,7 +288,7 @@ class AddOrderActivity : AppCompatActivity() {
                     val tv = TextView(this).apply {
                         text = if (OrderData.unitPrice(prod, dim) > 0)
                             "${fmt(OrderData.rowTotal(prod, dim))} Ar" else "—"
-                        setTextColor(Color.parseColor("#1B5E20"))
+                        setTextColor(Color.parseColor("#27FFC4"))
                         textSize = 13f
                         setTypeface(typeface, Typeface.BOLD)
                         gravity = Gravity.END
@@ -323,10 +323,10 @@ class AddOrderActivity : AppCompatActivity() {
             this.hint = hint
             inputType = InputType.TYPE_CLASS_NUMBER
             textSize = 13f
-            setTextColor(Color.parseColor("#222222"))
-            setHintTextColor(Color.parseColor("#BBBBBB"))
-            setPadding(dp(6), dp(6), dp(6), dp(6))
-            background = roundedBg(Color.parseColor("#F0F0F5"), 8)
+            setTextColor(Color.parseColor("#EAF2FF"))
+            setHintTextColor(Color.parseColor("#5A688F"))
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+            background = strokedBg(Color.parseColor("#0B1326"), 10, Color.parseColor("#243456"))
         }
     }
 
@@ -403,8 +403,8 @@ class AddOrderActivity : AppCompatActivity() {
         // Bouton retour
         container.addView(Button(this).apply {
             text = "‹ Retour"
-            setBackgroundColor(Color.parseColor("#EEEEEE"))
-            setTextColor(Color.parseColor("#555555"))
+            background = strokedBg(Color.parseColor("#14203F"), 12, Color.parseColor("#243456"))
+            setTextColor(Color.parseColor("#8A97C2"))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(10)
             layoutParams = lp
@@ -446,7 +446,7 @@ class AddOrderActivity : AppCompatActivity() {
 
     private fun wizTitle(t: String) = TextView(this).apply {
         text = t
-        setTextColor(Color.parseColor("#222222"))
+        setTextColor(Color.parseColor("#EAF2FF"))
         textSize = 16f
         setTypeface(typeface, Typeface.BOLD)
         setPadding(0, 0, 0, dp(10))
@@ -455,7 +455,10 @@ class AddOrderActivity : AppCompatActivity() {
     private fun optionCard(title: String, desc: String, selected: Boolean = false, onClick: () -> Unit): View {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = roundedBg(if (selected) Color.parseColor("#EDE9FF") else Color.parseColor("#F6F6FA"), 12)
+            background = strokedBg(
+                if (selected) Color.parseColor("#1B2A4F") else Color.parseColor("#0E1730"), 14,
+                if (selected) Color.parseColor("#8B5CFF") else Color.parseColor("#243456")
+            )
             setPadding(dp(14), dp(12), dp(14), dp(12))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(8)
@@ -464,13 +467,13 @@ class AddOrderActivity : AppCompatActivity() {
         }
         ll.addView(TextView(this).apply {
             text = title
-            setTextColor(Color.parseColor("#222222"))
+            setTextColor(Color.parseColor("#EAF2FF"))
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
         })
         if (desc.isNotEmpty()) ll.addView(TextView(this).apply {
             text = desc
-            setTextColor(Color.parseColor("#888888"))
+            setTextColor(Color.parseColor("#8A97C2"))
             textSize = 12f
         })
         return ll
@@ -480,7 +483,10 @@ class AddOrderActivity : AppCompatActivity() {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            background = roundedBg(if (selected) Color.parseColor("#EDE9FF") else Color.parseColor("#F6F6FA"), 12)
+            background = strokedBg(
+                if (selected) Color.parseColor("#1B2A4F") else Color.parseColor("#0E1730"), 14,
+                if (selected) Color.parseColor("#8B5CFF") else Color.parseColor("#243456")
+            )
             setPadding(dp(14), dp(10), dp(14), dp(10))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(8)
@@ -493,7 +499,7 @@ class AddOrderActivity : AppCompatActivity() {
         })
         ll.addView(TextView(this).apply {
             text = "   ${o.l}"
-            setTextColor(Color.parseColor("#222222"))
+            setTextColor(Color.parseColor("#EAF2FF"))
             textSize = 15f
         })
         return ll
@@ -575,7 +581,7 @@ class AddOrderActivity : AppCompatActivity() {
         }
 
         val progress = AlertDialog.Builder(this)
-            .setView(TextView(this).apply { text = "  Enregistrement en cours..."; setPadding(dp(20), dp(30), dp(20), dp(30)) })
+            .setView(TextView(this).apply { text = "  Enregistrement en cours..."; setTextColor(Color.parseColor("#EAF2FF")); setPadding(dp(20), dp(30), dp(20), dp(30)) })
             .setCancelable(false).create()
         progress.show()
 
@@ -626,14 +632,16 @@ class AddOrderActivity : AppCompatActivity() {
     }
 
     private fun label(t: String) = TextView(this).apply {
-        text = t; setTextColor(Color.parseColor("#4A42D6"))
+        text = t; setTextColor(Color.parseColor("#21E6FF"))
         textSize = 15f; setTypeface(typeface, Typeface.BOLD); setPadding(0, 0, 0, dp(8))
     }
 
     private fun clientField(hint: String) = EditText(this).apply {
         this.hint = hint
+        setTextColor(Color.parseColor("#EAF2FF"))
+        setHintTextColor(Color.parseColor("#5A688F"))
         setPadding(dp(12), dp(12), dp(12), dp(12))
-        background = roundedBg(Color.parseColor("#F0F0F5"), 10)
+        background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(8)
         layoutParams = lp
@@ -659,6 +667,11 @@ class AddOrderActivity : AppCompatActivity() {
     /* ════════════ FORMES ════════════ */
     private fun roundedBg(color: Int, radiusDp: Int) = android.graphics.drawable.GradientDrawable().apply {
         setColor(color); cornerRadius = dp(radiusDp).toFloat()
+    }
+
+    private fun strokedBg(color: Int, radiusDp: Int, strokeColor: Int) = android.graphics.drawable.GradientDrawable().apply {
+        setColor(color); cornerRadius = dp(radiusDp).toFloat()
+        setStroke(dp(1).coerceAtLeast(1), strokeColor)
     }
 
     private fun roundedTopBg(color: Int, radiusDp: Int) = android.graphics.drawable.GradientDrawable().apply {

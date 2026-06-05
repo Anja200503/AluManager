@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1A1730"
+    android:background="@drawable/bg_space"
     android:fillViewport="true">
 
     <LinearLayout
@@ -44,8 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            app:cardBackgroundColor="#252140"
-            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="#0F1830"
+            app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
             xmlns:app="http://schemas.android.com/apk/res-auto">
 

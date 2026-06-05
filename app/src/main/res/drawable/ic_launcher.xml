@@ -5,13 +5,29 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#6C63FF"
-        android:pathData="M0,0h108v108h-108z" />
-    <!-- Icone usine (industry) stylisee en blanc -->
+        android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor" xmlns:aapt="http://schemas.android.com/aapt">
+            <gradient
+                android:type="linear"
+                android:startX="0" android:startY="0"
+                android:endX="108" android:endY="108"
+                android:startColor="#0C1430"
+                android:endColor="#060912" />
+        </aapt:attr>
+    </path>
+    <!-- Icone usine néon -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M30,76 L30,52 L44,60 L44,52 L58,60 L58,40 L78,40 L78,76 Z" />
+        android:pathData="M30,76 L30,52 L44,60 L44,52 L58,60 L58,40 L78,40 L78,76 Z">
+        <aapt:attr name="android:fillColor" xmlns:aapt="http://schemas.android.com/aapt">
+            <gradient
+                android:type="linear"
+                android:startX="30" android:startY="40"
+                android:endX="78" android:endY="76"
+                android:startColor="#21E6FF"
+                android:endColor="#8B5CFF" />
+        </aapt:attr>
+    </path>
     <path
-        android:fillColor="#FFFFFF"
+        android:fillColor="#21E6FF"
         android:pathData="M64,32 L74,32 L74,38 L64,38 Z" />
 </vector>
