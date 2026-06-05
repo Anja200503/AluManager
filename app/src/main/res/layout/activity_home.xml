@@ -129,7 +129,7 @@
             <LinearLayout android:id="@+id/cardPlateaux" style="@style/QCard">
                 <TextView style="@style/QCardIco" android:background="@drawable/badge_indigo" android:text="🪟" />
                 <TextView style="@style/QCardLbl" android:text="PLATEAUX" />
-                <TextView style="@style/QCardSub" android:text="Stock & vitres" />
+                <TextView style="@style/QCardSub" android:text="Stock &amp; vitres" />
             </LinearLayout>
 
             <!-- AJOUTE DE COMMANDE -->
@@ -143,7 +143,7 @@
             <LinearLayout android:id="@+id/cardCommande" style="@style/QCard">
                 <TextView style="@style/QCardIco" android:background="@drawable/badge_amber" android:text="📋" />
                 <TextView style="@style/QCardLbl" android:text="COMMANDE" />
-                <TextView style="@style/QCardSub" android:text="Liste & suivi" />
+                <TextView style="@style/QCardSub" android:text="Liste &amp; suivi" />
             </LinearLayout>
 
             <!-- PRESENCE -->
