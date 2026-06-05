@@ -25,6 +25,9 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 class AddOrderActivity : AppCompatActivity() {
 
@@ -588,20 +591,24 @@ class AddOrderActivity : AppCompatActivity() {
         Thread {
             var ok = false; var reference = ""; var err = ""
             try {
-                val conn = (URL(SAVE_URL).openConnection() as HttpURLConnection).apply {
-                    requestMethod = "POST"
-                    doOutput = true
-                    connectTimeout = 15000; readTimeout = 15000
-                    setRequestProperty("Content-Type", "application/json")
+                val body = payload.toString()
+                var resp = postJson(SAVE_URL, body, null)
+                // Challenge anti-bot de l'hebergeur (InfinityFree / aes.js) :
+                // on resout l'AES, on pose le cookie __test, puis on renvoie.
+                if (resp.second.contains("toNumbers(") || resp.second.contains("slowAES")
+                    || resp.second.contains("aes.js")) {
+                    val cookie = solveAesChallenge(resp.second)
+                    if (cookie != null) resp = postJson(SAVE_URL, body, cookie)
                 }
-                conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
-                val code = conn.responseCode
-                val text = (if (code in 200..299) conn.inputStream else conn.errorStream)
-                    ?.bufferedReader()?.use { it.readText() } ?: ""
-                val json = JSONObject(text)
-                ok = json.optBoolean("success", false)
-                reference = json.optString("reference", "")
-                err = json.optString("error", "Erreur serveur")
+                val text = resp.second.trim()
+                if (!text.startsWith("{") && !text.startsWith("[")) {
+                    err = "Reponse invalide du serveur (HTTP ${resp.first}). Verifiez l'hebergeur."
+                } else {
+                    val json = JSONObject(text)
+                    ok = json.optBoolean("success", false)
+                    reference = json.optString("reference", "")
+                    err = json.optString("error", "Erreur serveur")
+                }
             } catch (e: Exception) {
                 err = e.localizedMessage ?: "Erreur reseau"
             }
@@ -679,4 +686,53 @@ class AddOrderActivity : AppCompatActivity() {
         val r = dp(radiusDp).toFloat()
         cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
     }
+
+    /* ════════════ RESEAU + CHALLENGE ANTI-BOT ════════════ */
+    private fun postJson(urlStr: String, body: String, cookie: String?): Pair<Int, String> {
+        val conn = (URL(urlStr).openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            doOutput = true
+            connectTimeout = 20000; readTimeout = 20000
+            instanceFollowRedirects = true
+            setRequestProperty("Content-Type", "application/json")
+            setRequestProperty("Accept", "application/json, text/plain, */*")
+            setRequestProperty(
+                "User-Agent",
+                "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36"
+            )
+            if (cookie != null) setRequestProperty("Cookie", "__test=$cookie")
+        }
+        conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+        val code = conn.responseCode
+        val text = (if (code in 200..299) conn.inputStream else conn.errorStream)
+            ?.bufferedReader()?.use { it.readText() } ?: ""
+        conn.disconnect()
+        return code to text
+    }
+
+    /** Resout le challenge JS (aes.js) : cookie __test = hex(AES-CBC-decrypt(c, key=a, iv=b)). */
+    private fun solveAesChallenge(html: String): String? {
+        val nums = Regex("toNumbers\\(\"([0-9a-fA-F]+)\"\\)")
+            .findAll(html).map { it.groupValues[1] }.toList()
+        if (nums.size < 3) return null
+        return try {
+            val cipher = Cipher.getInstance("AES/CBC/NoPadding")
+            cipher.init(
+                Cipher.DECRYPT_MODE,
+                SecretKeySpec(hexToBytes(nums[0]), "AES"),
+                IvParameterSpec(hexToBytes(nums[1]))
+            )
+            bytesToHex(cipher.doFinal(hexToBytes(nums[2])))
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun hexToBytes(s: String): ByteArray =
+        ByteArray(s.length / 2) {
+            ((Character.digit(s[it * 2], 16) shl 4) + Character.digit(s[it * 2 + 1], 16)).toByte()
+        }
+
+    private fun bytesToHex(b: ByteArray): String =
+        b.joinToString("") { "%02x".format(it) }
 }
