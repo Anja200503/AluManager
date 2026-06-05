@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#6C63FF" />
+  <title>MonApp</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/commande.css" />
+  <link rel="stylesheet" href="css/gg.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <div id="app-shell" style="display:none">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <!-- Bouton retour (masqué sur l'accueil) -->
+    <button class="header-back-btn" id="headerBackBtn" onclick="headerGoBack()" aria-label="Retour">
+      <i class="fa fa-chevron-left"></i>
+    </button>
+    <div class="header-title" id="page-title">Accueil</div>
+    <div class="header-right">
+      <button class="header-prix-btn" id="headerPrixBtn" onclick="cmdOpenPrix()" title="Paramètres des prix" style="display:none">
+        <i class="fa fa-sliders"></i>
+      </button>
+      <button class="account-btn" onclick="toggleAccountPanel()">
+        <i class="fa fa-circle-user"></i>
+      </button>
+    </div>
+  </header>
+
+
+  <!-- CONTENU PRINCIPAL -->
+  <main class="main-content" id="main-content">
+
+    <!-- PAGE: ACCUEIL -->
+    <div class="page active" id="page-home">
+
+      <!-- Hero -->
+      <div class="mod-hero">
+        <div class="mod-hero-glow"></div>
+        <div class="mod-hero-content">
+          <div class="mod-hero-top">
+            <div class="mod-avatar"><i class="fa fa-industry"></i></div>
+            <div class="mod-hero-info">
+              <div class="mod-greeting">Bienvenue</div>
+              <div class="mod-company">ALU MANAGER</div>
+            </div>
+          </div>
+          <div class="mod-hero-date" id="mgr-date"></div>
+          <div class="mod-hero-stats">
+            <div class="mod-hstat"><span class="mod-hstat-val">1 248</span><span class="mod-hstat-lbl">Stock</span></div>
+            <div class="mod-hstat-sep"></div>
+            <div class="mod-hstat"><span class="mod-hstat-val">34</span><span class="mod-hstat-lbl">Commandes</span></div>
+            <div class="mod-hstat-sep"></div>
+            <div class="mod-hstat"><span class="mod-hstat-val">12/15</span><span class="mod-hstat-lbl">Présences</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Titre -->
+      <div class="mod-section-lbl">Accès rapide</div>
+
+      <!-- Grille 2×2 + 1 -->
+      <div class="mod-grid">
+
+        <div class="mod-card" style="--c1:#1565C0;--c2:#42A5F5" onclick="navigateTo('dashboard')">
+          <div class="mod-card-shine"></div>
+          <div class="mod-card-ico"><i class="fa fa-calculator"></i></div>
+          <div class="mod-card-label">Compter</div>
+          <div class="mod-card-arrow"><i class="fa fa-arrow-right"></i></div>
+        </div>
+
+        <div class="mod-card" style="--c1:#1B5E20;--c2:#66BB6A" onclick="navigateTo('dashboard')">
+          <div class="mod-card-shine"></div>
+          <div class="mod-card-ico"><i class="fa fa-border-all"></i></div>
+          <div class="mod-card-label">Vitre plateaux</div>
+          <div class="mod-card-arrow"><i class="fa fa-arrow-right"></i></div>
+        </div>
+
+        <div class="mod-card" style="--c1:#4A148C;--c2:#AB47BC" onclick="navigateTo('messages')">
+          <div class="mod-card-shine"></div>
+          <div class="mod-card-ico"><i class="fa fa-clipboard-list"></i></div>
+          <div class="mod-card-label">Commande</div>
+          <div class="mod-card-arrow"><i class="fa fa-arrow-right"></i></div>
+        </div>
+
+        <div class="mod-card" style="--c1:#E65100;--c2:#FFA726" onclick="navigateTo('favoris')">
+          <div class="mod-card-shine"></div>
+          <div class="mod-card-ico"><i class="fa fa-circle-plus"></i></div>
+          <div class="mod-card-label">Ajoute commande</div>
+          <div class="mod-card-arrow"><i class="fa fa-arrow-right"></i></div>
+        </div>
+
+        <div class="mod-card mod-card-wide" style="--c1:#880E4F;--c2:#EC407A" onclick="navigateTo('profil')">
+          <div class="mod-card-shine"></div>
+          <div class="mod-card-ico"><i class="fa fa-users"></i></div>
+          <div class="mod-card-label">Présence du personnel</div>
+          <div class="mod-card-arrow"><i class="fa fa-arrow-right"></i></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- PAGE: TABLEAU DE BORD -->
+    <div class="page" id="page-dashboard"></div>
+
+    <!-- PAGE: PROFIL / PRÉSENCE -->
+    <div class="page" id="page-profil">
+
+      <!-- Entête date + société -->
+      <div class="pres-header">
+        <div class="pres-date-box">
+          <i class="fa fa-calendar-day"></i>
+          <div>
+            <div class="pres-date-label">Pointage du jour</div>
+            <div class="pres-date-val" id="pres-date">—</div>
+          </div>
+        </div>
+        <div class="pres-societe-badge" id="pres-societe">—</div>
+      </div>
+
+      <!-- Compteur résumé -->
+      <div class="pres-summary">
+        <div class="pres-sum-item green">
+          <span class="pres-sum-val" id="count-present">0</span>
+          <span class="pres-sum-lbl">Présents</span>
+        </div>
+        <div class="pres-sum-sep"></div>
+        <div class="pres-sum-item orange">
+          <span class="pres-sum-val" id="count-retard">0</span>
+          <span class="pres-sum-lbl">Retards</span>
+        </div>
+        <div class="pres-sum-sep"></div>
+        <div class="pres-sum-item red">
+          <span class="pres-sum-val" id="count-absent">0</span>
+          <span class="pres-sum-lbl">Absents</span>
+        </div>
+      </div>
+
+      <!-- Liste employés -->
+      <div class="pres-section-title">
+        <i class="fa fa-users"></i> Équipe
+        <button class="pres-add-btn" onclick="showAddEmploye()">
+          <i class="fa fa-plus"></i> Ajouter
+        </button>
+      </div>
+
+      <div class="pres-list" id="pres-list">
+        <div class="pres-empty">
+          <i class="fa fa-user-slash"></i>
+          <p>Aucun employé. Appuyez sur "Ajouter".</p>
+        </div>
+      </div>
+
+      <!-- Bouton enregistrer -->
+      <button class="pres-save-btn" id="pres-save-btn" onclick="savePointage()">
+        <i class="fa fa-floppy-disk"></i>
+        <span id="pres-save-txt">Enregistrer le pointage</span>
+      </button>
+
+      <!-- Historique -->
+      <div class="pres-section-title" style="margin-top:24px">
+        <i class="fa fa-clock-rotate-left"></i> Historique récent
+      </div>
+      <div class="pres-history" id="pres-history">
+        <div class="pres-empty"><i class="fa fa-inbox"></i><p>Aucun historique</p></div>
+      </div>
+
+    </div>
+
+    <!-- MODAL AJOUT EMPLOYÉ -->
+    <div class="emp-modal-overlay" id="emp-overlay" onclick="closeAddEmploye()"></div>
+    <div class="emp-modal" id="emp-modal">
+      <div class="emp-modal-title"><i class="fa fa-user-plus"></i> Nouvel employé</div>
+      <div class="emp-modal-field">
+        <i class="fa fa-user"></i>
+        <input type="text" id="emp-input" placeholder="Nom complet de l'employé" />
+      </div>
+      <div class="emp-modal-actions">
+        <button class="emp-cancel" onclick="closeAddEmploye()">Annuler</button>
+        <button class="emp-confirm" onclick="confirmAddEmploye()">Ajouter</button>
+      </div>
+    </div>
+
+    <!-- PAGE: LISTE COMMANDES -->
+    <div class="page" id="page-messages">
+      <div style="padding:14px 12px;max-width:520px;margin:0 auto">
+
+        <!-- Stats globales -->
+        <div class="lst-stats">
+          <div class="lst-stat-card">
+            <span class="lst-stat-icon-lbl">📋</span>
+            <span class="lst-stat-val" id="lstStatNb">—</span>
+            <span class="lst-stat-lbl">Commandes</span>
+          </div>
+          <div class="lst-stat-card lst-stat-ca">
+            <span class="lst-stat-icon-lbl">💰</span>
+            <span class="lst-stat-val" id="lstStatCA">—</span>
+            <span class="lst-stat-lbl">Chiffre d'affaires</span>
+          </div>
+          <div class="lst-stat-card lst-stat-av">
+            <span class="lst-stat-icon-lbl">✅</span>
+            <span class="lst-stat-val" id="lstStatAv">—</span>
+            <span class="lst-stat-lbl">Avances reçues</span>
+          </div>
+          <div class="lst-stat-card lst-stat-re">
+            <span class="lst-stat-icon-lbl">⏳</span>
+            <span class="lst-stat-val" id="lstStatRe">—</span>
+            <span class="lst-stat-lbl">Restes dûs</span>
+          </div>
+        </div>
+
+        <!-- Recherche -->
+        <div class="lst-search-bar">
+          <i class="fa fa-magnifying-glass"></i>
+          <input type="text" id="lstSearch" placeholder="Rechercher client, référence..."
+            oninput="lstFiltrer()">
+        </div>
+
+        <!-- Liste -->
+        <div id="lstWrap">
+          <div class="lst-loading">
+            <div class="lst-spinner"></div>
+            Chargement...
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-messages -->
+
+    <!-- PAGE: AJOUTE COMMANDE -->
+    <div class="page" id="page-favoris">
+      <div style="padding:14px 0 0;max-width:520px;margin:0 auto">
+
+        <!-- Stats -->
+        <div class="cmd-stats-row">
+          <div class="cmd-stat-item">
+            <span class="val" id="cmdHProduits">0</span>
+            <span class="lbl">Produits</span>
+          </div>
+          <div class="cmd-stat-item">
+            <span class="val" id="cmdHLignes">0</span>
+            <span class="lbl">Lignes</span>
+          </div>
+          <div class="cmd-stat-item">
+            <span class="val" id="cmdHQty">0</span>
+            <span class="lbl">Quantités</span>
+          </div>
+          <div class="cmd-stat-item">
+            <span class="val" id="cmdHTotal">0</span>
+            <span class="lbl">Total Ar</span>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="cmd-toolbar">
+          <div class="cmd-toolbar-left">
+            <span class="cmd-toolbar-title">Bon de commande</span>
+            <span class="cmd-count-badge" id="cmdCountBadge">0 article(s)</span>
+          </div>
+          <button class="cmd-btn-add" onclick="cmdOpenModal()">
+            <span class="cmd-plus-circle">+</span> Ajouter
+          </button>
+        </div>
+
+        <!-- Liste produits + état vide -->
+        <div id="cmdProductsList">
+          <div class="cmd-empty-state" id="cmdEmptyState">
+            <h3>Aucun produit</h3>
+            <p>Appuyez sur Ajouter pour commencer votre bon de commande</p>
+            <button class="cmd-btn-add" style="margin:0 auto" onclick="cmdOpenModal()">
+              <span class="cmd-plus-circle">+</span> Ajouter le premier produit
+            </button>
+          </div>
+        </div>
+
+        <!-- Barre récapitulatif -->
+        <div class="cmd-summary-bar" id="cmdSummaryBar" style="display:none">
+          <div>
+            <span class="cmd-sum-lbl">Total Général</span>
+            <span class="cmd-sum-val" id="cmdSTotal">0 Ar</span>
+          </div>
+          <button class="cmd-btn-validate" onclick="cmdOpenClientModal()">Valider la commande</button>
+        </div>
+
+      </div>
+    </div><!-- /page-favoris -->
+
+    <!-- ── MODALS COMMANDE (hors page pour que position:fixed fonctionne) ── -->
+
+    <!-- Modal produit -->
+    <div class="cmd-modal-overlay" id="cmdModalOverlay">
+      <div class="cmd-modal" id="cmdModalBox">
+        <div class="cmd-modal-handle"><div class="cmd-modal-handle-bar"></div></div>
+        <div class="cmd-modal-header">
+          <div>
+            <h2 id="cmdModalTitle">Nouveau produit</h2>
+            <p id="cmdModalSubtitle">Sélectionnez le type</p>
+          </div>
+          <button class="cmd-btn-close" onclick="cmdCloseModal()">✕</button>
+        </div>
+        <div class="cmd-step-indicator" id="cmdStepIndicator"></div>
+        <div class="cmd-modal-body" id="cmdModalBody"></div>
+        <div class="cmd-modal-footer">
+          <button class="cmd-btn-prev" id="cmdBtnPrev" onclick="cmdGoPrev()">Retour</button>
+          <button class="cmd-btn-confirm" id="cmdBtnConfirm" onclick="cmdConfirmProduct()" disabled>Ajouter à la commande</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal client -->
+    <div class="cmd-modal-overlay" id="cmdClientOverlay">
+      <div class="cmd-modal" id="cmdClientBox">
+        <div class="cmd-modal-handle"><div class="cmd-modal-handle-bar"></div></div>
+        <div class="cmd-modal-header">
+          <div>
+            <h2>Information client</h2>
+            <p>Remplissez les détails</p>
+          </div>
+          <button class="cmd-btn-close" onclick="cmdCloseClientModal()">✕</button>
+        </div>
+        <div style="padding:18px 16px 10px">
+          <div class="cmd-client-total-block">
+            <span class="cmd-client-total-lbl">Total Général de la commande</span>
+            <span class="cmd-client-total-val" id="cmdClientTotalAffiche">0 Ar</span>
+          </div>
+          <div class="cmd-form-grid">
+            <div class="cmd-form-group">
+              <label class="cmd-form-label">Nom du client</label>
+              <input type="text" class="cmd-form-input" id="cmdClientNom" placeholder="Ex: Jean Dupont" oninput="cmdCheckClientForm()">
+            </div>
+            <div class="cmd-form-group">
+              <label class="cmd-form-label">Lieu / Adresse</label>
+              <input type="text" class="cmd-form-input" id="cmdClientLieu" placeholder="Ex: Antananarivo" oninput="cmdCheckClientForm()">
+            </div>
+            <div class="cmd-avance-row">
+              <div class="cmd-form-group">
+                <label class="cmd-form-label">Date commande</label>
+                <input type="date" class="cmd-form-input" id="cmdClientDate" oninput="cmdCheckClientForm()">
+              </div>
+              <div class="cmd-form-group">
+                <label class="cmd-form-label">Date livraison</label>
+                <input type="date" class="cmd-form-input" id="cmdClientDateLiv" oninput="cmdCheckClientForm()">
+              </div>
+            </div>
+            <div class="cmd-form-group">
+              <label class="cmd-form-label">Total (Ar)</label>
+              <input type="text" class="cmd-form-input readonly" id="cmdClientTotal" readonly tabindex="-1">
+            </div>
+            <div class="cmd-avance-row">
+              <div class="cmd-form-group">
+                <label class="cmd-form-label">Avance (Ar)</label>
+                <input type="number" class="cmd-form-input" id="cmdClientAvance" placeholder="0" min="0" inputmode="numeric" oninput="cmdCalcReste()">
+              </div>
+              <div class="cmd-form-group">
+                <label class="cmd-form-label">Reste (Ar)</label>
+                <div class="cmd-reste-display" id="cmdResteDisplay">
+                  <span class="cmd-reste-lbl">Reste</span>
+                  <span class="cmd-reste-val" id="cmdResteVal">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 16px 16px;border-top:1px solid var(--cmd-border);background:#fafbfc">
+          <button class="cmd-btn-confirmer" id="cmdBtnConfirmerCommande" onclick="cmdConfirmerCommande()" disabled>
+            <span class="cmd-check-icon">✓</span> Confirmer &amp; Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal succès -->
+    <div class="cmd-modal-overlay" id="cmdSuccessOverlay">
+      <div class="cmd-modal" id="cmdSuccessBox">
+        <div class="cmd-modal-handle"><div class="cmd-modal-handle-bar"></div></div>
+        <div class="cmd-modal-header" style="background:linear-gradient(135deg,#1e8449,#27ae60)">
+          <div>
+            <h2>Commande enregistrée !</h2>
+            <p>Sauvegardée dans la base de données</p>
+          </div>
+          <button class="cmd-btn-close" onclick="cmdCloseSuccessModal()">✕</button>
+        </div>
+        <div style="padding:24px 20px;text-align:center">
+          <div class="cmd-confirm-icon">✓</div>
+          <div class="cmd-confirm-ref">
+            <div class="cmd-confirm-ref-lbl">Référence de commande</div>
+            <div class="cmd-confirm-ref-val" id="cmdSuccessRef">—</div>
+          </div>
+          <div class="cmd-confirm-details" id="cmdSuccessDetails"></div>
+          <button class="cmd-btn-new" onclick="cmdNouvelleCommande()">+ Nouvelle commande</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay chargement -->
+    <div class="cmd-loading-overlay" id="cmdLoadingOverlay">
+      <div class="cmd-spinner"></div>
+      <div class="cmd-loading-text">Enregistrement en cours...</div>
+    </div>
+
+    <!-- Toast -->
+    <div class="cmd-toast" id="cmdToast"><span id="cmdToastMsg"></span></div>
+
+    <!-- PAGE: PARAMÈTRES -->
+    <div class="page" id="page-parametres"></div>
+
+  </main>
+
+  <!-- PANNEAU COMPTE -->
+  <div class="acct-overlay" id="acct-overlay" onclick="toggleAccountPanel()"></div>
+  <div class="acct-panel" id="acct-panel">
+    <div class="acct-handle"></div>
+
+    <div class="acct-avatar">
+      <i class="fa fa-circle-user"></i>
+    </div>
+
+    <div class="acct-name" id="acct-name">—</div>
+    <div class="acct-societe" id="acct-societe">—</div>
+
+    <div class="acct-info-list">
+      <div class="acct-info-row">
+        <i class="fa fa-envelope"></i>
+        <span id="acct-email">—</span>
+      </div>
+      <div class="acct-info-row">
+        <i class="fa fa-building"></i>
+        <span id="acct-societe2">—</span>
+      </div>
+      <div class="acct-info-row">
+        <i class="fa fa-calendar"></i>
+        <span id="acct-date">—</span>
+      </div>
+    </div>
+
+    <button class="acct-logout-btn" onclick="handleLogout()">
+      <i class="fa fa-right-from-bracket"></i>
+      Déconnexion
+    </button>
+  </div>
+
+  </div><!-- /app-shell -->
+
+  <!-- ══ ÉCRAN DÉMARRAGE ═══════════════════════════════════════
+       Visible au lancement. Firebase vérifie la session (~300ms).
+       Disparaît en fondu dès que onAuthStateChanged répond.
+  ════════════════════════════════════════════════════════════ -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-glow splash-glow-1"></div>
+    <div class="splash-glow splash-glow-2"></div>
+    <div class="splash-content">
+      <div class="splash-icon"><i class="fa fa-industry"></i></div>
+      <div class="splash-name">ALU MANAGER</div>
+      <div class="splash-sub">Gestion professionnelle aluminium</div>
+      <div class="splash-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ECRAN AUTH (caché par défaut — affiché seulement si non connecté) -->
+  <div id="auth-screen" class="auth-screen" style="display:none">
+    <div class="auth-glow auth-glow-1"></div>
+    <div class="auth-glow auth-glow-2"></div>
+
+    <div class="auth-card">
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div class="auth-logo-icon"><i class="fa fa-industry"></i></div>
+        <div class="auth-logo-name">ALU MANAGER</div>
+        <div class="auth-logo-sub">Gestion professionnelle aluminium</div>
+      </div>
+
+      <!-- Onglets -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Créer un compte</button>
+      </div>
+
+      <!-- Message erreur -->
+      <div class="auth-error" id="auth-error"></div>
+
+      <!-- Formulaire CONNEXION -->
+      <form class="auth-form" id="form-login" onsubmit="handleLogin(event)">
+        <div class="auth-field">
+          <i class="fa fa-envelope"></i>
+          <input type="email" placeholder="Adresse email" id="login-email" required autocomplete="email" />
+        </div>
+        <div class="auth-field">
+          <i class="fa fa-lock"></i>
+          <input type="password" placeholder="Mot de passe" id="login-password" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="auth-btn" id="btn-login">
+          <span class="auth-btn-text">Se connecter</span>
+          <span class="auth-btn-loader" style="display:none"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+
+      <!-- Formulaire INSCRIPTION -->
+      <form class="auth-form" id="form-register" style="display:none" onsubmit="handleRegister(event)">
+        <div class="auth-field">
+          <i class="fa fa-user"></i>
+          <input type="text" placeholder="Nom complet" id="reg-name" required autocomplete="name" />
+        </div>
+        <div class="auth-field">
+          <i class="fa fa-envelope"></i>
+          <input type="email" placeholder="Adresse email" id="reg-email" required autocomplete="email" />
+        </div>
+        <div class="auth-field auth-field-select">
+          <i class="fa fa-building"></i>
+          <select id="reg-societe" required>
+            <option value="" disabled selected>Choisir votre société / lieu</option>
+            <option value="ALUVERRE AMBATOMIRAHAVAVY">ALUVERRE AMBATOMIRAHAVAVY</option>
+            <option value="ALUVERRE TSIROANOMANDIDY">ALUVERRE TSIROANOMANDIDY</option>
+          </select>
+        </div>
+        <div class="auth-field">
+          <i class="fa fa-lock"></i>
+          <input type="password" placeholder="Mot de passe (min. 6 caractères)" id="reg-password" required autocomplete="new-password" />
+        </div>
+        <div class="auth-field">
+          <i class="fa fa-lock"></i>
+          <input type="password" placeholder="Confirmer le mot de passe" id="reg-confirm" required autocomplete="new-password" />
+        </div>
+        <button type="submit" class="auth-btn" id="btn-register">
+          <span class="auth-btn-text">Créer mon compte</span>
+          <span class="auth-btn-loader" style="display:none"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ── MODAL PARAMÈTRES DES PRIX ────────────────────────────── -->
+  <div class="cmd-prix-overlay" id="cmdPrixOverlay">
+    <div class="cmd-prix-box">
+      <div class="cmd-prix-handle"><div class="cmd-prix-handle-bar"></div></div>
+      <div class="cmd-prix-header">
+        <div class="cmd-prix-header-left">
+          <div class="cmd-prix-header-icon">⚙️</div>
+          <div>
+            <div class="cmd-prix-title">Paramètres des prix</div>
+            <div class="cmd-prix-subtitle">Prix de base par produit</div>
+          </div>
+        </div>
+        <button class="cmd-prix-close" onclick="cmdClosePrix()">✕</button>
+      </div>
+      <div class="cmd-prix-body">
+        <p class="cmd-prix-desc">Modifiez le prix unitaire de base de chaque type de produit. Les totaux seront recalculés immédiatement.</p>
+        <div class="cmd-prix-list">
+
+          <!-- ── Fenêtre (par type) ── -->
+          <div class="cmd-prix-section">
+            <div class="cmd-prix-section-hd">
+              <span class="cmd-prix-icon">🪟</span>
+              <span class="cmd-prix-section-title">Fenêtre</span>
+              <span class="cmd-prix-section-unit">Ar / m²</span>
+            </div>
+            <div class="cmd-prix-section-body">
+              <!-- Coulissante Promotion -->
+              <div class="cmd-prix-subrow cmd-prix-col">
+                <div class="cmd-prix-subrow-top">
+                  <div class="cmd-prix-subrow-name">
+                    <span class="cmd-prix-sub-badge coulissante">Coulissante</span>
+                    Promotion
+                  </div>
+                  <input class="cmd-prix-input" type="number" id="prix_fenetre_coulissante_promotion" min="0" inputmode="numeric" placeholder="70000">
+                </div>
+                <div class="cmd-min-surf-row">
+                  <div class="cmd-min-surf-info">
+                    <span class="cmd-min-surf-label">📐 Minimum 1 m²</span>
+                    <span class="cmd-min-surf-desc">Si la surface est inférieure à 1m², facturer au minimum 1m²</span>
+                  </div>
+                  <label class="cmd-switch">
+                    <input type="checkbox" id="minSurf_coulissante_promotion"
+                           onchange="cmdToggleMinSurf('coulissante_promotion', this.checked)">
+                    <span class="cmd-switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Coulissante 2ème Choix -->
+              <div class="cmd-prix-subrow cmd-prix-col">
+                <div class="cmd-prix-subrow-top">
+                  <div class="cmd-prix-subrow-name">
+                    <span class="cmd-prix-sub-badge coulissante">Coulissante</span>
+                    2ème Choix
+                  </div>
+                  <input class="cmd-prix-input" type="number" id="prix_fenetre_coulissante_deuxieme" min="0" inputmode="numeric" placeholder="85000">
+                </div>
+                <div class="cmd-min-surf-row">
+                  <div class="cmd-min-surf-info">
+                    <span class="cmd-min-surf-label">📐 Minimum 1 m²</span>
+                    <span class="cmd-min-surf-desc">Si la surface est inférieure à 1m², facturer au minimum 1m²</span>
+                  </div>
+                  <label class="cmd-switch">
+                    <input type="checkbox" id="minSurf_coulissante_deuxieme"
+                           onchange="cmdToggleMinSurf('coulissante_deuxieme', this.checked)">
+                    <span class="cmd-switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Coulissante 1er Choix -->
+              <div class="cmd-prix-subrow cmd-prix-col">
+                <div class="cmd-prix-subrow-top">
+                  <div class="cmd-prix-subrow-name">
+                    <span class="cmd-prix-sub-badge coulissante">Coulissante</span>
+                    1er Choix
+                  </div>
+                  <input class="cmd-prix-input" type="number" id="prix_fenetre_coulissante_premier" min="0" inputmode="numeric" placeholder="100000">
+                </div>
+                <div class="cmd-min-surf-row">
+                  <div class="cmd-min-surf-info">
+                    <span class="cmd-min-surf-label">📐 Minimum 1 m²</span>
+                    <span class="cmd-min-surf-desc">Si la surface est inférieure à 1m², facturer au minimum 1m²</span>
+                  </div>
+                  <label class="cmd-switch">
+                    <input type="checkbox" id="minSurf_coulissante_premier"
+                           onchange="cmdToggleMinSurf('coulissante_premier', this.checked)">
+                    <span class="cmd-switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="cmd-prix-subrow">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge ouvrante">Ouvrante</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_ouvrante" min="0" inputmode="numeric" placeholder="90000">
+              </div>
+              <div class="cmd-prix-subrow">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge projetant">Projetant</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_projetant" min="0" inputmode="numeric" placeholder="95000">
+              </div>
+              <div class="cmd-prix-subrow">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge naco">Naco</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_naco" min="0" inputmode="numeric" placeholder="80000">
+              </div>
+              <div class="cmd-prix-subrow">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge fixe">Fixe</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_fixe" min="0" inputmode="numeric" placeholder="65000">
+              </div>
+
+              <!-- Surplus vitrage coulissante -->
+              <div class="cmd-prix-surp-hd">
+                <i class="fa fa-plus-circle"></i>&nbsp; Surplus vitrage &mdash; Coulissante
+              </div>
+              <div class="cmd-prix-subrow">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge vitre">Antelio 4mm</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_surp_antelio_4mm" min="0" inputmode="numeric" placeholder="0">
+              </div>
+              <div class="cmd-prix-subrow">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge vitre">Antelio 5mm</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_surp_antelio_5mm" min="0" inputmode="numeric" placeholder="0">
+              </div>
+              <div class="cmd-prix-subrow last">
+                <div class="cmd-prix-subrow-name">
+                  <span class="cmd-prix-sub-badge vitre">Clair 5mm</span>
+                </div>
+                <input class="cmd-prix-input" type="number" id="prix_fenetre_surp_clair_5mm" min="0" inputmode="numeric" placeholder="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Autres produits ── -->
+          <div class="cmd-prix-row">
+            <div class="cmd-prix-row-info">
+              <span class="cmd-prix-icon">🏠</span>
+              <div>
+                <div class="cmd-prix-row-name">Lavarangana Inox</div>
+                <div class="cmd-prix-row-unit">Ar / ml</div>
+              </div>
+            </div>
+            <input class="cmd-prix-input" type="number" id="prix_lavarangana" min="0" inputmode="numeric" placeholder="45000">
+          </div>
+          <div class="cmd-prix-row">
+            <div class="cmd-prix-row-info">
+              <span class="cmd-prix-icon">🚪</span>
+              <div>
+                <div class="cmd-prix-row-name">Porte</div>
+                <div class="cmd-prix-row-unit">Ar / m²</div>
+              </div>
+            </div>
+            <input class="cmd-prix-input" type="number" id="prix_porte" min="0" inputmode="numeric" placeholder="120000">
+          </div>
+          <div class="cmd-prix-row">
+            <div class="cmd-prix-row-info">
+              <span class="cmd-prix-icon">🔲</span>
+              <div>
+                <div class="cmd-prix-row-name">Rideau Métallique</div>
+                <div class="cmd-prix-row-unit">Ar / m²</div>
+              </div>
+            </div>
+            <input class="cmd-prix-input" type="number" id="prix_rideau" min="0" inputmode="numeric" placeholder="95000">
+          </div>
+          <div class="cmd-prix-row">
+            <div class="cmd-prix-row-info">
+              <span class="cmd-prix-icon">🏪</span>
+              <div>
+                <div class="cmd-prix-row-name">Vitrine Alu</div>
+                <div class="cmd-prix-row-unit">Ar / m³</div>
+              </div>
+            </div>
+            <input class="cmd-prix-input" type="number" id="prix_vitrine" min="0" inputmode="numeric" placeholder="150000">
+          </div>
+
+        </div>
+      </div>
+      <div class="cmd-prix-footer">
+        <button class="cmd-prix-btn-reset" onclick="cmdResetPrix()">
+          <i class="fa fa-rotate-left"></i> Défauts
+        </button>
+        <button class="cmd-prix-btn-save" onclick="cmdSavePrix()">
+          <i class="fa fa-check"></i> Appliquer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL CONFIRMATION SUPPRESSION ───────────────────────── -->
+  <div class="lst-confirm-overlay" id="lstConfirmOverlay">
+    <div class="lst-confirm-box">
+      <div class="lst-confirm-icon">🗑️</div>
+      <div class="lst-confirm-title">Supprimer la commande ?</div>
+      <div class="lst-confirm-ref" id="lstConfirmRef"></div>
+      <p class="lst-confirm-msg">Cette action est irréversible. La commande sera définitivement supprimée.</p>
+      <div class="lst-confirm-btns">
+        <button class="lst-confirm-btn-cancel" onclick="lstConfirmClose()">Annuler</button>
+        <button class="lst-confirm-btn-del" id="lstConfirmDelBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL PLAN DE COUPE — GILMORE-GOMORY ──────────────────── -->
+  <div class="gg-overlay" id="ggOverlay">
+    <div class="gg-header">
+      <span class="gg-header-icon">🪚</span>
+      <div>
+        <div class="gg-header-title">Plan de coupe optimal</div>
+        <div class="gg-header-sub">Algorithme de Gilmore-Gomory</div>
+      </div>
+      <button class="gg-close-btn" onclick="GG.closeModal()">✕</button>
+    </div>
+
+    <!-- Configuration barre / trait -->
+    <div class="gg-config">
+      <div class="gg-config-item">
+        <span class="gg-config-label">Barre</span>
+        <input class="gg-config-input" type="number" id="ggBarLen" value="6000" min="100" max="12000">
+        <span>mm</span>
+      </div>
+      <div class="gg-config-item">
+        <span class="gg-config-label">Trait</span>
+        <input class="gg-config-input" type="number" id="ggKerf" value="3" min="0" max="10">
+        <span>mm</span>
+      </div>
+      <button class="gg-calc-btn" id="ggRecalcBtn">↻ Recalculer</button>
+    </div>
+
+    <div class="gg-body" id="ggBody"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script src="js/firebase-auth.js"></script>
+  <script src="js/firestore.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/commande.js"></script>
+  <script src="js/gilmore_gomory.js"></script>
+</body>
+</html>
