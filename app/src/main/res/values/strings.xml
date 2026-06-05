@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ALU MANAGER</string>
+
+    <string-array name="societes">
+        <item>Choisir votre societe / lieu</item>
+        <item>ALUVERRE AMBATOMIRAHAVAVY</item>
+        <item>ALUVERRE TSIROANOMANDIDY</item>
+    </string-array>
 </resources>

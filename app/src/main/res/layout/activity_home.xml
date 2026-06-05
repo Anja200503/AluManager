@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F4F8"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- HERO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/hero_bg"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="36dp"
+            android:paddingBottom="26dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/avatar_circle"
+                    android:gravity="center"
+                    android:text="🏭"
+                    android:textSize="22sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/heroGreeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bienvenue"
+                        android:textColor="#E0DCFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/heroCompany"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ALU MANAGER"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnAccount"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/avatar_circle"
+                    android:gravity="center"
+                    android:text="👤"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/heroDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="—"
+                android:textColor="#E0DCFF"
+                android:textSize="13sp" />
+
+            <!-- Stats -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <LinearLayout style="@style/HStat">
+                    <TextView style="@style/HStatVal" android:text="1 248" />
+                    <TextView style="@style/HStatLbl" android:text="Stock" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/HStat">
+                    <TextView style="@style/HStatVal" android:text="34" />
+                    <TextView style="@style/HStatLbl" android:text="Commandes" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/HStat">
+                    <TextView style="@style/HStatVal" android:text="12/15" />
+                    <TextView style="@style/HStatLbl" android:text="Presences" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Titre section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Acces rapide"
+            android:textColor="#888"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- Grille de cartes -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:padding="12dp"
+            android:useDefaultMargins="true">
+
+            <LinearLayout android:id="@+id/cardCompter" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:text="🧮" />
+                <TextView style="@style/QCardLbl" android:text="Compter" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/cardVitre" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:text="🔲" />
+                <TextView style="@style/QCardLbl" android:text="Vitre plateaux" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/cardCommande" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:text="📋" />
+                <TextView style="@style/QCardLbl" android:text="Commande" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/cardAjoute" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:text="➕" />
+                <TextView style="@style/QCardLbl" android:text="Ajoute commande" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cardPresence"
+                style="@style/QCard"
+                android:layout_columnSpan="2">
+                <TextView style="@style/QCardIco" android:text="👥" />
+                <TextView style="@style/QCardLbl" android:text="Presence du personnel" />
+            </LinearLayout>
+        </GridLayout>
+
+    </LinearLayout>
+</ScrollView>
