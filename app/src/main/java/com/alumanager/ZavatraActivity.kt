@@ -147,12 +147,23 @@ class ZavatraActivity : AppCompatActivity() {
 
     private fun dimRef(dm: JSONObject, di: Int) = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
 
+    private var curRefColors: Map<String, Int> = emptyMap()
+    private fun refColorMap(dims: JSONArray): Map<String, Int> {
+        val m = HashMap<String, Int>()
+        for (di in 0 until dims.length()) {
+            val dm = dims.optJSONObject(di) ?: continue
+            m[dimRef(dm, di)] = DIM_COLORS[di % DIM_COLORS.size]
+        }
+        return m
+    }
+
     /* ════════ COULISSANTE ════════ */
     private fun renderCoulissante(card: LinearLayout, dims: JSONArray, mode: String, barCm: Double) {
         val suffix = when (mode) { "promo" -> "Promotion"; "2choix" -> "2ème Choix"; else -> "1er Choix" }
         val fOuvr = if (mode == "promo") "OuvrH=H-4.1 · OuvrL=(L+1)/2" else "OuvrH=H-5.2 · OuvrL=L/2"
         card.addView(note("$suffix : BatiH=H+6 · BatiL=L+6 · $fOuvr · Acros=OuvrH · VitrH=OuvrH-8.3 · VitrL=OuvrL-8.3 · VitrQty=Qty×2", "#21E6FF"))
         renderLegend(card, dims)
+        curRefColors = refColorMap(dims)
         val bati = mutableListOf<Entry>(); val ouvr = mutableListOf<Entry>(); val acr = mutableListOf<Entry>()
         val rows = mutableListOf<Pair<Int, List<String>>>()
         var totQty = 0
@@ -202,6 +213,7 @@ class ZavatraActivity : AppCompatActivity() {
         card.addView(note("Porte 1 vantail $typeLabel : BatiH=H+3(×2) · BatiL=L+6(×1) · OuvrH=H-2.7(×2) · OuvrL=L-4.6(×1) · Interm=OuvrL-6.3(×2)" +
             if (isDV) " · Bardage 72cm si H≤200 sinon 82cm, Qty=⌈Interm/9⌉" else "", "#21E6FF"))
         renderLegend(card, dims)
+        curRefColors = refColorMap(dims)
         val bati = mutableListOf<Entry>(); val ouvr = mutableListOf<Entry>(); val inter = mutableListOf<Entry>(); val bard = mutableListOf<Entry>()
         val rows = mutableListOf<Pair<Int, List<String>>>()
         var totQty = 0
@@ -251,6 +263,7 @@ class ZavatraActivity : AppCompatActivity() {
     private fun renderFixe(card: LinearLayout, dims: JSONArray, barCm: Double) {
         card.addView(note("Fixe : BatiH=H+6(×2) · BatiL=L+6(×2) · ParaH=H-5.6(×2) · ParaL=L-5.6(×2) · VitrH=ParaH-5 · VitrL=ParaL-5 · Aucun accessoire", "#21E6FF"))
         renderLegend(card, dims)
+        curRefColors = refColorMap(dims)
         val bati = mutableListOf<Entry>(); val para = mutableListOf<Entry>()
         val rows = mutableListOf<Pair<Int, List<String>>>()
         for (di in 0 until dims.length()) {
@@ -285,6 +298,7 @@ class ZavatraActivity : AppCompatActivity() {
     private fun renderProjetant(card: LinearLayout, dims: JSONArray, barCm: Double) {
         card.addView(note("Projetant : BatiH=H+6(×2) · BatiL=L+6(×2) · OuvrH=H-4.6(×2) · OuvrL=L-4.6(×2) · VitrH=OuvrH-6.5 · VitrL=OuvrL-6.5", "#21E6FF"))
         renderLegend(card, dims)
+        curRefColors = refColorMap(dims)
         val bati = mutableListOf<Entry>(); val ouvr = mutableListOf<Entry>()
         val rows = mutableListOf<Pair<Int, List<String>>>()
         var totQty = 0; val compas = linkedMapOf<String, Int>()
@@ -325,6 +339,7 @@ class ZavatraActivity : AppCompatActivity() {
     private fun renderNaco(card: LinearLayout, dims: JSONArray, barCm: Double) {
         card.addView(note("Naco : BatiH=H+6(×2) · BatiL=L+6(×2) · LameH=10cm (fixe) · LameL=L-15 · LameQty=Qty×NbLames (lames selon H)", "#21E6FF"))
         renderLegend(card, dims)
+        curRefColors = refColorMap(dims)
         val bati = mutableListOf<Entry>()
         val rows = mutableListOf<Pair<Int, List<String>>>()
         val acc = mutableListOf<Triple<String, String, Int>>()
@@ -377,32 +392,50 @@ class ZavatraActivity : AppCompatActivity() {
             cells.add(fmtAr(d(dm, "prix_total")))
             rows.add(col to cells)
         }
-        card.addView(buildTable(groups, emptyList(), rows))
+        card.addView(buildTable(groups, emptyList(), rows, 1))
     }
 
     /* ════════ TABLE BUILDER ════════ */
     private fun buildTable(
         groups: List<Triple<String, Int, Int>>,
         subs: List<Pair<String, Int>>,
-        rows: List<Pair<Int, List<String>>>
+        rows: List<Pair<Int, List<String>>>,
+        fixedCols: Int = 4
     ): View {
-        val table = TableLayout(this).apply { setBackgroundColor(Color.parseColor("#2A3C66")) }
-        val ra = TableRow(this)
-        for ((label, span, color) in groups) ra.addView(thCell(label, color, span, true))
-        table.addView(ra)
-        if (subs.isNotEmpty()) {
-            val rb = TableRow(this)
-            for ((label, color) in subs) rb.addView(thCell(label, color, 1, false))
-            table.addView(rb)
+        val hasSub = subs.isNotEmpty()
+        // séparer les groupes : colonnes fixes (gauche) vs défilantes (droite)
+        var spanAcc = 0; var split = 0
+        for ((i, g) in groups.withIndex()) {
+            if (spanAcc >= fixedCols) { split = i; break }
+            spanAcc += g.second; split = i + 1
         }
-        for ((rc, cells) in rows) {
-            val tr = TableRow(this)
-            cells.forEachIndexed { idx, c -> tr.addView(tdCell(c, rc, idx == 0)) }
-            table.addView(tr)
+        fun part(grp: List<Triple<String, Int, Int>>, sub: List<Pair<String, Int>>, left: Boolean): TableLayout {
+            val t = TableLayout(this).apply { setBackgroundColor(Color.parseColor("#2A3C66")) }
+            val ra = TableRow(this)
+            for ((label, span, color) in grp) ra.addView(thCell(label, color, span, true))
+            t.addView(ra)
+            if (hasSub) {
+                val rb = TableRow(this)
+                for ((label, color) in sub) rb.addView(thCell(label, color, 1, false))
+                t.addView(rb)
+            }
+            for ((rc, cells) in rows) {
+                val tr = TableRow(this)
+                val pcells = if (left) cells.take(fixedCols) else cells.drop(fixedCols)
+                pcells.forEachIndexed { idx, c -> tr.addView(tdCell(c, rc, left && idx == 0)) }
+                t.addView(tr)
+            }
+            return t
         }
-        return HorizontalScrollView(this).apply {
-            isHorizontalScrollBarEnabled = false
-            addView(table)
+        val leftTable = part(groups.take(split), if (hasSub) subs.take(fixedCols) else emptyList(), true)
+        val rightTable = part(groups.drop(split), if (hasSub) subs.drop(fixedCols) else emptyList(), false)
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(leftTable, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+            addView(HorizontalScrollView(this@ZavatraActivity).apply {
+                isHorizontalScrollBarEnabled = false
+                addView(rightTable)
+            }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(8); layoutParams = lp
         }
@@ -410,7 +443,8 @@ class ZavatraActivity : AppCompatActivity() {
 
     private fun thCell(text: String, color: Int, span: Int, group: Boolean): TextView = TextView(this).apply {
         this.text = text; setTextColor(Color.WHITE); textSize = if (group) 11f else 9.5f
-        setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
+        setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER; maxLines = 1
+        minimumHeight = dp(if (group) 32 else 26)
         setPadding(dp(7), dp(6), dp(7), dp(6))
         setBackgroundColor(withA(color, if (group) 0x55 else 0x2E))
         val lp = TableRow.LayoutParams(); lp.span = span; lp.setMargins(1, 1, 1, 1); layoutParams = lp
@@ -420,6 +454,7 @@ class ZavatraActivity : AppCompatActivity() {
         this.text = text
         setTextColor(if (first) Color.WHITE else Color.parseColor("#EAF2FF"))
         textSize = 11f; gravity = if (first) Gravity.CENTER_VERTICAL else Gravity.CENTER
+        maxLines = 1; minimumHeight = dp(34)
         setPadding(dp(7), dp(6), dp(7), dp(6))
         setBackgroundColor(withA(rowColor, if (first) 0x66 else 0x12))
         if (first) setTypeface(typeface, Typeface.BOLD)
@@ -430,49 +465,84 @@ class ZavatraActivity : AppCompatActivity() {
     private fun renderCoupeGroup(card: LinearLayout, label: String, color: String, entries: List<Entry>, barCm: Double) {
         val valid = entries.filter { it.lenCm > 0 && it.pcs > 0 }
         if (valid.isEmpty()) return
-        card.addView(sectionTitle("✂️ $label"))
-        val agg = LinkedHashMap<Double, Int>()
-        valid.forEach { agg[it.lenCm] = (agg[it.lenCm] ?: 0) + it.pcs }
-        card.addView(TextView(this).apply {
-            text = agg.entries.joinToString("   ") { "${numCm(it.key)}cm×${it.value}" }
-            setTextColor(Color.parseColor("#C7D2F2")); textSize = 12f
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        })
         val pieces = valid.map { CuttingStock.Piece(Math.round(it.lenCm * 10).toInt(), it.pcs, it.ref) }
         val res = try { CuttingStock.solve(pieces, (barCm * 10).toInt(), 0) } catch (e: Exception) { null } ?: return
         if (res.bars.isEmpty()) return
         val s = res.stats
-        card.addView(TextView(this).apply {
-            text = "${s.nbBarres} barre(s) × ${barCm.toInt()}cm  •  eff. ${s.pctEfficacite}%  •  chute ${s.pctChute}%"
-            setTextColor(Color.parseColor(color)); textSize = 12f; setTypeface(typeface, Typeface.BOLD)
+        val ci = Color.parseColor(color)
+
+        // Carte du profilé
+        val block = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = strokedBg(Color.parseColor("#0C1426"), 14, ci)
+            setPadding(dp(10), dp(10), dp(10), dp(10))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            lp.topMargin = dp(4); layoutParams = lp
+            lp.topMargin = dp(12); layoutParams = lp
+        }
+        val hdr = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        hdr.addView(TextView(this).apply {
+            text = "🪚 $label"; setTextColor(ci); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         })
+        hdr.addView(TextView(this).apply {
+            text = "${s.nbBarres} barre(s) • ${s.pctEfficacite}%"
+            setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+        })
+        block.addView(hdr)
+
+        // Pièces nécessaires (agrégé) pour ce profilé
+        val agg = LinkedHashMap<Double, Int>()
+        valid.forEach { agg[it.lenCm] = (agg[it.lenCm] ?: 0) + it.pcs }
+        block.addView(TextView(this).apply {
+            text = "Pièces : " + agg.entries.joinToString("  ·  ") { "${numCm(it.key)}cm ×${it.value}" }
+            setTextColor(Color.parseColor("#C7D2F2")); textSize = 12f
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        })
+
         val L = (barCm * 10).toFloat()
         res.bars.forEachIndexed { idx, bar ->
             val waste = if (bar.realWaste > 0) bar.realWaste else bar.waste
-            card.addView(TextView(this).apply {
-                text = "Barre ${idx + 1} • ${bar.cuts.size} pcs • chute ${r2(waste / 10)}cm"
-                setTextColor(Color.parseColor("#8A97C2")); textSize = 11f
+            val usedPct = Math.round((L - waste) / L * 100).toInt()
+            block.addView(TextView(this).apply {
+                text = "Barre ${idx + 1}  —  ${bar.cuts.size} pièce(s) · utilisé ${usedPct}% · reste ${r2(waste / 10)}cm"
+                setTextColor(Color.parseColor("#EAF2FF")); textSize = 12f; setTypeface(typeface, Typeface.BOLD)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                lp.topMargin = dp(6); layoutParams = lp
+                lp.topMargin = dp(8); layoutParams = lp
             })
+            // Barre visuelle
             val visual = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; weightSum = L
                 background = strokedBg(Color.parseColor("#0B1326"), 6, Color.parseColor("#243456"))
-                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(24)); lp.topMargin = dp(3); layoutParams = lp
+                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(26)); lp.topMargin = dp(4); layoutParams = lp
             }
-            for (cut in bar.cuts) visual.addView(TextView(this).apply {
-                text = if (cut.length >= 4000) (cut.length / 10).toString() else ""
-                setTextColor(Color.WHITE); textSize = 8f; gravity = Gravity.CENTER; setBackgroundColor(cut.color)
-                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, cut.length.toFloat())
-            })
+            for (cut in bar.cuts) {
+                val cc = curRefColors[cut.label] ?: cut.color
+                visual.addView(TextView(this).apply {
+                    text = if (cut.length >= 3000) numCm(cut.length / 10.0) else ""
+                    setTextColor(Color.WHITE); textSize = 8f; gravity = Gravity.CENTER; maxLines = 1
+                    setBackgroundColor(cc)
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, cut.length.toFloat())
+                })
+            }
             if (waste > 10) visual.addView(View(this).apply {
                 setBackgroundColor(Color.parseColor("#1A2440"))
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, waste.toFloat())
             })
-            card.addView(visual)
+            block.addView(visual)
+            // Chips : pièces de CETTE barre
+            val chipRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+            for (cut in bar.cuts) {
+                val cc = curRefColors[cut.label] ?: cut.color
+                chipRow.addView(chip("${cut.label} : ${numCm(cut.length / 10.0)}cm", cc))
+            }
+            if (waste > 10) chipRow.addView(chip("Chute ${r2(waste / 10)}cm", Color.parseColor("#8A97C2")))
+            block.addView(HorizontalScrollView(this).apply {
+                isHorizontalScrollBarEnabled = false; addView(chipRow)
+                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                lp.topMargin = dp(5); layoutParams = lp
+            })
         }
+        card.addView(block)
     }
 
     private fun renderAccItems(card: LinearLayout, title: String, items: List<Triple<String, String, Int>>) {
