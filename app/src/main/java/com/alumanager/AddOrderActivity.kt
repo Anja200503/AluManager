@@ -340,7 +340,7 @@ class AddOrderActivity : AppCompatActivity() {
     }
 
     private fun confirmDeleteProduct(prod: ProductItem) {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, R.style.NeonDialog)
             .setMessage("Supprimer \"${prod.label}\" ?")
             .setPositiveButton("Supprimer") { _, _ -> commande.remove(prod); renderAll() }
             .setNegativeButton("Annuler", null)
@@ -360,7 +360,7 @@ class AddOrderActivity : AppCompatActivity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(12), dp(16), dp(12))
         }
-        wizDialog = AlertDialog.Builder(this).setView(wrapScroll(container)).create()
+        wizDialog = AlertDialog.Builder(this, R.style.NeonDialog).setView(wrapScroll(container)).create()
         renderWizardStep0(container)
         wizDialog?.show()
     }
@@ -525,7 +525,7 @@ class AddOrderActivity : AppCompatActivity() {
         val avance = clientField("Avance (Ar)").apply { inputType = InputType.TYPE_CLASS_NUMBER }
         v.addView(nom); v.addView(lieu); v.addView(dateCmd); v.addView(dateLiv); v.addView(avance)
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, R.style.NeonDialog)
             .setTitle("Information client")
             .setView(wrapScroll(v))
             .setPositiveButton("Confirmer", null)
@@ -583,7 +583,7 @@ class AddOrderActivity : AppCompatActivity() {
             })
         }
 
-        val progress = AlertDialog.Builder(this)
+        val progress = AlertDialog.Builder(this, R.style.NeonDialog)
             .setView(TextView(this).apply { text = "  Enregistrement en cours..."; setTextColor(Color.parseColor("#EAF2FF")); setPadding(dp(20), dp(30), dp(20), dp(30)) })
             .setCancelable(false).create()
         progress.show()
@@ -594,20 +594,25 @@ class AddOrderActivity : AppCompatActivity() {
                 val body = payload.toString()
                 var resp = postJson(SAVE_URL, body, null)
                 // Challenge anti-bot de l'hebergeur (InfinityFree / aes.js) :
-                // on resout l'AES, on pose le cookie __test, puis on renvoie.
-                if (resp.second.contains("toNumbers(") || resp.second.contains("slowAES")
-                    || resp.second.contains("aes.js")) {
-                    val cookie = solveAesChallenge(resp.second)
-                    if (cookie != null) resp = postJson(SAVE_URL, body, cookie)
+                // on resout l'AES, on pose le cookie __test, puis on renvoie (2 essais max).
+                repeat(2) {
+                    if (isChallenge(resp.second)) {
+                        val cookie = solveAesChallenge(resp.second)
+                        if (cookie != null) resp = postJson(SAVE_URL, body, cookie)
+                    }
                 }
-                val text = resp.second.trim()
-                if (!text.startsWith("{") && !text.startsWith("[")) {
-                    err = "Reponse invalide du serveur (HTTP ${resp.first}). Verifiez l'hebergeur."
+                // Certains hebergeurs prefixent la reponse de notices/HTML : on extrait le JSON.
+                val jsonStr = extractJson(resp.second)
+                if (jsonStr == null) {
+                    val snippet = resp.second.replace(Regex("<[^>]*>"), " ")
+                        .replace(Regex("\\s+"), " ").trim().take(180)
+                    err = "Serveur (HTTP ${resp.first}) : " +
+                        (if (snippet.isBlank()) "reponse vide" else snippet)
                 } else {
-                    val json = JSONObject(text)
+                    val json = JSONObject(jsonStr)
                     ok = json.optBoolean("success", false)
                     reference = json.optString("reference", "")
-                    err = json.optString("error", "Erreur serveur")
+                    err = json.optString("error", json.optString("message", "Erreur serveur"))
                 }
             } catch (e: Exception) {
                 err = e.localizedMessage ?: "Erreur reseau"
@@ -615,7 +620,7 @@ class AddOrderActivity : AppCompatActivity() {
             runOnUiThread {
                 progress.dismiss()
                 if (ok) showSuccess(reference, nom, total, avance, reste)
-                else AlertDialog.Builder(this)
+                else AlertDialog.Builder(this, R.style.NeonDialog)
                     .setTitle("Erreur").setMessage(err).setPositiveButton("OK", null).show()
             }
         }.start()
@@ -629,7 +634,7 @@ class AddOrderActivity : AppCompatActivity() {
             append("✅ Avance : ${fmt(avance)} Ar\n")
             append("⏳ Reste : ${fmt(reste)} Ar")
         }
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, R.style.NeonDialog)
             .setTitle("Commande enregistree !")
             .setMessage(msg)
             .setPositiveButton("Nouvelle commande") { _, _ -> commande.clear(); renderAll() }
@@ -708,6 +713,18 @@ class AddOrderActivity : AppCompatActivity() {
             ?.bufferedReader()?.use { it.readText() } ?: ""
         conn.disconnect()
         return code to text
+    }
+
+    private fun isChallenge(s: String): Boolean =
+        s.contains("toNumbers(") || s.contains("slowAES") || s.contains("aes.js")
+
+    /** Extrait le 1er objet JSON valide d'une reponse (ignore HTML/notices autour). */
+    private fun extractJson(text: String): String? {
+        val start = text.indexOf('{')
+        val end = text.lastIndexOf('}')
+        if (start < 0 || end <= start) return null
+        val cand = text.substring(start, end + 1)
+        return try { JSONObject(cand); cand } catch (e: Exception) { null }
     }
 
     /** Resout le challenge JS (aes.js) : cookie __test = hex(AES-CBC-decrypt(c, key=a, iv=b)). */

@@ -59,7 +59,7 @@ class HomeActivity : AppCompatActivity() {
             append("✉️  $email\n\n")
             if (societe.isNotEmpty()) append("🏢  $societe")
         }
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, R.style.NeonDialog)
             .setTitle("Mon compte")
             .setMessage(msg)
             .setPositiveButton("Deconnexion") { _, _ -> logout() }
