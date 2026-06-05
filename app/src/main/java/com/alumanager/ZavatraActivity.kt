@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.alumanager.databinding.ActivityZavatraBinding
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.ceil
 import kotlin.math.round
 
 /**
@@ -74,6 +75,16 @@ class ZavatraActivity : AppCompatActivity() {
         else -> null
     }
 
+    private fun isDemiVitre(s: String) =
+        s.contains("demi vitr") || s.contains("demi-vitr") || s.contains("1/2 vitr") || s.contains("mi vitr")
+
+    private fun nacoBlades(hCm: Double): Int {
+        val hmm = hCm * 10
+        val table = listOf(380 to 4, 469 to 5, 558 to 6, 647 to 7, 736 to 8, 825 to 9, 914 to 10, 1003 to 11, 1092 to 12, 1181 to 13)
+        for ((hm, nb) in table) if (hmm <= hm) return nb
+        return 13
+    }
+
     private fun renderProduit(prod: JSONObject, pi: Int, barCm: Double): View {
         val cfg = prod.optJSONObject("config_parsed") ?: JSONObject()
         val s = cfgStr(cfg)
@@ -115,11 +126,13 @@ class ZavatraActivity : AppCompatActivity() {
         if (dims.length() == 0) { card.addView(note("Aucune dimension.", "#FFC34D")); return card }
 
         when {
-            (pid == "fenetre" || pid == "porte") && !naco && !projetant && !fixe && !porte1v && mode != null ->
-                renderCoulissante(card, dims, mode, barCm)
-            (pid == "fenetre" || pid == "porte") && (naco || projetant || fixe || porte1v) -> {
-                val t = when { porte1v -> "Ouvrant 1 vantail"; naco -> "Naco"; projetant -> "Projetant"; else -> "Fixe" }
-                card.addView(note("Type « $t » : formules spécifiques en cours d'intégration. Dimensions ci-dessous.", "#FFC34D"))
+            porte1v -> renderPorte1V(card, dims, isDemiVitre(s), barCm)
+            (pid == "fenetre" || pid == "porte") && naco -> renderNaco(card, dims, barCm)
+            (pid == "fenetre" || pid == "porte") && projetant -> renderProjetant(card, dims, barCm)
+            (pid == "fenetre" || pid == "porte") && fixe -> renderFixe(card, dims, barCm)
+            (pid == "fenetre" || pid == "porte") && mode != null -> renderCoulissante(card, dims, mode, barCm)
+            pid == "fenetre" || pid == "porte" -> {
+                card.addView(note("Formules dispo : Promotion / 2e / 1er Choix, Naco, Projetant, Fixe, Porte 1 vantail.", "#FFC34D"))
                 renderSimple(card, dims, pid)
             }
             else -> renderSimple(card, dims, pid)
@@ -181,7 +194,135 @@ class ZavatraActivity : AppCompatActivity() {
         }
 
         // accessoires
-        renderAccessoires(card, totQty, suffix)
+        renderAccItems(card, "🔩 Accessoires — $suffix (Qty:$totQty)", listOf(
+            Triple("🔒 Serrure $suffix", "$totQty × 2", totQty * 2),
+            Triple("⚙️ Roulette $suffix", "$totQty × 4", totQty * 4),
+            Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4)
+        ))
+    }
+
+    /* ════════ PORTE OUVRANT 1 VANTAIL (PV & DV) ════════ */
+    private fun renderPorte1V(card: LinearLayout, dims: JSONArray, isDV: Boolean, barCm: Double) {
+        val typeLabel = if (isDV) "Demi Vitré" else "Plein Vitré"
+        card.addView(note(
+            "Porte 1 vantail $typeLabel : BatiH=H+3(×2) · BatiL=L+6(×1) · OuvrH=H-2.7(×2) · OuvrL=L-4.6(×1) · Interm=OuvrL-6.3(×2)" +
+                if (isDV) " · Bardage 72cm si H≤200 sinon 82cm, Qty=⌈Interm/9⌉" else "", "#21E6FF"
+        ))
+        renderLegend(card, dims)
+        val bati = mutableListOf<Entry>(); val ouvr = mutableListOf<Entry>()
+        val inter = mutableListOf<Entry>(); val bard = mutableListOf<Entry>()
+        var totQty = 0
+        for (di in 0 until dims.length()) {
+            val dm = dims.optJSONObject(di) ?: continue
+            val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
+            val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
+            val ref = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
+            val batiH = r2(h + 3); val batiL = r2(l + 6)
+            val ouvrH = r2(h - 2.7); val ouvrL = r2(l - 4.6)
+            val interL = r2(ouvrL - 6.3)
+            totQty += qty
+            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty, ref, di))
+            ouvr.add(Entry(ouvrH, qty * 2, ref, di)); ouvr.add(Entry(ouvrL, qty, ref, di))
+            inter.add(Entry(interL, qty * 2, ref, di))
+            if (isDV) {
+                val bardageL = if (h <= 200) 72.0 else 82.0
+                val bardageQty = ceil(interL / 9.0).toInt() * qty
+                bard.add(Entry(bardageL, bardageQty, ref, di))
+            }
+        }
+        renderCoupeGroup(card, "BATI PORTE", "#21E6FF", bati, barCm)
+        renderCoupeGroup(card, "OUVRANT PORTE", "#8B5CFF", ouvr, barCm)
+        renderCoupeGroup(card, "INTERMÉDIAIRE", "#FFC34D", inter, barCm)
+        if (isDV) renderCoupeGroup(card, "BARDAGE", "#FF4D9D", bard, barCm)
+        renderAccItems(card, "🔩 Accessoires — Porte 1V $typeLabel (Qty:$totQty)", listOf(
+            Triple("🔒 Serrure Porte", "$totQty × 1", totQty),
+            Triple("🔗 Charnière", "$totQty × 3", totQty * 3),
+            Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4)
+        ))
+    }
+
+    /* ════════ FIXE ════════ */
+    private fun renderFixe(card: LinearLayout, dims: JSONArray, barCm: Double) {
+        card.addView(note("Fixe : BatiH=H+6(×2) · BatiL=L+6(×2) · ParaH=H-5.6(×2) · ParaL=L-5.6(×2) · VitrH=ParaH-5 · VitrL=ParaL-5 · Aucun accessoire", "#21E6FF"))
+        renderLegend(card, dims)
+        val bati = mutableListOf<Entry>(); val para = mutableListOf<Entry>()
+        val vitre = mutableListOf<Triple<Double, Double, Int>>()
+        for (di in 0 until dims.length()) {
+            val dm = dims.optJSONObject(di) ?: continue
+            val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
+            val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
+            val ref = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
+            val batiH = r2(h + 6); val batiL = r2(l + 6)
+            val paraH = r2(h - 5.6); val paraL = r2(l - 5.6)
+            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
+            para.add(Entry(paraH, qty * 2, ref, di)); para.add(Entry(paraL, qty * 2, ref, di))
+            vitre.add(Triple(r2(paraH - 5), r2(paraL - 5), qty))
+        }
+        renderCoupeGroup(card, "BATI FIXE", "#21E6FF", bati, barCm)
+        renderCoupeGroup(card, "PARACLOSE FIXE", "#8B5CFF", para, barCm)
+        renderVitres(card, vitre)
+        card.addView(note("Aucun accessoire pour le type FIXE.", "#8A97C2"))
+    }
+
+    /* ════════ PROJETANT ════════ */
+    private fun renderProjetant(card: LinearLayout, dims: JSONArray, barCm: Double) {
+        card.addView(note("Projetant : BatiH=H+6(×2) · BatiL=L+6(×2) · OuvrH=H-4.6(×2) · OuvrL=L-4.6(×2) · VitrH=OuvrH-6.5 · VitrL=OuvrL-6.5", "#21E6FF"))
+        renderLegend(card, dims)
+        val bati = mutableListOf<Entry>(); val ouvr = mutableListOf<Entry>()
+        val vitre = mutableListOf<Triple<Double, Double, Int>>()
+        var totQty = 0
+        val compas = linkedMapOf<String, Int>()
+        for (di in 0 until dims.length()) {
+            val dm = dims.optJSONObject(di) ?: continue
+            val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
+            val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
+            val ref = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
+            val batiH = r2(h + 6); val batiL = r2(l + 6)
+            val ouvrH = r2(h - 4.6); val ouvrL = r2(l - 4.6)
+            totQty += qty
+            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
+            ouvr.add(Entry(ouvrH, qty * 2, ref, di)); ouvr.add(Entry(ouvrL, qty * 2, ref, di))
+            vitre.add(Triple(r2(ouvrH - 6.5), r2(ouvrL - 6.5), qty))
+            val t = if (h < 30) "20" else if (h < 40) "30" else "40"
+            compas[t] = (compas[t] ?: 0) + qty * 2
+        }
+        renderCoupeGroup(card, "BATI PROJETANT", "#21E6FF", bati, barCm)
+        renderCoupeGroup(card, "OUVRANT PROJETANT", "#8B5CFF", ouvr, barCm)
+        renderVitres(card, vitre)
+        val acc = mutableListOf(Triple("🔧 Poignée Projetant", "$totQty × 1", totQty))
+        compas.forEach { (t, q) -> acc.add(Triple("🛠️ Compas $t", "selon H", q)) }
+        renderAccItems(card, "🔩 Accessoires — Projetant (Qty:$totQty)", acc)
+    }
+
+    /* ════════ NACO ════════ */
+    private fun renderNaco(card: LinearLayout, dims: JSONArray, barCm: Double) {
+        card.addView(note("Naco : BatiH=H+6(×2) · BatiL=L+6(×2) · LameH=10cm (fixe) · LameL=L-15 · LameQty=Qty×NbLames (lames selon H)", "#21E6FF"))
+        renderLegend(card, dims)
+        val bati = mutableListOf<Entry>()
+        val lames = mutableListOf<Triple<Double, Double, Int>>()
+        val bladesChips = flowText()
+        val acc = mutableListOf<Triple<String, String, Int>>()
+        var totQty = 0
+        for (di in 0 until dims.length()) {
+            val dm = dims.optJSONObject(di) ?: continue
+            val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
+            val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
+            val ref = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
+            val col = DIM_COLORS[di % DIM_COLORS.size]
+            val nb = nacoBlades(h)
+            val batiH = r2(h + 6); val batiL = r2(l + 6)
+            totQty += qty
+            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
+            lames.add(Triple(10.0, r2(l - 15), qty * nb))
+            bladesChips.addView(chip("$ref : $nb lames", col))
+            acc.add(Triple("🏷️ Lame Naco de $nb ($ref)", "$qty × 2", qty * 2))
+        }
+        card.addView(sectionTitle("🔢 Nombre de lames"))
+        card.addView(bladesChips)
+        renderCoupeGroup(card, "BATI NACO", "#21E6FF", bati, barCm)
+        renderVitres(card, lames)
+        acc.add(Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4))
+        renderAccItems(card, "🔩 Accessoires — Naco (Qty:$totQty)", acc)
     }
 
     private fun renderCoupeGroup(card: LinearLayout, label: String, color: String, entries: List<Entry>, barCm: Double) {
@@ -239,13 +380,8 @@ class ZavatraActivity : AppCompatActivity() {
         }
     }
 
-    private fun renderAccessoires(card: LinearLayout, totQty: Int, suffix: String) {
-        card.addView(sectionTitle("🔩 Accessoires — $suffix (Qty:$totQty)"))
-        val items = listOf(
-            Triple("🔒 Serrure $suffix", "$totQty × 2", totQty * 2),
-            Triple("⚙️ Roulette $suffix", "$totQty × 4", totQty * 4),
-            Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4)
-        )
+    private fun renderAccItems(card: LinearLayout, title: String, items: List<Triple<String, String, Int>>) {
+        card.addView(sectionTitle(title))
         for (it in items) {
             val rowv = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
@@ -315,6 +451,25 @@ class ZavatraActivity : AppCompatActivity() {
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(12); layoutParams = lp
     }
+    private fun renderLegend(card: LinearLayout, dims: JSONArray) {
+        val legend = flowText()
+        for (di in 0 until dims.length()) {
+            val dm = dims.optJSONObject(di) ?: continue
+            val ref = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
+            val col = DIM_COLORS[di % DIM_COLORS.size]
+            legend.addView(chip("$ref ${numCm(d(dm, "hauteur_cm"))}×${numCm(d(dm, "largeur_cm"))}cm", col))
+        }
+        card.addView(legend)
+    }
+
+    private fun renderVitres(card: LinearLayout, list: List<Triple<Double, Double, Int>>) {
+        card.addView(sectionTitle("🪟 Vitres / Lames"))
+        for (v in list) card.addView(TextView(this).apply {
+            text = "   • ${numCm(v.first)} × ${numCm(v.second)} cm  ×${v.third} p"
+            setTextColor(Color.parseColor("#C7D2F2")); textSize = 12f
+        })
+    }
+
     private fun flowText() = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
