@@ -15,8 +15,10 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.alumanager.databinding.ActivityCommandeBinding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -158,14 +160,17 @@ class CommandeActivity : AppCompatActivity() {
             lp.topMargin = dp(8)
             layoutParams = lp
         })
-        // Footer : boutons
-        val footer = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14) }
-        footer.addView(actionBtn("🗑️ Suppr.", "#FF4D9D") { showDeleteConfirm(c) })
-        footer.addView(spacer())
-        footer.addView(actionBtn("🔧 Zavatra", "#FFC34D") { openZavatra(c) })
-        footer.addView(spacer())
-        footer.addView(actionBtn("📄 Détail", "#21E6FF") { showDetail(c) })
-        card.addView(footer)
+        // Footer : boutons (2 lignes)
+        val f1 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14) }
+        f1.addView(actionBtn("📄 Détail", "#21E6FF") { showDetail(c) })
+        f1.addView(spacer())
+        f1.addView(actionBtn("🧾 Facture PDF", "#27FFC4") { showInvoice(c) })
+        card.addView(f1)
+        val f2 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8) }
+        f2.addView(actionBtn("🔧 Zavatra", "#FFC34D") { openZavatra(c) })
+        f2.addView(spacer())
+        f2.addView(actionBtn("🗑️ Supprimer", "#FF4D9D") { showDeleteConfirm(c) })
+        card.addView(f2)
         return card
     }
 
@@ -294,6 +299,30 @@ class CommandeActivity : AppCompatActivity() {
             .setView(ScrollView(this).apply { addView(root) })
             .setPositiveButton("Fermer", null)
             .show()
+    }
+
+    /* ════════════ FACTURE PDF ════════════ */
+    private fun showInvoice(c: JSONObject) {
+        try {
+            val file = InvoicePdf.generate(this, c)
+            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            val view = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            try {
+                startActivity(Intent.createChooser(view, "Ouvrir la facture"))
+            } catch (e: Exception) {
+                val send = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/pdf"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(send, "Partager la facture"))
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Erreur PDF : ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     /* ════════════ ZAVATRA (nécessaire de pièces) ════════════ */
