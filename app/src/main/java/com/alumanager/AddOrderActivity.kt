@@ -42,15 +42,117 @@ class AddOrderActivity : AppCompatActivity() {
         b = ActivityAddOrderBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        loadPrices()
         b.btnBack.setOnClickListener { finish() }
         b.btnAddProduct.setOnClickListener { showProductWizard() }
         b.btnValidate.setOnClickListener { showClientDialog() }
+        b.btnSettings.setOnClickListener { showPriceSettings() }
 
         renderAll()
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun fmt(v: Double): String = "%,d".format(Math.round(v)).replace(",", " ")
+
+    /* ════════════ PARAMÈTRES DE PRIX ════════════ */
+    private val FEN_LBL = linkedMapOf(
+        "coulissante_promotion" to "Coulissante Promotion",
+        "coulissante_deuxieme" to "Coulissante 2e Choix",
+        "coulissante_premier" to "Coulissante 1er Choix",
+        "ouvrante" to "Ouvrante", "projetant" to "Projetant",
+        "naco" to "Naco", "fixe" to "Fixe"
+    )
+    private val SUR_LBL = linkedMapOf(
+        "antelio_4mm" to "Surplus Antelio 4mm",
+        "antelio_5mm" to "Surplus Antelio 5mm",
+        "clair_5mm" to "Surplus Clair 5mm"
+    )
+    private val AUT_LBL = linkedMapOf(
+        "lavarangana" to "Lavarangana Inox", "porte" to "Porte",
+        "rideau" to "Rideau Métallique", "vitrine" to "Vitrine Alu"
+    )
+    private val FEN_DEF = linkedMapOf(
+        "coulissante_promotion" to 70000.0, "coulissante_deuxieme" to 85000.0,
+        "coulissante_premier" to 100000.0, "ouvrante" to 90000.0,
+        "projetant" to 95000.0, "naco" to 80000.0, "fixe" to 65000.0
+    )
+    private val SUR_DEF = linkedMapOf("antelio_4mm" to 0.0, "antelio_5mm" to 0.0, "clair_5mm" to 0.0)
+    private val AUT_DEF = linkedMapOf("lavarangana" to 45000.0, "porte" to 120000.0, "rideau" to 95000.0, "vitrine" to 150000.0)
+
+    private fun prefsPrix() = getSharedPreferences("alu_prices", MODE_PRIVATE)
+
+    private fun loadPrices() {
+        val p = prefsPrix()
+        FEN_LBL.keys.forEach { k -> p.getFloat("fbp_$k", -1f).let { if (it >= 0) OrderData.fenetreBasePrices[k] = it.toDouble() } }
+        SUR_LBL.keys.forEach { k -> p.getFloat("fsur_$k", -1f).let { if (it >= 0) OrderData.fenetreSurcharges[k] = it.toDouble() } }
+        AUT_LBL.keys.forEach { k -> p.getFloat("abp_$k", -1f).let { if (it >= 0) OrderData.autresBasePrice[k] = it.toDouble() } }
+    }
+
+    private fun showPriceSettings() {
+        val fields = LinkedHashMap<String, EditText>()
+        val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(8)) }
+
+        fun section(t: String) = root.addView(TextView(this).apply {
+            text = t; setTextColor(Color.parseColor("#21E6FF")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+            val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            lp.topMargin = dp(14); layoutParams = lp
+        })
+        fun row(key: String, label: String, value: Double) {
+            root.addView(TextView(this).apply {
+                text = label; setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                lp.topMargin = dp(8); layoutParams = lp
+            })
+            val et = EditText(this).apply {
+                setText(Math.round(value).toString())
+                inputType = InputType.TYPE_CLASS_NUMBER
+                setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
+                setPadding(dp(12), dp(10), dp(12), dp(10))
+                background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+            root.addView(et); fields[key] = et
+        }
+
+        section("FENÊTRE — Prix de base (Ar)")
+        FEN_LBL.forEach { (k, lbl) -> row("fbp_$k", lbl, OrderData.fenetreBasePrices[k] ?: 0.0) }
+        section("FENÊTRE — Surplus vitrage (Ar)")
+        SUR_LBL.forEach { (k, lbl) -> row("fsur_$k", lbl, OrderData.fenetreSurcharges[k] ?: 0.0) }
+        section("AUTRES PRODUITS (Ar)")
+        AUT_LBL.forEach { (k, lbl) -> row("abp_$k", lbl, OrderData.autresBasePrice[k] ?: 0.0) }
+
+        AlertDialog.Builder(this, R.style.NeonDialog)
+            .setTitle("⚙️ Paramètres de prix")
+            .setView(wrapScroll(root))
+            .setPositiveButton("Enregistrer") { _, _ ->
+                val e = prefsPrix().edit()
+                FEN_LBL.keys.forEach { k ->
+                    val v = fields["fbp_$k"]?.text?.toString()?.toDoubleOrNull() ?: return@forEach
+                    OrderData.fenetreBasePrices[k] = v; e.putFloat("fbp_$k", v.toFloat())
+                }
+                SUR_LBL.keys.forEach { k ->
+                    val v = fields["fsur_$k"]?.text?.toString()?.toDoubleOrNull() ?: return@forEach
+                    OrderData.fenetreSurcharges[k] = v.coerceAtLeast(0.0); e.putFloat("fsur_$k", v.toFloat())
+                }
+                AUT_LBL.keys.forEach { k ->
+                    val v = fields["abp_$k"]?.text?.toString()?.toDoubleOrNull() ?: return@forEach
+                    OrderData.autresBasePrice[k] = v; e.putFloat("abp_$k", v.toFloat())
+                }
+                e.apply()
+                renderAll()
+                Toast.makeText(this, "Prix mis à jour ✓", Toast.LENGTH_SHORT).show()
+            }
+            .setNeutralButton("Réinitialiser") { _, _ ->
+                FEN_DEF.forEach { (k, v) -> OrderData.fenetreBasePrices[k] = v }
+                SUR_DEF.forEach { (k, v) -> OrderData.fenetreSurcharges[k] = v }
+                AUT_DEF.forEach { (k, v) -> OrderData.autresBasePrice[k] = v }
+                prefsPrix().edit().clear().apply()
+                renderAll()
+                Toast.makeText(this, "Prix réinitialisés", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Annuler", null)
+            .show()
+    }
 
     /* ════════════ RENDU GLOBAL ════════════ */
     private fun renderAll() {
