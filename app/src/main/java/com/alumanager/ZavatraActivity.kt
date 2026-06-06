@@ -432,6 +432,10 @@ class ZavatraActivity : AppCompatActivity() {
         return LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             addView(leftTable, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+            // ligne épaisse de séparation fixe / défilant
+            addView(View(this@ZavatraActivity).apply {
+                setBackgroundColor(Color.parseColor("#21E6FF"))
+            }, LinearLayout.LayoutParams(dp(4), ViewGroup.LayoutParams.MATCH_PARENT))
             addView(HorizontalScrollView(this@ZavatraActivity).apply {
                 isHorizontalScrollBarEnabled = false
                 addView(rightTable)
@@ -529,11 +533,16 @@ class ZavatraActivity : AppCompatActivity() {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, waste.toFloat())
             })
             block.addView(visual)
-            // Chips : pièces de CETTE barre
+            // Chips : pièces de CETTE barre, agrégées par longueur (102cm : 3 pcs)
             val chipRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+            val grouped = LinkedHashMap<Int, Pair<Int, Int>>() // lenMm -> (count, color)
             for (cut in bar.cuts) {
                 val cc = curRefColors[cut.label] ?: cut.color
-                chipRow.addView(chip("${cut.label} : ${numCm(cut.length / 10.0)}cm", cc))
+                val prev = grouped[cut.length]
+                grouped[cut.length] = Pair((prev?.first ?: 0) + 1, prev?.second ?: cc)
+            }
+            for ((lenMm, pc) in grouped) {
+                chipRow.addView(chip("${numCm(lenMm / 10.0)}cm : ${pc.first} pcs", pc.second))
             }
             if (waste > 10) chipRow.addView(chip("Chute ${r2(waste / 10)}cm", Color.parseColor("#8A97C2")))
             block.addView(HorizontalScrollView(this).apply {
