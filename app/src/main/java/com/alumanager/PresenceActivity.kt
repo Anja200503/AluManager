@@ -1,13 +1,15 @@
 package com.alumanager
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import java.io.File
 import android.view.Gravity
@@ -47,8 +49,19 @@ class PresenceActivity : AppCompatActivity() {
     private val FACE_THRESHOLD = 0.62f
     private var pendingFile: File? = null
     private var pendingEmpId: String? = null
-    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
-        if (ok) processPhoto() else pendingFile?.delete()
+    private val clockHandler = Handler(Looper.getMainLooper())
+    private val clockFmt = SimpleDateFormat("HH:mm:ss · EEEE dd/MM/yyyy", Locale.FRANCE)
+    private val clockTick = object : Runnable {
+        override fun run() {
+            b.clock.text = clockFmt.format(Date()).replaceFirstChar { it.uppercase() }
+            clockHandler.postDelayed(this, 1000)
+        }
+    }
+    private val faceLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+        if (res.resultCode == RESULT_OK) {
+            val path = res.data?.getStringExtra("path")
+            if (path != null) { pendingFile = File(path); processPhoto() }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +73,9 @@ class PresenceActivity : AppCompatActivity() {
         b.statDate.text = dateFmt.format(Date())
         render()
     }
+
+    override fun onResume() { super.onResume(); clockHandler.post(clockTick); render() }
+    override fun onPause() { super.onPause(); clockHandler.removeCallbacks(clockTick) }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun toast(m: String) = Toast.makeText(this, m, Toast.LENGTH_SHORT).show()
@@ -212,10 +228,16 @@ class PresenceActivity : AppCompatActivity() {
     private fun launchFaceCapture(empId: String?) {
         pendingEmpId = empId
         if (empId == null && !FaceRecognizer.available(this)) { showModelMissing(); return }
-        val dir = File(cacheDir, "faces"); dir.mkdirs()
-        val f = File(dir, "face_${System.currentTimeMillis()}.jpg"); pendingFile = f
-        val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", f)
-        try { cameraLauncher.launch(uri) } catch (e: Exception) { toast("Caméra indisponible") }
+        val emps = loadEmployees()
+        val title = if (empId != null) {
+            var n = "employé"
+            for (i in 0 until emps.length()) {
+                val e = emps.optJSONObject(i) ?: continue
+                if (e.optString("id") == empId) n = e.optString("nom")
+            }
+            "Enregistrer le visage : $n"
+        } else "Pointage par reconnaissance faciale"
+        faceLauncher.launch(Intent(this, FaceCaptureActivity::class.java).putExtra("title", title))
     }
 
     private fun processPhoto() {
