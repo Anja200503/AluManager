@@ -1,9 +1,15 @@
 package com.alumanager
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import androidx.activity.result.contracts.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
+import java.io.File
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +43,13 @@ class PresenceActivity : AppCompatActivity() {
     private val hmFmt = SimpleDateFormat("HH:mm", Locale.FRANCE)
     private val dateFmt = SimpleDateFormat("dd/MM", Locale.FRANCE)
     private val fullFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.FRANCE)
+
+    private val FACE_THRESHOLD = 0.62f
+    private var pendingFile: File? = null
+    private var pendingEmpId: String? = null
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
+        if (ok) processPhoto() else pendingFile?.delete()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,10 +97,21 @@ class PresenceActivity : AppCompatActivity() {
 
         b.listContainer.removeAllViews()
         if (emps.length() == 0) { b.listContainer.addView(b.emptyState); return }
+        b.listContainer.addView(faceButton())
         for (i in 0 until emps.length()) {
             val e = emps.optJSONObject(i) ?: continue
             b.listContainer.addView(buildCard(e))
         }
+    }
+
+    private fun faceButton() = TextView(this).apply {
+        text = "📷  Pointer par reconnaissance faciale"
+        gravity = Gravity.CENTER; setTextColor(Color.parseColor("#08101F")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+        background = btnGrad("#21E6FF", "#8B5CFF")
+        setPadding(dp(12), dp(14), dp(12), dp(14))
+        val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        lp.topMargin = dp(12); layoutParams = lp
+        setOnClickListener { launchFaceCapture(null) }
     }
 
     private fun buildCard(emp: JSONObject): View {
@@ -127,30 +151,33 @@ class PresenceActivity : AppCompatActivity() {
         top.addView(info)
         card.addView(top)
 
-        // boutons
-        val row = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            lp.topMargin = dp(12); layoutParams = lp
-        }
+        // bouton pointage (empreinte) pleine largeur
         val pointBtn = TextView(this).apply {
             text = if (present) "👆 Pointer Sortie" else "👆 Pointer Entrée"
             gravity = Gravity.CENTER; setTextColor(Color.parseColor("#08101F")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
             background = btnGrad(if (present) "#FFC34D" else "#27FFC4", if (present) "#FF8A3D" else "#21E6FF")
             setPadding(dp(10), dp(12), dp(10), dp(12))
-            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 2f)
+            val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            lp.topMargin = dp(12); layoutParams = lp
             setOnClickListener { pointer(emp, present) }
         }
-        row.addView(pointBtn)
-        row.addView(spacer())
-        row.addView(actionBtn("🕘") { showHistory(emp) }.apply {
-            (layoutParams as LinearLayout.LayoutParams).weight = 1f
+        card.addView(pointBtn)
+
+        val row2 = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            lp.topMargin = dp(8); layoutParams = lp
+        }
+        val hasFace = emp.has("face")
+        row2.addView(actionBtn(if (hasFace) "📷 Visage ✓" else "📷 Visage") { launchFaceCapture(emp.optString("id")) }.apply {
+            (layoutParams as LinearLayout.LayoutParams).weight = 2f
+            if (hasFace) setTextColor(Color.parseColor("#27FFC4"))
         })
-        row.addView(spacer())
-        row.addView(actionBtn("🗑️") { confirmDelete(emp) }.apply {
-            (layoutParams as LinearLayout.LayoutParams).weight = 1f
-        })
-        card.addView(row)
+        row2.addView(spacer())
+        row2.addView(actionBtn("🕘") { showHistory(emp) })
+        row2.addView(spacer())
+        row2.addView(actionBtn("🗑️") { confirmDelete(emp) })
+        card.addView(row2)
         return card
     }
 
@@ -166,17 +193,99 @@ class PresenceActivity : AppCompatActivity() {
 
     /* ════════ POINTAGE (empreinte) ════════ */
     private fun pointer(emp: JSONObject, present: Boolean) {
+        authenticate(emp.optString("nom")) { recordPointage(emp) }
+    }
+
+    private fun recordPointage(emp: JSONObject) {
+        val present = isPresent(emp.optString("id"))
         val type = if (present) "out" else "in"
         val libelle = if (type == "in") "Entrée" else "Sortie"
-        authenticate("${emp.optString("nom")} — $libelle") {
-            val arr = loadPointages()
-            arr.put(JSONObject().apply {
-                put("empId", emp.optString("id")); put("ts", System.currentTimeMillis()); put("type", type)
-            })
-            savePointages(arr)
-            render()
-            toast("$libelle enregistrée pour ${emp.optString("nom")}")
+        val arr = loadPointages()
+        arr.put(JSONObject().apply {
+            put("empId", emp.optString("id")); put("ts", System.currentTimeMillis()); put("type", type)
+        })
+        savePointages(arr); render()
+        toast("$libelle enregistrée — ${emp.optString("nom")}")
+    }
+
+    /* ════════ RECONNAISSANCE FACIALE ════════ */
+    private fun launchFaceCapture(empId: String?) {
+        pendingEmpId = empId
+        if (empId == null && !FaceRecognizer.available(this)) { showModelMissing(); return }
+        val dir = File(cacheDir, "faces"); dir.mkdirs()
+        val f = File(dir, "face_${System.currentTimeMillis()}.jpg"); pendingFile = f
+        val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", f)
+        try { cameraLauncher.launch(uri) } catch (e: Exception) { toast("Caméra indisponible") }
+    }
+
+    private fun processPhoto() {
+        val f = pendingFile ?: return
+        val bmp = decodeRotated(f)
+        if (bmp == null) { toast("Photo illisible"); f.delete(); return }
+        if (!FaceRecognizer.available(this)) { showModelMissing(); f.delete(); return }
+        toast("Analyse du visage…")
+        FaceRecognizer.embed(this, bmp) { emb ->
+            f.delete()
+            if (emb == null) { toast("Aucun visage détecté, réessayez"); return@embed }
+            val id = pendingEmpId
+            if (id != null) enrollFace(id, emb) else identifyAndPoint(emb)
         }
+    }
+
+    private fun enrollFace(empId: String, emb: FloatArray) {
+        val emps = loadEmployees()
+        for (i in 0 until emps.length()) {
+            val e = emps.optJSONObject(i) ?: continue
+            if (e.optString("id") == empId) {
+                val arr = JSONArray(); for (v in emb) arr.put(v.toDouble())
+                e.put("face", arr); saveEmployees(emps); render()
+                toast("Visage enregistré ✓"); return
+            }
+        }
+    }
+
+    private fun identifyAndPoint(emb: FloatArray) {
+        val emps = loadEmployees()
+        var best: JSONObject? = null; var bestSim = -1f
+        for (i in 0 until emps.length()) {
+            val e = emps.optJSONObject(i) ?: continue
+            val fa = e.optJSONArray("face") ?: continue
+            val v = FloatArray(fa.length()) { fa.optDouble(it).toFloat() }
+            val sim = FaceRecognizer.cosine(emb, v)
+            if (sim > bestSim) { bestSim = sim; best = e }
+        }
+        if (best != null && bestSim >= FACE_THRESHOLD) {
+            recordPointage(best!!)
+            toast("Reconnu : ${best!!.optString("nom")} (${(bestSim * 100).toInt()}%)")
+        } else {
+            toast("Visage non reconnu" + if (best != null) " (${(bestSim * 100).toInt()}%)" else "")
+        }
+    }
+
+    private fun showModelMissing() {
+        AlertDialog.Builder(this, R.style.NeonDialog)
+            .setTitle("Modèle facial manquant")
+            .setMessage("Le modèle de reconnaissance (.tflite) n'est pas encore installé dans l'app.\n\nFournis le fichier et je l'intègre.")
+            .setPositiveButton("OK", null).show()
+    }
+
+    private fun decodeRotated(f: File): Bitmap? {
+        return try {
+            val o = BitmapFactory.Options().apply { inSampleSize = 2 }
+            var bmp = BitmapFactory.decodeFile(f.absolutePath, o) ?: return null
+            val rot = when (ExifInterface(f.absolutePath)
+                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                else -> 0f
+            }
+            if (rot != 0f) {
+                val m = android.graphics.Matrix().apply { postRotate(rot) }
+                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, m, true)
+            }
+            bmp
+        } catch (e: Exception) { null }
     }
 
     private fun authenticate(subtitle: String, onOk: () -> Unit) {

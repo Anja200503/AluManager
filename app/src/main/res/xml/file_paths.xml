@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <cache-path name="factures" path="factures/" />
+    <cache-path name="faces" path="faces/" />
     <files-path name="files" path="." />
 </paths>

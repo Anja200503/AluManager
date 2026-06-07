@@ -34,6 +34,10 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    androidResources {
+        noCompress 'tflite'
+    }
 }
 
 dependencies {
@@ -42,6 +46,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.biometric:biometric:1.1.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.7'
+    implementation 'com.google.mlkit:face-detection:16.1.6'
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
 
     // Firebase (initialise manuellement, sans google-services.json)
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
