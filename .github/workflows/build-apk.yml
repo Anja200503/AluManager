@@ -28,6 +28,15 @@ jobs:
           unzip -q gradle.zip
           echo "$GITHUB_WORKSPACE/gradle-8.2/bin" >> $GITHUB_PATH
 
+      - name: Telecharger le modele de reconnaissance faciale (FaceNet)
+        run: |
+          mkdir -p app/src/main/assets
+          curl -sL "https://media.githubusercontent.com/media/shubham0204/FaceRecognition_With_FaceNet_Android/master/app/src/main/assets/facenet.tflite" -o app/src/main/assets/facenet.tflite
+          SZ=$(stat -c%s app/src/main/assets/facenet.tflite)
+          SIG=$(dd if=app/src/main/assets/facenet.tflite bs=1 skip=4 count=4 2>/dev/null)
+          echo "Modele facenet.tflite : taille=$SZ octets, signature=[$SIG]"
+          if [ "$SIG" != "TFL3" ]; then echo "::error::Modele TFLite invalide (LFS non recupere)"; exit 1; fi
+
       - name: Construire l'APK
         run: gradle assembleDebug
 
