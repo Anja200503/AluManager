@@ -250,10 +250,10 @@ class AddOrderActivity : AppCompatActivity() {
         header.addView(numBadge)
         val pimg = productImageRes(prod.productId)
         if (pimg != 0) header.addView(ImageView(this).apply {
-            val s = dp(36)
+            val s = dp(44)
             layoutParams = LinearLayout.LayoutParams(s, s).apply { leftMargin = dp(8) }
             scaleType = ImageView.ScaleType.CENTER_CROP
-            background = strokedBg(Color.parseColor("#33FFFFFF"), 10, Color.parseColor("#66FFFFFF"))
+            background = circleBg(Color.parseColor("#33FFFFFF"), Color.parseColor("#80FFFFFF"))
             clipToOutline = true
             setImageResource(pimg)
         })
@@ -591,13 +591,13 @@ class AddOrderActivity : AppCompatActivity() {
             layoutParams = lp
             setOnClickListener { onClick() }
         }
-        val box = dp(58)
+        val box = dp(84)
         val res = productImageRes(pid)
         if (res != 0) {
             ll.addView(ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(box, box)
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                background = strokedBg(Color.parseColor("#0B1326"), 14, Color.parseColor("#2A3C66"))
+                background = circleBg(Color.parseColor("#0B1326"), Color.parseColor("#21E6FF"))
                 clipToOutline = true
                 setImageResource(res)
             })
@@ -605,9 +605,9 @@ class AddOrderActivity : AppCompatActivity() {
             ll.addView(TextView(this).apply {
                 text = productEmoji[pid] ?: "📦"
                 gravity = Gravity.CENTER
-                textSize = 26f
-                background = strokedBg(
-                    Color.parseColor(OrderData.productColor[pid] ?: "#1B2A4F"), 14,
+                textSize = 34f
+                background = circleBg(
+                    Color.parseColor(OrderData.productColor[pid] ?: "#1B2A4F"),
                     Color.parseColor("#33FFFFFF")
                 )
                 layoutParams = LinearLayout.LayoutParams(box, box)
@@ -871,6 +871,11 @@ class AddOrderActivity : AppCompatActivity() {
     private fun strokedBg(color: Int, radiusDp: Int, strokeColor: Int) = android.graphics.drawable.GradientDrawable().apply {
         setColor(color); cornerRadius = dp(radiusDp).toFloat()
         setStroke(dp(1).coerceAtLeast(1), strokeColor)
+    }
+
+    private fun circleBg(color: Int, strokeColor: Int) = android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.OVAL
+        setColor(color); setStroke(dp(2).coerceAtLeast(1), strokeColor)
     }
 
     private fun roundedTopBg(color: Int, radiusDp: Int) = android.graphics.drawable.GradientDrawable().apply {
