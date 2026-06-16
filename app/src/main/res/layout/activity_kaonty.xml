@@ -121,6 +121,20 @@
                 android:text="+0 / -0"
                 android:textColor="#8A97C2"
                 android:textSize="11sp" />
+
+            <EditText
+                android:id="@+id/volaAlu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/field_bg"
+                android:hint="Vola omaly"
+                android:inputType="numberDecimal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="8dp"
+                android:textColor="#EAF2FF"
+                android:textColorHint="#5A688F"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <View android:layout_width="10dp" android:layout_height="1dp" />
@@ -161,6 +175,20 @@
                 android:text="+0 / -0"
                 android:textColor="#8A97C2"
                 android:textSize="11sp" />
+
+            <EditText
+                android:id="@+id/volaPlateaux"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/field_bg"
+                android:hint="Vola omaly"
+                android:inputType="numberDecimal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="8dp"
+                android:textColor="#EAF2FF"
+                android:textColorHint="#5A688F"
+                android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
 

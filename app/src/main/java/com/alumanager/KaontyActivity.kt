@@ -42,6 +42,8 @@ class KaontyActivity : AppCompatActivity() {
     private val DELETE_URL = "https://alu.xo.je/delete_kaonty.php"
 
     private var selectedDate = dayFmt.format(Date())
+    private var settingFields = false
+    private var inAlu = 0.0; private var outAlu = 0.0; private var inPlt = 0.0; private var outPlt = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +55,40 @@ class KaontyActivity : AppCompatActivity() {
         b.btnPrevDay.setOnClickListener { shiftDay(-1) }
         b.btnNextDay.setOnClickListener { shiftDay(1) }
         b.dateLabel.setOnClickListener { pickDate() }
+        b.volaAlu.addTextChangedListener(simpleWatcher {
+            if (!settingFields) { setVola(CAT_ALU, it.replace(',', '.').toDoubleOrNull() ?: 0.0); updateSoldes() }
+        })
+        b.volaPlateaux.addTextChangedListener(simpleWatcher {
+            if (!settingFields) { setVola(CAT_PLT, it.replace(',', '.').toDoubleOrNull() ?: 0.0); updateSoldes() }
+        })
         updateDateLabel()
         render()
         syncFromServer()
+    }
+
+    private fun simpleWatcher(onText: (String) -> Unit) = object : android.text.TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        override fun afterTextChanged(s: android.text.Editable?) { onText(s?.toString() ?: "") }
+    }
+
+    private fun loadVola(): JSONObject = try { JSONObject(prefs().getString("vola", "{}")) } catch (e: Exception) { JSONObject() }
+    private fun getVola(cat: String): Double = loadVola().optDouble("$cat|$selectedDate", 0.0)
+    private fun setVola(cat: String, amt: Double) {
+        val v = loadVola(); v.put("$cat|$selectedDate", amt)
+        prefs().edit().putString("vola", v.toString()).apply()
+    }
+    private fun trimNum(v: Double) = if (v == Math.floor(v)) v.toInt().toString() else v.toString().replace('.', ',')
+
+    private fun updateSoldes() {
+        fun apply(soldeTv: TextView, detTv: TextView, cat: String, inV: Double, outV: Double, accent: String) {
+            val v = getVola(cat); val bal = v + inV - outV
+            soldeTv.text = "${fmt(bal)} Ar"
+            soldeTv.setTextColor(Color.parseColor(if (bal >= 0) accent else "#FF4D9D"))
+            detTv.text = "Omaly ${fmt(v)} · +${fmt(inV)} / -${fmt(outV)}"
+        }
+        apply(b.soldeAlu, b.detailAlu, CAT_ALU, inAlu, outAlu, accentAlu)
+        apply(b.soldePlateaux, b.detailPlateaux, CAT_PLT, inPlt, outPlt, accentPlt)
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
@@ -101,13 +134,14 @@ class KaontyActivity : AppCompatActivity() {
             else tout[cat] = (tout[cat] ?: 0.0) + amt
             byCat.getOrPut(cat) { ArrayList() }.add(o)
         }
-        fun setCard(s: TextView, det: TextView, cat: String, accent: String) {
-            val i = tin[cat] ?: 0.0; val o = tout[cat] ?: 0.0; val bal = i - o
-            s.text = "${fmt(bal)} Ar"; s.setTextColor(Color.parseColor(if (bal >= 0) accent else "#FF4D9D"))
-            det.text = "+${fmt(i)} / -${fmt(o)}"
-        }
-        setCard(b.soldeAlu, b.detailAlu, CAT_ALU, accentAlu)
-        setCard(b.soldePlateaux, b.detailPlateaux, CAT_PLT, accentPlt)
+        inAlu = tin[CAT_ALU] ?: 0.0; outAlu = tout[CAT_ALU] ?: 0.0
+        inPlt = tin[CAT_PLT] ?: 0.0; outPlt = tout[CAT_PLT] ?: 0.0
+        settingFields = true
+        val vA = getVola(CAT_ALU); val vP = getVola(CAT_PLT)
+        b.volaAlu.setText(if (vA != 0.0) trimNum(vA) else "")
+        b.volaPlateaux.setText(if (vP != 0.0) trimNum(vP) else "")
+        settingFields = false
+        updateSoldes()
 
         b.listContainer.removeAllViews()
         val total = (byCat[CAT_ALU]?.size ?: 0) + (byCat[CAT_PLT]?.size ?: 0)
