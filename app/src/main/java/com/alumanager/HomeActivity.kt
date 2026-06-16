@@ -45,6 +45,9 @@ class HomeActivity : AppCompatActivity() {
         binding.cardPresence.setOnClickListener {
             startActivity(Intent(this, PresenceActivity::class.java))
         }
+        binding.cardKaonty.setOnClickListener {
+            startActivity(Intent(this, KaontyActivity::class.java))
+        }
         binding.cardAjoute.setOnClickListener {
             startActivity(Intent(this, AddOrderActivity::class.java))
         }

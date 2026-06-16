@@ -37,6 +37,10 @@
         <activity
             android:name=".PresenceActivity"
             android:exported="false" />
+        <activity
+            android:name=".KaontyActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

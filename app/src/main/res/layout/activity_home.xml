@@ -153,6 +153,13 @@
                 <TextView style="@style/QCardSub" android:text="Personnel du jour" />
             </LinearLayout>
 
+            <!-- KAONTY -->
+            <LinearLayout android:id="@+id/cardKaonty" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:background="@drawable/badge_green" android:text="💰" />
+                <TextView style="@style/QCardLbl" android:text="KAONTY" />
+                <TextView style="@style/QCardSub" android:text="Versement &amp; sortie" />
+            </LinearLayout>
+
         </GridLayout>
 
         <View
