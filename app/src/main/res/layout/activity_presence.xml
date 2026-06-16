@@ -25,88 +25,25 @@
             android:textColor="#FFFFFF"
             android:textSize="26sp" />
 
-        <LinearLayout
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Présence"
-                android:textColor="#FFFFFF"
-                android:textSize="19sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="00:00:00"
-                android:textColor="#E0DCFF"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/btnAddEmp"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/avatar_circle"
-            android:gravity="center"
-            android:text="+"
+            android:text="Présence"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="19sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Stats -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#0C1426"
-        android:orientation="horizontal"
-        android:paddingVertical="14dp">
-
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statEmp" style="@style/OStatVal" android:text="0" />
-            <TextView style="@style/OStatLbl" android:text="Employés" />
-        </LinearLayout>
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statPresent" style="@style/OStatVal" android:text="0" />
-            <TextView style="@style/OStatLbl" android:text="Présents" />
-        </LinearLayout>
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statDate" style="@style/OStatVal" android:text="—" android:textSize="13sp" />
-            <TextView style="@style/OStatLbl" android:text="Aujourd'hui" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <ScrollView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:id="@+id/listContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="12dp"
-            android:paddingBottom="20dp">
-
-            <TextView
-                android:id="@+id/emptyState"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
-                android:gravity="center"
-                android:text="Aucun employé\n\nAppuyez sur + pour en ajouter"
-                android:textColor="#8A97C2"
-                android:textSize="15sp" />
-        </LinearLayout>
-    </ScrollView>
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="🚧\n\nPage Présence vide\n\nLes fonctionnalités arriveront prochainement"
+        android:textColor="#8A97C2"
+        android:textSize="16sp" />
 
 </LinearLayout>

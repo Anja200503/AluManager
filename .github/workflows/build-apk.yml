@@ -28,29 +28,6 @@ jobs:
           unzip -q gradle.zip
           echo "$GITHUB_WORKSPACE/gradle-8.2/bin" >> $GITHUB_PATH
 
-      - name: Telecharger le modele de reconnaissance faciale (best-effort)
-        run: |
-          mkdir -p app/src/main/assets
-          URLS="
-          https://media.githubusercontent.com/media/michaellay19/SKRIPSI/main/assets/facenet.tflite
-          https://media.githubusercontent.com/media/AlvynStane/Skripsi_Full/main/Flutter/assets/facenet.tflite
-          https://media.githubusercontent.com/media/VRLzull/Absensi-flutter/main/assets/models/facenet.tflite
-          https://media.githubusercontent.com/media/shubham0204/FaceRecognition_With_FaceNet_Android/master/app/src/main/assets/facenet.tflite
-          "
-          OK=0
-          for u in $URLS; do
-            echo "Essai: $u"
-            curl -sL "$u" -o app/src/main/assets/facenet.tflite --max-time 180 || true
-            SZ=$(stat -c%s app/src/main/assets/facenet.tflite 2>/dev/null || echo 0)
-            SIG=$(dd if=app/src/main/assets/facenet.tflite bs=1 skip=4 count=4 2>/dev/null || true)
-            echo "  taille=$SZ sig=[$SIG]"
-            if [ "$SIG" = "TFL3" ]; then echo "  -> MODELE OK"; OK=1; break; fi
-          done
-          if [ "$OK" != "1" ]; then
-            echo "::warning::Aucun modele facial recupere - reco faciale desactivee dans cet APK"
-            rm -f app/src/main/assets/facenet.tflite
-          fi
-
       - name: Construire l'APK
         run: gradle assembleDebug
 
