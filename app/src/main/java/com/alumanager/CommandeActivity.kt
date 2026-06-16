@@ -43,6 +43,7 @@ class CommandeActivity : AppCompatActivity() {
 
         b.btnBack.setOnClickListener { finish() }
         b.btnRefresh.setOnClickListener { load() }
+        b.btnFormules.setOnClickListener { showFormulaSettings() }
         b.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
@@ -471,6 +472,56 @@ class CommandeActivity : AppCompatActivity() {
     }
 
     /* ════════════ FORMES ════════════ */
+    /* ════════════ PARAMÈTRES DES FORMULES (par classement) ════════════ */
+    private fun showFormulaSettings() {
+        val fields = LinkedHashMap<String, EditText>()
+        val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(8)) }
+        for (g in FormulaConfig.GROUPS) {
+            root.addView(TextView(this).apply {
+                text = "▸ ${g.title}"; setTextColor(Color.parseColor("#21E6FF")); textSize = 14f
+                setTypeface(typeface, Typeface.BOLD)
+                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                lp.topMargin = dp(16); layoutParams = lp
+            })
+            for (p in g.params) {
+                root.addView(TextView(this).apply {
+                    text = p.label; setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+                    val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    lp.topMargin = dp(8); layoutParams = lp
+                })
+                val cur = FormulaConfig.value(this, p.key)
+                val et = EditText(this).apply {
+                    setText(if (cur == Math.floor(cur)) cur.toInt().toString() else cur.toString().replace('.', ','))
+                    inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    keyListener = android.text.method.DigitsKeyListener.getInstance("0123456789.,")
+                    setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                    background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                }
+                root.addView(et); fields[p.key] = et
+            }
+        }
+        AlertDialog.Builder(this, R.style.NeonDialog)
+            .setTitle("⚙️ Paramètres des formules")
+            .setView(ScrollView(this).apply { addView(root) })
+            .setPositiveButton("Enregistrer") { _, _ ->
+                val map = HashMap<String, Double>()
+                for ((k, et) in fields) {
+                    val v = et.text.toString().replace(',', '.').toDoubleOrNull()
+                    if (v != null) map[k] = v
+                }
+                FormulaConfig.save(this, map)
+                Toast.makeText(this, "Formules mises à jour ✓", Toast.LENGTH_SHORT).show()
+            }
+            .setNeutralButton("Réinitialiser") { _, _ ->
+                FormulaConfig.reset(this)
+                Toast.makeText(this, "Formules réinitialisées", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Annuler", null)
+            .show()
+    }
+
     private fun strokedBg(color: Int, radiusDp: Int, strokeColor: Int) = GradientDrawable().apply {
         setColor(color); cornerRadius = dp(radiusDp).toFloat()
         setStroke(dp(1).coerceAtLeast(1), strokeColor)

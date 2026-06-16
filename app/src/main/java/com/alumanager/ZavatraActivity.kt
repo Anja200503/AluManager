@@ -63,6 +63,7 @@ class ZavatraActivity : AppCompatActivity() {
 
     private fun render() {
         b.content.removeAllViews()
+        F = FormulaConfig.all(this)
         val barCm = b.barInput.text.toString().toDoubleOrNull() ?: 580.0
         val produits = cmd.optJSONArray("produits") ?: JSONArray()
         if (produits.length() == 0) { b.content.addView(note("Aucun produit dans cette commande.", "#FFC34D")); return }
@@ -148,6 +149,8 @@ class ZavatraActivity : AppCompatActivity() {
     private fun dimRef(dm: JSONObject, di: Int) = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
 
     private var curRefColors: Map<String, Int> = emptyMap()
+    private var F: Map<String, Double> = emptyMap()
+    private fun f(k: String) = F[k] ?: 0.0
     private fun refColorMap(dims: JSONArray): Map<String, Int> {
         val m = HashMap<String, Int>()
         for (di in 0 until dims.length()) {
@@ -172,10 +175,12 @@ class ZavatraActivity : AppCompatActivity() {
             val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
             val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
             val ref = dimRef(dm, di); val col = DIM_COLORS[di % DIM_COLORS.size]
-            val batiH = r2(h + 6); val batiL = r2(l + 6)
+            val batiH = r2(h + f("coul_bati_h")); val batiL = r2(l + f("coul_bati_l"))
+            val div = if (f("coul_ouvr_div") != 0.0) f("coul_ouvr_div") else 2.0
             val ouvrH: Double; val ouvrL: Double
-            if (mode == "promo") { ouvrH = r2(h - 4.1); ouvrL = r2((l + 1) / 2) } else { ouvrH = r2(h - 5.2); ouvrL = r2(l / 2) }
-            val acrL = ouvrH; val vH = r2(ouvrH - 8.3); val vL = r2(ouvrL - 8.3)
+            if (mode == "promo") { ouvrH = r2(h - f("coul_ouvrH_promo")); ouvrL = r2((l + f("coul_ouvrL_promo_add")) / div) }
+            else { ouvrH = r2(h - f("coul_ouvrH_choix")); ouvrL = r2(l / div) }
+            val acrL = ouvrH; val vH = r2(ouvrH - f("coul_vitre")); val vL = r2(ouvrL - f("coul_vitre"))
             totQty += qty
             bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
             ouvr.add(Entry(ouvrH, qty * 4, ref, di)); ouvr.add(Entry(ouvrL, qty * 4, ref, di))
@@ -222,8 +227,8 @@ class ZavatraActivity : AppCompatActivity() {
             val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
             val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
             val ref = dimRef(dm, di); val col = DIM_COLORS[di % DIM_COLORS.size]
-            val batiH = r2(h + 3); val batiL = r2(l + 6)
-            val ouvrH = r2(h - 2.7); val ouvrL = r2(l - 4.6); val interL = r2(ouvrL - 6.3)
+            val batiH = r2(h + f("p1v_bati_h")); val batiL = r2(l + f("p1v_bati_l"))
+            val ouvrH = r2(h - f("p1v_ouvr_h")); val ouvrL = r2(l - f("p1v_ouvr_l")); val interL = r2(ouvrL - f("p1v_inter"))
             totQty += qty
             bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty, ref, di))
             ouvr.add(Entry(ouvrH, qty * 2, ref, di)); ouvr.add(Entry(ouvrL, qty, ref, di))
@@ -233,8 +238,9 @@ class ZavatraActivity : AppCompatActivity() {
                 numCm(ouvrH), "${qty * 2}", numCm(ouvrL), "$qty",
                 numCm(interL), "${qty * 2}")
             if (isDV) {
-                val bardageL = if (h <= 200) 72.0 else 82.0
-                val bardageQty = ceil(interL / 9.0).toInt() * qty
+                val bardageL = if (h <= f("p1v_bard_seuil")) f("p1v_bard_court") else f("p1v_bard_long")
+                val bdiv = if (f("p1v_bard_div") != 0.0) f("p1v_bard_div") else 9.0
+                val bardageQty = ceil(interL / bdiv).toInt() * qty
                 bard.add(Entry(bardageL, bardageQty, ref, di))
                 cells.add(numCm(bardageL)); cells.add("$bardageQty")
             }
@@ -271,8 +277,9 @@ class ZavatraActivity : AppCompatActivity() {
             val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
             val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
             val ref = dimRef(dm, di); val col = DIM_COLORS[di % DIM_COLORS.size]
-            val batiH = r2(h + 6); val batiL = r2(l + 6); val paraH = r2(h - 5.6); val paraL = r2(l - 5.6)
-            val vH = r2(paraH - 5); val vL = r2(paraL - 5)
+            val batiH = r2(h + f("fixe_bati_h")); val batiL = r2(l + f("fixe_bati_l"))
+            val paraH = r2(h - f("fixe_para_h")); val paraL = r2(l - f("fixe_para_l"))
+            val vH = r2(paraH - f("fixe_vitre")); val vL = r2(paraL - f("fixe_vitre"))
             bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
             para.add(Entry(paraH, qty * 2, ref, di)); para.add(Entry(paraL, qty * 2, ref, di))
             rows.add(col to listOf(ref, numCm(h), numCm(l), qty.toString(),
@@ -307,8 +314,9 @@ class ZavatraActivity : AppCompatActivity() {
             val h = d(dm, "hauteur_cm"); val l = d(dm, "largeur_cm")
             val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
             val ref = dimRef(dm, di); val col = DIM_COLORS[di % DIM_COLORS.size]
-            val batiH = r2(h + 6); val batiL = r2(l + 6); val ouvrH = r2(h - 4.6); val ouvrL = r2(l - 4.6)
-            val vH = r2(ouvrH - 6.5); val vL = r2(ouvrL - 6.5)
+            val batiH = r2(h + f("proj_bati_h")); val batiL = r2(l + f("proj_bati_l"))
+            val ouvrH = r2(h - f("proj_ouvr_h")); val ouvrL = r2(l - f("proj_ouvr_l"))
+            val vH = r2(ouvrH - f("proj_vitre")); val vL = r2(ouvrL - f("proj_vitre"))
             totQty += qty
             bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
             ouvr.add(Entry(ouvrH, qty * 2, ref, di)); ouvr.add(Entry(ouvrL, qty * 2, ref, di))
@@ -350,13 +358,14 @@ class ZavatraActivity : AppCompatActivity() {
             val qty = dm.optString("quantite", "1").toIntOrNull() ?: 1
             val ref = dimRef(dm, di); val col = DIM_COLORS[di % DIM_COLORS.size]
             val nb = nacoBlades(h)
-            val batiH = r2(h + 6); val batiL = r2(l + 6); val lameL = r2(l - 15); val lameQty = qty * nb
+            val batiH = r2(h + f("naco_bati_h")); val batiL = r2(l + f("naco_bati_l"))
+            val lameL = r2(l - f("naco_lame_l")); val lameQty = qty * nb
             totQty += qty
             bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
             acc.add(Triple("🏷️ Lame Naco de $nb ($ref)", "$qty × 2", qty * 2))
             rows.add(col to listOf(ref, numCm(h), numCm(l), qty.toString(),
                 numCm(batiH), "${qty * 2}", numCm(batiL), "${qty * 2}",
-                "$nb", "10", numCm(lameL), "$lameQty"))
+                "$nb", numCm(f("naco_lame_h")), numCm(lameL), "$lameQty"))
         }
         card.addView(buildTable(
             listOf(Triple("Dim", 1, FIX), Triple("H", 1, FIX), Triple("L", 1, FIX), Triple("Qty", 1, FIX),

@@ -364,19 +364,20 @@ class AddOrderActivity : AppCompatActivity() {
             when (c) {
                 "h", "l", "p", "qty" -> {
                     val et = numField(when (c) {
-                        "h" -> if (dim.h > 0) dim.h.toInt().toString() else ""
-                        "l" -> if (dim.l > 0) dim.l.toInt().toString() else ""
-                        "p" -> if (dim.p > 0) dim.p.toInt().toString() else ""
+                        "h" -> if (dim.h > 0) numIn(dim.h) else ""
+                        "l" -> if (dim.l > 0) numIn(dim.l) else ""
+                        "p" -> if (dim.p > 0) numIn(dim.p) else ""
                         else -> dim.qty.toString()
-                    }, c.uppercase())
+                    }, c.uppercase(), c != "qty")
                     et.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, colWeight(c))
                     et.addTextChangedListener(simpleWatcher { txt ->
-                        val n = txt.toDoubleOrNull() ?: 0.0
+                        val v = txt.replace(',', '.')
+                        val n = v.toDoubleOrNull() ?: 0.0
                         when (c) {
                             "h" -> { dim.h = n; dim.puOverride = null }
                             "l" -> { dim.l = n; dim.puOverride = null }
                             "p" -> { dim.p = n; dim.puOverride = null }
-                            "qty" -> dim.qty = (txt.toIntOrNull() ?: 1).coerceAtLeast(1)
+                            "qty" -> dim.qty = (v.toDoubleOrNull()?.toInt() ?: 1).coerceAtLeast(1)
                         }
                         refresh()
                     })
@@ -384,12 +385,11 @@ class AddOrderActivity : AppCompatActivity() {
                 }
                 "pu" -> {
                     val auto = OrderData.calcUnitPrice(prod, dim)
-                    val et = numField(if (auto > 0) fmt(auto) else "", "— Ar")
-                    et.inputType = InputType.TYPE_CLASS_NUMBER
+                    val et = numField(if (auto > 0) fmt(auto) else "", "— Ar", false)
                     et.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, colWeight(c))
                     et.addTextChangedListener(simpleWatcher { txt ->
                         if (et.hasFocus()) {
-                            val raw = txt.replace(Regex("[^0-9.]"), "")
+                            val raw = txt.replace(',', '.').replace(Regex("[^0-9.]"), "")
                             val n = raw.toDoubleOrNull()
                             dim.puOverride = if (n != null && n >= 0) n else null
                             totView?.text = if (OrderData.unitPrice(prod, dim) > 0)
@@ -433,11 +433,16 @@ class AddOrderActivity : AppCompatActivity() {
         return row
     }
 
-    private fun numField(value: String, hint: String): EditText {
+    private fun numField(value: String, hint: String, decimal: Boolean = true): EditText {
         return EditText(this).apply {
             setText(value)
             this.hint = hint
-            inputType = InputType.TYPE_CLASS_NUMBER
+            if (decimal) {
+                inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                keyListener = android.text.method.DigitsKeyListener.getInstance("0123456789.,")
+            } else {
+                inputType = InputType.TYPE_CLASS_NUMBER
+            }
             textSize = 13f
             setTextColor(Color.parseColor("#EAF2FF"))
             setHintTextColor(Color.parseColor("#5A688F"))
@@ -445,6 +450,10 @@ class AddOrderActivity : AppCompatActivity() {
             background = strokedBg(Color.parseColor("#0B1326"), 10, Color.parseColor("#243456"))
         }
     }
+
+    /** Affiche un nombre cm : entier sans décimale, sinon avec virgule. */
+    private fun numIn(v: Double): String =
+        if (v == Math.floor(v)) v.toInt().toString() else v.toString().replace('.', ',')
 
     private fun simpleWatcher(onText: (String) -> Unit): TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
