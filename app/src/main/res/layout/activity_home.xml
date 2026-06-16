@@ -160,6 +160,13 @@
                 <TextView style="@style/QCardSub" android:text="Versement &amp; sortie" />
             </LinearLayout>
 
+            <!-- DIRECTEUR IA -->
+            <LinearLayout android:id="@+id/cardDirecteur" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:background="@drawable/badge_indigo" android:text="🧠" />
+                <TextView style="@style/QCardLbl" android:text="DIRECTEUR IA" />
+                <TextView style="@style/QCardSub" android:text="Analyse &amp; conseils" />
+            </LinearLayout>
+
         </GridLayout>
 
         <View
