@@ -36,6 +36,14 @@ class AddOrderActivity : AppCompatActivity() {
     private val commande = mutableListOf<ProductItem>()
 
     private val SAVE_URL = "https://alu.xo.je/save_commande.php"
+    private val DELETE_URL = "https://alu.xo.je/delete_commande.php"
+
+    private var editId = 0
+    private var editNom = ""
+    private var editLieu = ""
+    private var editDateCmd = ""
+    private var editDateLiv = ""
+    private var editAvance = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +51,8 @@ class AddOrderActivity : AppCompatActivity() {
         setContentView(b.root)
 
         loadPrices()
+        intent.getStringExtra("edit")?.let { loadForEdit(it) }
+        if (editId > 0) b.screenTitle.text = "Modifier la commande"
         b.btnBack.setOnClickListener { finish() }
         b.btnAddProduct.setOnClickListener { showProductWizard() }
         b.btnValidate.setOnClickListener { showClientDialog() }
@@ -711,11 +721,14 @@ class AddOrderActivity : AppCompatActivity() {
             orientation = LinearLayout.VERTICAL; setPadding(pad, pad, pad, 0)
         }
         v.addView(label("Total : ${fmt(total)} Ar"))
-        val nom = clientField("Nom du client")
-        val lieu = clientField("Lieu / Adresse")
-        val dateCmd = dateField("Date commande", today())
-        val dateLiv = dateField("Date livraison", "")
-        val avance = clientField("Avance (Ar)").apply { inputType = InputType.TYPE_CLASS_NUMBER }
+        val nom = clientField("Nom du client").apply { if (editId > 0) setText(editNom) }
+        val lieu = clientField("Lieu / Adresse").apply { if (editId > 0) setText(editLieu) }
+        val dateCmd = dateField("Date commande", if (editId > 0) editDateCmd else today())
+        val dateLiv = dateField("Date livraison", if (editId > 0) editDateLiv else "")
+        val avance = clientField("Avance (Ar)").apply {
+            inputType = InputType.TYPE_CLASS_NUMBER
+            if (editId > 0 && editAvance > 0) setText(Math.round(editAvance).toString())
+        }
         v.addView(nom); v.addView(lieu); v.addView(dateCmd); v.addView(dateLiv); v.addView(avance)
 
         AlertDialog.Builder(this, R.style.NeonDialog)
@@ -741,6 +754,46 @@ class AddOrderActivity : AppCompatActivity() {
                     }
                 }
             }.show()
+    }
+
+    /* ════════════ CHARGEMENT POUR ÉDITION ════════════ */
+    private fun loadForEdit(jsonStr: String) {
+        try {
+            val o = JSONObject(jsonStr)
+            editId = o.optString("id").toIntOrNull() ?: 0
+            editNom = o.optString("client_nom")
+            editLieu = o.optString("client_lieu")
+            editDateCmd = o.optString("date_commande")
+            editDateLiv = o.optString("date_livraison")
+            editAvance = o.optString("avance_ar").toDoubleOrNull() ?: 0.0
+            val prods = o.optJSONArray("produits") ?: return
+            for (i in 0 until prods.length()) {
+                val p = prods.optJSONObject(i) ?: continue
+                val item = ProductItem(
+                    productId = p.optString("product_id"),
+                    label = p.optString("product_label")
+                )
+                val cfg = p.optJSONObject("config_parsed")
+                    ?: try { JSONObject(p.optString("config_json", "{}")) } catch (e: Exception) { JSONObject() }
+                cfg.keys().forEach { k -> item.config[k] = cfg.optString(k) }
+                val dims = p.optJSONArray("dimensions") ?: JSONArray()
+                for (j in 0 until dims.length()) {
+                    val dd = dims.optJSONObject(j) ?: continue
+                    val dim = Dimension(
+                        h = dd.optString("hauteur_cm", "0").toDoubleOrNull() ?: 0.0,
+                        l = dd.optString("largeur_cm", "0").toDoubleOrNull() ?: 0.0,
+                        p = dd.optString("profondeur_cm", "0").toDoubleOrNull() ?: 0.0,
+                        qty = (dd.optString("quantite", "1").toDoubleOrNull()?.toInt() ?: 1).coerceAtLeast(1)
+                    )
+                    val pu = dd.optString("prix_unitaire", "0").toDoubleOrNull() ?: 0.0
+                    if (pu > 0) dim.puOverride = pu
+                    item.dimensions.add(dim)
+                }
+                commande.add(item)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Erreur de chargement de la commande", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun saveOrder(
@@ -813,6 +866,8 @@ class AddOrderActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 err = e.localizedMessage ?: "Erreur reseau"
             }
+            // En mode édition : la nouvelle commande est créée, on supprime l'ancienne.
+            if (ok && editId > 0) deleteOldOrder(editId)
             runOnUiThread {
                 progress.dismiss()
                 if (ok) showSuccess(reference, nom, total, avance, reste)
@@ -820,6 +875,15 @@ class AddOrderActivity : AppCompatActivity() {
                     .setTitle("Erreur").setMessage(err).setPositiveButton("OK", null).show()
             }
         }.start()
+    }
+
+    private fun deleteOldOrder(id: Int) {
+        try {
+            var cookie: String? = null
+            val pre = getText(DELETE_URL)
+            if (isChallenge(pre.second)) cookie = solveAesChallenge(pre.second)
+            postJson(DELETE_URL, JSONObject().put("id", id).toString(), cookie)
+        } catch (e: Exception) { /* ignore */ }
     }
 
     private fun showSuccess(ref: String, nom: String, total: Double, avance: Double, reste: Double) {
@@ -831,7 +895,7 @@ class AddOrderActivity : AppCompatActivity() {
             append("⏳ Reste : ${fmt(reste)} Ar")
         }
         AlertDialog.Builder(this, R.style.NeonDialog)
-            .setTitle("Commande enregistree !")
+            .setTitle(if (editId > 0) "Commande modifiée !" else "Commande enregistree !")
             .setMessage(msg)
             .setPositiveButton("Nouvelle commande") { _, _ -> commande.clear(); renderAll() }
             .setNegativeButton("Fermer") { _, _ -> finish() }

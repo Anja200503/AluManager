@@ -52,6 +52,13 @@ class CommandeActivity : AppCompatActivity() {
         load()
     }
 
+    private var firstResume = true
+    override fun onResume() {
+        super.onResume()
+        // Recharger au retour (ex. après modification d'une commande), sauf au tout 1er affichage.
+        if (firstResume) firstResume = false else load()
+    }
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun fmt(v: Double): String = "%,d".format(Math.round(v)).replace(",", " ")
     private fun d(o: JSONObject, key: String): Double = o.optString(key, "0").toDoubleOrNull() ?: 0.0
@@ -172,7 +179,14 @@ class CommandeActivity : AppCompatActivity() {
         f2.addView(spacer())
         f2.addView(actionBtn("🗑️ Supprimer", "#FF4D9D") { showDeleteConfirm(c) })
         card.addView(f2)
+        val f3 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8) }
+        f3.addView(actionBtn("✏️ Modifier la commande", "#8B5CFF") { openEdit(c) })
+        card.addView(f3)
         return card
+    }
+
+    private fun openEdit(c: JSONObject) {
+        startActivity(Intent(this, AddOrderActivity::class.java).putExtra("edit", c.toString()))
     }
 
     private fun row() = LinearLayout(this).apply {
