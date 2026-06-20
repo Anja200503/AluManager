@@ -1,10 +1,15 @@
 package com.alumanager
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
 import android.text.InputType
+import androidx.activity.result.contract.ActivityResultContracts
+import java.util.Locale
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.EditText
@@ -26,6 +31,16 @@ class DirecteurActivity : AppCompatActivity() {
     private var contextText = "(données en cours de chargement)"
     private var busy = false
 
+    private var tts: TextToSpeech? = null
+    private var ttsReady = false
+    private var voiceOutput = true
+    private val speechLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+        if (res.resultCode == RESULT_OK) {
+            val spoken = res.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()?.trim()
+            if (!spoken.isNullOrBlank()) send(spoken)
+        }
+    }
+
     private val SYSTEM = """
         Tu es le directeur-conseil d'AluManager, une entreprise de menuiserie aluminium à Madagascar.
         Tu analyses les données réelles de l'entreprise (commandes, trésorerie/caisse "Kaonty") et tu réponds
@@ -44,8 +59,45 @@ class DirecteurActivity : AppCompatActivity() {
         b.btnBriefing.setOnClickListener {
             send("Fais-moi un briefing complet de mon entreprise : rentabilité, trésorerie (Kaonty), créances (restes à payer), et 3 recommandations concrètes.")
         }
-        addBubble("Bonjour 👋 Je suis votre directeur-conseil. Posez une question ou lancez un briefing complet.", false)
+        b.btnMic.setOnClickListener { startListening() }
+        b.btnVoice.setOnClickListener { toggleVoice() }
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) { tts?.language = Locale.FRENCH; ttsReady = true }
+        }
+        addBubble("Bonjour 👋 Je suis votre directeur-conseil. Posez une question (texte ou 🎤) ou lancez un briefing complet.", false)
         loadContext()
+    }
+
+    override fun onDestroy() { tts?.stop(); tts?.shutdown(); super.onDestroy() }
+
+    private fun toggleVoice() {
+        voiceOutput = !voiceOutput
+        b.btnVoice.text = if (voiceOutput) "🔊" else "🔇"
+        if (!voiceOutput) tts?.stop()
+        Toast.makeText(this, if (voiceOutput) "Lecture vocale activée" else "Lecture vocale coupée", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun startListening() {
+        tts?.stop()
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fr-FR")
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Parlez maintenant…")
+        }
+        try { speechLauncher.launch(intent) }
+        catch (e: Exception) { Toast.makeText(this, "Reconnaissance vocale indisponible sur ce téléphone", Toast.LENGTH_LONG).show() }
+    }
+
+    private fun speakOut(text: String) {
+        val t = tts ?: return
+        if (!ttsReady) return
+        t.stop()
+        var i = 0; var first = true
+        while (i < text.length) {
+            val end = minOf(i + 3500, text.length)
+            t.speak(text.substring(i, end), if (first) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD, null, "dir$i")
+            first = false; i = end
+        }
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
@@ -119,7 +171,10 @@ class DirecteurActivity : AppCompatActivity() {
             runOnUiThread {
                 busy = false; b.status.text = "Données chargées ✓"
                 typing.text = answer
-                if (ok) convo.put(JSONObject().put("role", "assistant").put("content", answer))
+                if (ok) {
+                    convo.put(JSONObject().put("role", "assistant").put("content", answer))
+                    if (voiceOutput) speakOut(answer)
+                }
                 b.scroll.post { b.scroll.fullScroll(android.view.View.FOCUS_DOWN) }
             }
         }.start()

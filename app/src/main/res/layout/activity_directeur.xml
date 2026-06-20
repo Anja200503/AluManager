@@ -50,6 +50,17 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/btnVoice"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/avatar_circle"
+            android:gravity="center"
+            android:text="🔊"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/btnKey"
             android:layout_width="42dp"
             android:layout_height="42dp"
@@ -112,6 +123,19 @@
             android:textColor="#EAF2FF"
             android:textColorHint="#5A688F"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/btnMic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/btn_primary"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="14dp"
+            android:text="🎤"
+            android:textColor="#08101F"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/btnSend"
