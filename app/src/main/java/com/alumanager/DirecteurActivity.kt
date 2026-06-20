@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import android.text.InputType
 import androidx.activity.result.contract.ActivityResultContracts
 import java.util.Locale
@@ -61,8 +62,14 @@ class DirecteurActivity : AppCompatActivity() {
         }
         b.btnMic.setOnClickListener { startListening() }
         b.btnVoice.setOnClickListener { toggleVoice() }
+        b.btnVoice.setOnLongClickListener { showVoicePicker(); true }
         tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) { tts?.language = Locale.FRENCH; ttsReady = true }
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.FRENCH
+                tts?.setSpeechRate(0.98f); tts?.setPitch(1.0f)
+                ttsReady = true
+                applyVoice()
+            }
         }
         addBubble("Bonjour 👋 Je suis votre directeur-conseil. Posez une question (texte ou 🎤) ou lancez un briefing complet.", false)
         loadContext()
@@ -86,6 +93,50 @@ class DirecteurActivity : AppCompatActivity() {
         }
         try { speechLauncher.launch(intent) }
         catch (e: Exception) { Toast.makeText(this, "Reconnaissance vocale indisponible sur ce téléphone", Toast.LENGTH_LONG).show() }
+    }
+
+    private fun frenchVoices(): List<Voice> = try {
+        (tts?.voices ?: emptySet<Voice>())
+            .filter { it.locale?.language == "fr" && !it.isNetworkConnectionRequired || it.locale?.language == "fr" }
+            .sortedWith(compareBy<Voice>({ if (it.isNetworkConnectionRequired) 1 else 0 }).thenByDescending { it.quality })
+    } catch (e: Exception) { emptyList() }
+
+    private fun applyVoice() {
+        val t = tts ?: return
+        val voices = frenchVoices()
+        if (voices.isEmpty()) return
+        val saved = prefs().getString("ttsVoice", "")
+        val v = voices.firstOrNull { it.name == saved } ?: voices.first()
+        try { t.voice = v; prefs().edit().putString("ttsVoice", v.name).apply() } catch (e: Exception) {}
+    }
+
+    private fun showVoicePicker() {
+        val voices = frenchVoices()
+        if (voices.isEmpty()) {
+            AlertDialog.Builder(this, R.style.NeonDialog)
+                .setTitle("Voix française")
+                .setMessage("Aucune voix française trouvée sur ce téléphone.\n\nInstalle-en une : Réglages Android → Langues et saisie → Synthèse vocale → moteur Google → installer la voix « Français ».")
+                .setPositiveButton("OK", null).show()
+            return
+        }
+        val current = prefs().getString("ttsVoice", "")
+        val labels = voices.map { v ->
+            val off = if (v.isNetworkConnectionRequired) "en ligne" else "hors-ligne"
+            val q = when { v.quality >= 500 -> "très bonne"; v.quality >= 400 -> "bonne"; v.quality >= 300 -> "normale"; else -> "basique" }
+            "${v.locale?.country ?: "FR"} · qualité $q · $off"
+        }.toTypedArray()
+        var sel = voices.indexOfFirst { it.name == current }.let { if (it < 0) 0 else it }
+        AlertDialog.Builder(this, R.style.NeonDialog)
+            .setTitle("🔊 Choisir la voix")
+            .setSingleChoiceItems(labels, sel) { _, which -> sel = which }
+            .setPositiveButton("Choisir & tester") { _, _ ->
+                val v = voices[sel]
+                try { tts?.voice = v } catch (e: Exception) {}
+                prefs().edit().putString("ttsVoice", v.name).apply()
+                speakOut("Bonjour, je suis votre directeur. Voici la voix sélectionnée.")
+            }
+            .setNegativeButton("Fermer", null)
+            .show()
     }
 
     private fun speakOut(text: String) {
