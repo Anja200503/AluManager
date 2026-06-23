@@ -51,6 +51,9 @@ class HomeActivity : AppCompatActivity() {
         binding.cardDirecteur.setOnClickListener {
             startActivity(Intent(this, DirecteurActivity::class.java))
         }
+        binding.cardOptiCoupe.setOnClickListener {
+            startActivity(Intent(this, OptiCoupeActivity::class.java))
+        }
         binding.cardAjoute.setOnClickListener {
             startActivity(Intent(this, AddOrderActivity::class.java))
         }

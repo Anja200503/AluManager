@@ -167,6 +167,13 @@
                 <TextView style="@style/QCardSub" android:text="Analyse &amp; conseils" />
             </LinearLayout>
 
+            <!-- OPTI COUPE -->
+            <LinearLayout android:id="@+id/cardOptiCoupe" style="@style/QCard">
+                <TextView style="@style/QCardIco" android:background="@drawable/badge_amber" android:text="✂️" />
+                <TextView style="@style/QCardLbl" android:text="OPTI COUPE" />
+                <TextView style="@style/QCardSub" android:text="Optimiser la chute" />
+            </LinearLayout>
+
         </GridLayout>
 
         <View
