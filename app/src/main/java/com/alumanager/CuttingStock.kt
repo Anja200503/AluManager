@@ -175,8 +175,9 @@ object CuttingStock {
         for (p in pieces) {
             val L = p.length
             val t = map.getOrPut(L) { TypeAgg(L, 0, mutableListOf()) }
-            t.qty += max(1, p.qty)
-            if (p.label.isNotEmpty()) t.labels.add(p.label)
+            val q = max(1, p.qty)
+            t.qty += q
+            if (p.label.isNotEmpty()) repeat(q) { t.labels.add(p.label) }
         }
         val types = map.values.sortedByDescending { it.length }
         val pats = columnGen(types, barLength, kerf)
