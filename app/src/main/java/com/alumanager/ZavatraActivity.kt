@@ -144,9 +144,9 @@ class ZavatraActivity : AppCompatActivity() {
         return card
     }
 
-    private data class Entry(val lenCm: Double, val pcs: Int, val ref: String, val di: Int)
+    private data class Entry(val lenCm: Double, val pcs: Int, val ref: String, val di: Int, val tag: String = "")
 
-    private fun dimRef(dm: JSONObject, di: Int) = dm.optString("dim_ref").ifBlank { "L${di + 1}" }
+    private fun dimRef(dm: JSONObject, di: Int) = dm.optString("dim_ref").ifBlank { "N°${di + 1}" }
 
     private var curRefColors: Map<String, Int> = emptyMap()
     private var F: Map<String, Double> = emptyMap()
@@ -182,9 +182,9 @@ class ZavatraActivity : AppCompatActivity() {
             else { ouvrH = r2(h - f("coul_ouvrH_choix")); ouvrL = r2(l / div) }
             val acrL = ouvrH; val vH = r2(ouvrH - f("coul_vitre")); val vL = r2(ouvrL - f("coul_vitre"))
             totQty += qty
-            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
-            ouvr.add(Entry(ouvrH, qty * 4, ref, di)); ouvr.add(Entry(ouvrL, qty * 4, ref, di))
-            acr.add(Entry(acrL, qty * 2, ref, di))
+            bati.add(Entry(batiH, qty * 2, ref, di, "H")); bati.add(Entry(batiL, qty * 2, ref, di, "L"))
+            ouvr.add(Entry(ouvrH, qty * 4, ref, di, "H")); ouvr.add(Entry(ouvrL, qty * 4, ref, di, "L"))
+            acr.add(Entry(acrL, qty * 2, ref, di, "H"))
             rows.add(col to listOf(
                 ref, numCm(h), numCm(l), qty.toString(),
                 numCm(batiH), "${qty * 2}", numCm(batiL), "${qty * 2}",
@@ -230,9 +230,9 @@ class ZavatraActivity : AppCompatActivity() {
             val batiH = r2(h + f("p1v_bati_h")); val batiL = r2(l + f("p1v_bati_l"))
             val ouvrH = r2(h - f("p1v_ouvr_h")); val ouvrL = r2(l - f("p1v_ouvr_l")); val interL = r2(ouvrL - f("p1v_inter"))
             totQty += qty
-            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty, ref, di))
-            ouvr.add(Entry(ouvrH, qty * 2, ref, di)); ouvr.add(Entry(ouvrL, qty, ref, di))
-            inter.add(Entry(interL, qty * 2, ref, di))
+            bati.add(Entry(batiH, qty * 2, ref, di, "H")); bati.add(Entry(batiL, qty, ref, di, "L"))
+            ouvr.add(Entry(ouvrH, qty * 2, ref, di, "H")); ouvr.add(Entry(ouvrL, qty, ref, di, "L"))
+            inter.add(Entry(interL, qty * 2, ref, di, "I"))
             val cells = mutableListOf(ref, numCm(h), numCm(l), qty.toString(),
                 numCm(batiH), "${qty * 2}", numCm(batiL), "$qty",
                 numCm(ouvrH), "${qty * 2}", numCm(ouvrL), "$qty",
@@ -241,7 +241,7 @@ class ZavatraActivity : AppCompatActivity() {
                 val bardageL = if (h <= f("p1v_bard_seuil")) f("p1v_bard_court") else f("p1v_bard_long")
                 val bdiv = if (f("p1v_bard_div") != 0.0) f("p1v_bard_div") else 9.0
                 val bardageQty = ceil(interL / bdiv).toInt() * qty
-                bard.add(Entry(bardageL, bardageQty, ref, di))
+                bard.add(Entry(bardageL, bardageQty, ref, di, "B"))
                 cells.add(numCm(bardageL)); cells.add("$bardageQty")
             }
             rows.add(col to cells)
@@ -280,8 +280,8 @@ class ZavatraActivity : AppCompatActivity() {
             val batiH = r2(h + f("fixe_bati_h")); val batiL = r2(l + f("fixe_bati_l"))
             val paraH = r2(h - f("fixe_para_h")); val paraL = r2(l - f("fixe_para_l"))
             val vH = r2(paraH - f("fixe_vitre")); val vL = r2(paraL - f("fixe_vitre"))
-            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
-            para.add(Entry(paraH, qty * 2, ref, di)); para.add(Entry(paraL, qty * 2, ref, di))
+            bati.add(Entry(batiH, qty * 2, ref, di, "H")); bati.add(Entry(batiL, qty * 2, ref, di, "L"))
+            para.add(Entry(paraH, qty * 2, ref, di, "H")); para.add(Entry(paraL, qty * 2, ref, di, "L"))
             rows.add(col to listOf(ref, numCm(h), numCm(l), qty.toString(),
                 numCm(batiH), "${qty * 2}", numCm(batiL), "${qty * 2}",
                 numCm(paraH), "${qty * 2}", numCm(paraL), "${qty * 2}",
@@ -318,8 +318,8 @@ class ZavatraActivity : AppCompatActivity() {
             val ouvrH = r2(h - f("proj_ouvr_h")); val ouvrL = r2(l - f("proj_ouvr_l"))
             val vH = r2(ouvrH - f("proj_vitre")); val vL = r2(ouvrL - f("proj_vitre"))
             totQty += qty
-            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
-            ouvr.add(Entry(ouvrH, qty * 2, ref, di)); ouvr.add(Entry(ouvrL, qty * 2, ref, di))
+            bati.add(Entry(batiH, qty * 2, ref, di, "H")); bati.add(Entry(batiL, qty * 2, ref, di, "L"))
+            ouvr.add(Entry(ouvrH, qty * 2, ref, di, "H")); ouvr.add(Entry(ouvrL, qty * 2, ref, di, "L"))
             val t = if (h < 30) "20" else if (h < 40) "30" else "40"
             compas[t] = (compas[t] ?: 0) + qty * 2
             rows.add(col to listOf(ref, numCm(h), numCm(l), qty.toString(),
@@ -361,7 +361,7 @@ class ZavatraActivity : AppCompatActivity() {
             val batiH = r2(h + f("naco_bati_h")); val batiL = r2(l + f("naco_bati_l"))
             val lameL = r2(l - f("naco_lame_l")); val lameQty = qty * nb
             totQty += qty
-            bati.add(Entry(batiH, qty * 2, ref, di)); bati.add(Entry(batiL, qty * 2, ref, di))
+            bati.add(Entry(batiH, qty * 2, ref, di, "H")); bati.add(Entry(batiL, qty * 2, ref, di, "L"))
             acc.add(Triple("🏷️ Lame Naco de $nb ($ref)", "$qty × 2", qty * 2))
             rows.add(col to listOf(ref, numCm(h), numCm(l), qty.toString(),
                 numCm(batiH), "${qty * 2}", numCm(batiL), "${qty * 2}",
@@ -478,7 +478,10 @@ class ZavatraActivity : AppCompatActivity() {
     private fun renderCoupeGroup(card: LinearLayout, label: String, color: String, entries: List<Entry>, barCm: Double) {
         val valid = entries.filter { it.lenCm > 0 && it.pcs > 0 }
         if (valid.isEmpty()) return
-        val pieces = valid.map { CuttingStock.Piece(Math.round(it.lenCm * 10).toInt(), it.pcs, it.ref) }
+        fun labelOf(e: Entry) = if (e.tag.isNotBlank()) "${e.tag}${e.di + 1}" else e.ref
+        val colorMap = HashMap<String, Int>()
+        valid.forEach { colorMap[labelOf(it)] = DIM_COLORS[it.di % DIM_COLORS.size] }
+        val pieces = valid.map { CuttingStock.Piece(Math.round(it.lenCm * 10).toInt(), it.pcs, labelOf(it)) }
         val res = try { CuttingStock.solve(pieces, (barCm * 10).toInt(), 0) } catch (e: Exception) { null } ?: return
         if (res.bars.isEmpty()) return
         val s = res.stats
@@ -528,13 +531,19 @@ class ZavatraActivity : AppCompatActivity() {
                 background = strokedBg(Color.parseColor("#0B1326"), 6, Color.parseColor("#243456"))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(26)); lp.topMargin = dp(4); layoutParams = lp
             }
-            for (cut in bar.cuts) {
-                val cc = curRefColors[cut.label] ?: cut.color
+            bar.cuts.forEachIndexed { ci2, cut ->
+                val cc = colorMap[cut.label] ?: cut.color
                 visual.addView(TextView(this).apply {
-                    text = if (cut.length >= 3000) numCm(cut.length / 10.0) else ""
-                    setTextColor(Color.WHITE); textSize = 8f; gravity = Gravity.CENTER; maxLines = 1
+                    text = if (cut.length >= L / 18f) cut.label else ""
+                    setTextColor(Color.WHITE); textSize = 9f; gravity = Gravity.CENTER; maxLines = 1
+                    setTypeface(typeface, Typeface.BOLD)
                     setBackgroundColor(cc)
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, cut.length.toFloat())
+                })
+                // petite ligne de séparation entre les pièces
+                if (ci2 < bar.cuts.size - 1 || waste > 10) visual.addView(View(this).apply {
+                    setBackgroundColor(Color.parseColor("#05070E"))
+                    layoutParams = LinearLayout.LayoutParams(dp(2), ViewGroup.LayoutParams.MATCH_PARENT)
                 })
             }
             if (waste > 10) visual.addView(View(this).apply {
@@ -546,7 +555,7 @@ class ZavatraActivity : AppCompatActivity() {
             val chipRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
             val grouped = LinkedHashMap<Int, Pair<Int, Int>>() // lenMm -> (count, color)
             for (cut in bar.cuts) {
-                val cc = curRefColors[cut.label] ?: cut.color
+                val cc = colorMap[cut.label] ?: cut.color
                 val prev = grouped[cut.length]
                 grouped[cut.length] = Pair((prev?.first ?: 0) + 1, prev?.second ?: cc)
             }
