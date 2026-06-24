@@ -234,11 +234,11 @@ class DirecteurActivity : AppCompatActivity() {
     private fun addBubble(text: String, user: Boolean): TextView {
         val tv = TextView(this).apply {
             this.text = text
-            setTextColor(Color.parseColor(if (user) "#08101F" else "#EAF2FF"))
+            setTextColor(Color.parseColor(if (user) "#08101F" else "#18202E"))
             textSize = 14f
             setPadding(dp(12), dp(10), dp(12), dp(10))
             background = if (user) btnGrad("#27FFC4", "#21E6FF")
-            else strokedBg(Color.parseColor("#101A30"), 14, Color.parseColor("#2A3C66"))
+            else strokedBg(Color.parseColor("#FFFFFF"), 14, Color.parseColor("#D7DDEA"))
             if (user) setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(8)
@@ -257,14 +257,14 @@ class DirecteurActivity : AppCompatActivity() {
         val v = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(pad, dp(8), pad, 0) }
         v.addView(TextView(this).apply {
             text = "Colle ta clé API Claude (commence par sk-ant-…). Elle est stockée sur ce téléphone uniquement."
-            setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+            setTextColor(Color.parseColor("#6A7488")); textSize = 12f
         })
         val et = EditText(this).apply {
             setText(apiKey()); hint = "sk-ant-..."
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-            setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
+            setTextColor(Color.parseColor("#18202E")); setHintTextColor(Color.parseColor("#97A0B2"))
             setPadding(dp(12), dp(12), dp(12), dp(12))
-            background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+            background = strokedBg(Color.parseColor("#F2F5FB"), 12, Color.parseColor("#D7DDEA"))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(10); layoutParams = lp
         }

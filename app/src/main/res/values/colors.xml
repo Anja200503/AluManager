@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base spatiale -->
-    <color name="bg_deep">#060912</color>
-    <color name="bg_grad_top">#0C1430</color>
-    <color name="surface">#111A33</color>
-    <color name="surface_2">#0C1426</color>
+    <color name="bg_deep">#EEF1F7</color>
+    <color name="bg_grad_top">#FFFFFF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_2">#E9EDF5</color>
 
     <!-- Neons -->
     <color name="neon_cyan">#21E6FF</color>
@@ -14,9 +14,9 @@
     <color name="neon_amber">#FFC34D</color>
 
     <!-- Texte -->
-    <color name="text_hi">#EAF2FF</color>
-    <color name="text_mu">#8A97C2</color>
-    <color name="stroke_soft">#243456</color>
+    <color name="text_hi">#18202E</color>
+    <color name="text_mu">#6A7488</color>
+    <color name="stroke_soft">#D7DDEA</color>
 
     <!-- Compat anciens noms -->
     <color name="purple_500">#8B5CFF</color>

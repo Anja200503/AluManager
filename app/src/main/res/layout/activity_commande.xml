@@ -62,7 +62,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0C1426"
+        android:background="#E9EDF5"
         android:orientation="horizontal"
         android:paddingVertical="14dp">
 
@@ -94,8 +94,8 @@
         android:hint="Rechercher (client, référence, lieu)…"
         android:inputType="text"
         android:paddingHorizontal="16dp"
-        android:textColor="#EAF2FF"
-        android:textColorHint="#5A688F"
+        android:textColor="#18202E"
+        android:textColorHint="#97A0B2"
         android:textSize="14sp" />
 
     <!-- Liste -->
@@ -121,7 +121,7 @@
                 android:layout_marginTop="70dp"
                 android:gravity="center"
                 android:text="Chargement…"
-                android:textColor="#8A97C2"
+                android:textColor="#6A7488"
                 android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>

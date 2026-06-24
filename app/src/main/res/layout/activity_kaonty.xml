@@ -40,7 +40,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0C1426"
+        android:background="#E9EDF5"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"
@@ -53,7 +53,7 @@
             android:background="@drawable/avatar_circle"
             android:gravity="center"
             android:text="‹"
-            android:textColor="#EAF2FF"
+            android:textColor="#18202E"
             android:textSize="22sp" />
 
         <TextView
@@ -63,7 +63,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="📅 —"
-            android:textColor="#EAF2FF"
+            android:textColor="#18202E"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -74,7 +74,7 @@
             android:background="@drawable/avatar_circle"
             android:gravity="center"
             android:text="›"
-            android:textColor="#EAF2FF"
+            android:textColor="#18202E"
             android:textSize="22sp" />
     </LinearLayout>
 
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="+0 / -0"
-                android:textColor="#8A97C2"
+                android:textColor="#6A7488"
                 android:textSize="11sp" />
 
             <EditText
@@ -132,8 +132,8 @@
                 android:inputType="numberDecimal"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="8dp"
-                android:textColor="#EAF2FF"
-                android:textColorHint="#5A688F"
+                android:textColor="#18202E"
+                android:textColorHint="#97A0B2"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="+0 / -0"
-                android:textColor="#8A97C2"
+                android:textColor="#6A7488"
                 android:textSize="11sp" />
 
             <EditText
@@ -186,8 +186,8 @@
                 android:inputType="numberDecimal"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="8dp"
-                android:textColor="#EAF2FF"
-                android:textColorHint="#5A688F"
+                android:textColor="#18202E"
+                android:textColorHint="#97A0B2"
                 android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
@@ -251,7 +251,7 @@
                 android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:text="Aucune opération\n\nAjoutez un versement ou une sortie"
-                android:textColor="#8A97C2"
+                android:textColor="#6A7488"
                 android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>

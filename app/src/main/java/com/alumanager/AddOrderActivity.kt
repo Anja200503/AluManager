@@ -109,16 +109,16 @@ class AddOrderActivity : AppCompatActivity() {
         })
         fun row(key: String, label: String, value: Double) {
             root.addView(TextView(this).apply {
-                text = label; setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+                text = label; setTextColor(Color.parseColor("#6A7488")); textSize = 12f
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(8); layoutParams = lp
             })
             val et = EditText(this).apply {
                 setText(Math.round(value).toString())
                 inputType = InputType.TYPE_CLASS_NUMBER
-                setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
+                setTextColor(Color.parseColor("#18202E")); setHintTextColor(Color.parseColor("#97A0B2"))
                 setPadding(dp(12), dp(10), dp(12), dp(10))
-                background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+                background = strokedBg(Color.parseColor("#F2F5FB"), 12, Color.parseColor("#D7DDEA"))
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             }
             root.addView(et); fields[key] = et
@@ -199,7 +199,7 @@ class AddOrderActivity : AppCompatActivity() {
     private fun buildProductCard(prod: ProductItem, num: Int): View {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = strokedBg(Color.parseColor("#101A30"), 18, Color.parseColor("#2A3C66"))
+            background = strokedBg(Color.parseColor("#FFFFFF"), 18, Color.parseColor("#D7DDEA"))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -312,7 +312,7 @@ class AddOrderActivity : AppCompatActivity() {
         }
         val subTotal = TextView(this).apply {
             text = "Sous-total : ${fmt(OrderData.productTotal(prod))} Ar"
-            setTextColor(Color.parseColor("#EAF2FF"))
+            setTextColor(Color.parseColor("#18202E"))
             textSize = 13f
         }
         footer.addView(addRowBtn); footer.addView(subTotal)
@@ -454,10 +454,10 @@ class AddOrderActivity : AppCompatActivity() {
                 inputType = InputType.TYPE_CLASS_NUMBER
             }
             textSize = 13f
-            setTextColor(Color.parseColor("#EAF2FF"))
-            setHintTextColor(Color.parseColor("#5A688F"))
+            setTextColor(Color.parseColor("#18202E"))
+            setHintTextColor(Color.parseColor("#97A0B2"))
             setPadding(dp(8), dp(8), dp(8), dp(8))
-            background = strokedBg(Color.parseColor("#0B1326"), 10, Color.parseColor("#243456"))
+            background = strokedBg(Color.parseColor("#F2F5FB"), 10, Color.parseColor("#D7DDEA"))
         }
     }
 
@@ -538,8 +538,8 @@ class AddOrderActivity : AppCompatActivity() {
         // Bouton retour
         container.addView(Button(this).apply {
             text = "‹ Retour"
-            background = strokedBg(Color.parseColor("#14203F"), 12, Color.parseColor("#243456"))
-            setTextColor(Color.parseColor("#8A97C2"))
+            background = strokedBg(Color.parseColor("#EDEFF6"), 12, Color.parseColor("#D7DDEA"))
+            setTextColor(Color.parseColor("#6A7488"))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(10)
             layoutParams = lp
@@ -581,7 +581,7 @@ class AddOrderActivity : AppCompatActivity() {
 
     private fun wizTitle(t: String) = TextView(this).apply {
         text = t
-        setTextColor(Color.parseColor("#EAF2FF"))
+        setTextColor(Color.parseColor("#18202E"))
         textSize = 16f
         setTypeface(typeface, Typeface.BOLD)
         setPadding(0, 0, 0, dp(10))
@@ -601,7 +601,7 @@ class AddOrderActivity : AppCompatActivity() {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            background = strokedBg(Color.parseColor("#0E1730"), 16, Color.parseColor("#243456"))
+            background = strokedBg(Color.parseColor("#FFFFFF"), 16, Color.parseColor("#D7DDEA"))
             setPadding(dp(12), dp(12), dp(12), dp(12))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -616,7 +616,7 @@ class AddOrderActivity : AppCompatActivity() {
             ll.addView(ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(box, box)
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                background = circleBg(Color.parseColor("#0B1326"), Color.parseColor("#21E6FF"))
+                background = circleBg(Color.parseColor("#F2F5FB"), Color.parseColor("#21E6FF"))
                 clipToOutline = true
                 setImageResource(res)
             })
@@ -626,7 +626,7 @@ class AddOrderActivity : AppCompatActivity() {
                 gravity = Gravity.CENTER
                 textSize = 34f
                 background = circleBg(
-                    Color.parseColor(OrderData.productColor[pid] ?: "#1B2A4F"),
+                    Color.parseColor(OrderData.productColor[pid] ?: "#E9EDF6"),
                     Color.parseColor("#33FFFFFF")
                 )
                 layoutParams = LinearLayout.LayoutParams(box, box)
@@ -639,13 +639,13 @@ class AddOrderActivity : AppCompatActivity() {
         }
         tb.addView(TextView(this).apply {
             text = label
-            setTextColor(Color.parseColor("#EAF2FF"))
+            setTextColor(Color.parseColor("#18202E"))
             textSize = 16f
             setTypeface(typeface, Typeface.BOLD)
         })
         tb.addView(TextView(this).apply {
             text = "Toucher pour configurer"
-            setTextColor(Color.parseColor("#8A97C2"))
+            setTextColor(Color.parseColor("#6A7488"))
             textSize = 12f
         })
         ll.addView(tb)
@@ -662,8 +662,8 @@ class AddOrderActivity : AppCompatActivity() {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = strokedBg(
-                if (selected) Color.parseColor("#1B2A4F") else Color.parseColor("#0E1730"), 14,
-                if (selected) Color.parseColor("#8B5CFF") else Color.parseColor("#243456")
+                if (selected) Color.parseColor("#E9EDF6") else Color.parseColor("#FFFFFF"), 14,
+                if (selected) Color.parseColor("#8B5CFF") else Color.parseColor("#D7DDEA")
             )
             setPadding(dp(14), dp(12), dp(14), dp(12))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -673,13 +673,13 @@ class AddOrderActivity : AppCompatActivity() {
         }
         ll.addView(TextView(this).apply {
             text = title
-            setTextColor(Color.parseColor("#EAF2FF"))
+            setTextColor(Color.parseColor("#18202E"))
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
         })
         if (desc.isNotEmpty()) ll.addView(TextView(this).apply {
             text = desc
-            setTextColor(Color.parseColor("#8A97C2"))
+            setTextColor(Color.parseColor("#6A7488"))
             textSize = 12f
         })
         return ll
@@ -690,8 +690,8 @@ class AddOrderActivity : AppCompatActivity() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             background = strokedBg(
-                if (selected) Color.parseColor("#1B2A4F") else Color.parseColor("#0E1730"), 14,
-                if (selected) Color.parseColor("#8B5CFF") else Color.parseColor("#243456")
+                if (selected) Color.parseColor("#E9EDF6") else Color.parseColor("#FFFFFF"), 14,
+                if (selected) Color.parseColor("#8B5CFF") else Color.parseColor("#D7DDEA")
             )
             setPadding(dp(14), dp(10), dp(14), dp(10))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -705,7 +705,7 @@ class AddOrderActivity : AppCompatActivity() {
         })
         ll.addView(TextView(this).apply {
             text = "   ${o.l}"
-            setTextColor(Color.parseColor("#EAF2FF"))
+            setTextColor(Color.parseColor("#18202E"))
             textSize = 15f
         })
         return ll
@@ -830,7 +830,7 @@ class AddOrderActivity : AppCompatActivity() {
         }
 
         val progress = AlertDialog.Builder(this, R.style.NeonDialog)
-            .setView(TextView(this).apply { text = "  Enregistrement en cours..."; setTextColor(Color.parseColor("#EAF2FF")); setPadding(dp(20), dp(30), dp(20), dp(30)) })
+            .setView(TextView(this).apply { text = "  Enregistrement en cours..."; setTextColor(Color.parseColor("#18202E")); setPadding(dp(20), dp(30), dp(20), dp(30)) })
             .setCancelable(false).create()
         progress.show()
 
@@ -910,10 +910,10 @@ class AddOrderActivity : AppCompatActivity() {
 
     private fun clientField(hint: String) = EditText(this).apply {
         this.hint = hint
-        setTextColor(Color.parseColor("#EAF2FF"))
-        setHintTextColor(Color.parseColor("#5A688F"))
+        setTextColor(Color.parseColor("#18202E"))
+        setHintTextColor(Color.parseColor("#97A0B2"))
         setPadding(dp(12), dp(12), dp(12), dp(12))
-        background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+        background = strokedBg(Color.parseColor("#F2F5FB"), 12, Color.parseColor("#D7DDEA"))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(8)
         layoutParams = lp
