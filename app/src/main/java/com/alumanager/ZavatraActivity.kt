@@ -146,7 +146,7 @@ class ZavatraActivity : AppCompatActivity() {
 
     private data class Entry(val lenCm: Double, val pcs: Int, val ref: String, val di: Int, val tag: String = "")
 
-    private fun dimRef(dm: JSONObject, di: Int) = dm.optString("dim_ref").ifBlank { "N°${di + 1}" }
+    private fun dimRef(dm: JSONObject, di: Int) = "N°${di + 1}"
 
     private var curRefColors: Map<String, Int> = emptyMap()
     private var F: Map<String, Double> = emptyMap()
@@ -529,13 +529,17 @@ class ZavatraActivity : AppCompatActivity() {
             val visual = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; weightSum = L
                 background = strokedBg(Color.parseColor("#0B1326"), 6, Color.parseColor("#243456"))
-                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(26)); lp.topMargin = dp(4); layoutParams = lp
+                val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(36)); lp.topMargin = dp(4); layoutParams = lp
             }
             bar.cuts.forEachIndexed { ci2, cut ->
                 val cc = colorMap[cut.label] ?: cut.color
                 visual.addView(TextView(this).apply {
-                    text = if (cut.length >= L / 18f) cut.label else ""
-                    setTextColor(Color.WHITE); textSize = 9f; gravity = Gravity.CENTER; maxLines = 1
+                    text = when {
+                        cut.length >= L / 12f -> "${cut.label}\n${numCm(cut.length / 10.0)}"
+                        cut.length >= L / 26f -> cut.label
+                        else -> ""
+                    }
+                    setTextColor(Color.WHITE); textSize = 8f; gravity = Gravity.CENTER; maxLines = 2
                     setTypeface(typeface, Typeface.BOLD)
                     setBackgroundColor(cc)
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, cut.length.toFloat())
