@@ -120,8 +120,8 @@
             android:maxLines="4"
             android:paddingHorizontal="14dp"
             android:paddingVertical="12dp"
-            android:textColor="#18202E"
-            android:textColorHint="#97A0B2"
+            android:textColor="#EAF2FF"
+            android:textColorHint="#5A688F"
             android:textSize="14sp" />
 
         <TextView

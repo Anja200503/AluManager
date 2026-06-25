@@ -60,12 +60,6 @@ class ZavatraActivity : AppCompatActivity() {
     private fun fmtAr(v: Double): String = "%,d".format(Math.round(v)).replace(",", " ")
     private fun d(o: JSONObject, k: String) = o.optString(k, "0").toDoubleOrNull() ?: 0.0
     private fun withA(color: Int, a: Int) = (a shl 24) or (color and 0x00FFFFFF)
-    private fun darken(c: Int, f: Float): Int {
-        val r = ((c shr 16 and 0xFF) * (1 - f)).toInt()
-        val g = ((c shr 8 and 0xFF) * (1 - f)).toInt()
-        val bl = ((c and 0xFF) * (1 - f)).toInt()
-        return (0xFF shl 24) or (r shl 16) or (g shl 8) or bl
-    }
 
     private fun render() {
         b.content.removeAllViews()
@@ -119,17 +113,17 @@ class ZavatraActivity : AppCompatActivity() {
         val head = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         head.addView(TextView(this).apply {
             text = "${pi + 1}. ${prod.optString("product_label")}"
-            setTextColor(Color.parseColor("#18202E")); textSize = 16f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#EAF2FF")); textSize = 16f; setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         })
         head.addView(TextView(this).apply {
             text = "${fmtAr(d(prod, "total_ar"))} Ar"
-            setTextColor(Color.parseColor("#0E9E72")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#27FFC4")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
         })
         card.addView(head)
         val cfgVals = cfg.keys().asSequence().map { cfg.optString(it) }.filter { it.isNotEmpty() }.joinToString(" · ")
         if (cfgVals.isNotEmpty()) card.addView(TextView(this).apply {
-            text = cfgVals; setTextColor(Color.parseColor("#6A7488")); textSize = 11f
+            text = cfgVals; setTextColor(Color.parseColor("#8A97C2")); textSize = 11f
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(3); layoutParams = lp
         })
@@ -304,7 +298,7 @@ class ZavatraActivity : AppCompatActivity() {
         ))
         renderCoupeGroup(card, "BATI FIXE", "#21E6FF", bati, barCm)
         renderCoupeGroup(card, "PARACLOSE FIXE", "#8B5CFF", para, barCm)
-        card.addView(note("Aucun accessoire pour le type FIXE.", "#6A7488"))
+        card.addView(note("Aucun accessoire pour le type FIXE.", "#8A97C2"))
     }
 
     /* ════════ PROJETANT ════════ */
@@ -425,7 +419,7 @@ class ZavatraActivity : AppCompatActivity() {
             spanAcc += g.second; split = i + 1
         }
         fun part(grp: List<Triple<String, Int, Int>>, sub: List<Pair<String, Int>>, left: Boolean): TableLayout {
-            val t = TableLayout(this).apply { setBackgroundColor(Color.parseColor("#D7DDEA")) }
+            val t = TableLayout(this).apply { setBackgroundColor(Color.parseColor("#2A3C66")) }
             val ra = TableRow(this)
             for ((label, span, color) in grp) ra.addView(thCell(label, color, span, true))
             t.addView(ra)
@@ -461,7 +455,7 @@ class ZavatraActivity : AppCompatActivity() {
     }
 
     private fun thCell(text: String, color: Int, span: Int, group: Boolean): TextView = TextView(this).apply {
-        this.text = text; setTextColor(Color.parseColor("#18202E")); textSize = if (group) 11f else 9.5f
+        this.text = text; setTextColor(Color.WHITE); textSize = if (group) 11f else 9.5f
         setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER; maxLines = 1
         minimumHeight = dp(if (group) 32 else 26)
         setPadding(dp(7), dp(6), dp(7), dp(6))
@@ -471,7 +465,7 @@ class ZavatraActivity : AppCompatActivity() {
 
     private fun tdCell(text: String, rowColor: Int, first: Boolean): TextView = TextView(this).apply {
         this.text = text
-        setTextColor(Color.parseColor("#18202E"))
+        setTextColor(if (first) Color.WHITE else Color.parseColor("#EAF2FF"))
         textSize = 11f; gravity = if (first) Gravity.CENTER_VERTICAL else Gravity.CENTER
         maxLines = 1; minimumHeight = dp(34)
         setPadding(dp(7), dp(6), dp(7), dp(6))
@@ -496,19 +490,19 @@ class ZavatraActivity : AppCompatActivity() {
         // Carte du profilé
         val block = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = strokedBg(Color.parseColor("#E9EDF5"), 14, ci)
+            background = strokedBg(Color.parseColor("#0C1426"), 14, ci)
             setPadding(dp(10), dp(10), dp(10), dp(10))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(12); layoutParams = lp
         }
         val hdr = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         hdr.addView(TextView(this).apply {
-            text = "🪚 $label"; setTextColor(darken(ci, 0.42f)); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            text = "🪚 $label"; setTextColor(ci); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         })
         hdr.addView(TextView(this).apply {
             text = "${s.nbBarres} barre(s) • ${s.pctEfficacite}%"
-            setTextColor(Color.parseColor("#6A7488")); textSize = 12f
+            setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
         })
         block.addView(hdr)
 
@@ -517,7 +511,7 @@ class ZavatraActivity : AppCompatActivity() {
         valid.forEach { agg[it.lenCm] = (agg[it.lenCm] ?: 0) + it.pcs }
         block.addView(TextView(this).apply {
             text = "Pièces : " + agg.entries.joinToString("  ·  ") { "${numCm(it.key)}cm ×${it.value}" }
-            setTextColor(Color.parseColor("#44506A")); textSize = 12f
+            setTextColor(Color.parseColor("#C7D2F2")); textSize = 12f
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         })
 
@@ -527,14 +521,14 @@ class ZavatraActivity : AppCompatActivity() {
             val usedPct = Math.round((L - waste) / L * 100).toInt()
             block.addView(TextView(this).apply {
                 text = "Barre ${idx + 1}  —  ${bar.cuts.size} pièce(s) · utilisé ${usedPct}% · reste ${r2(waste / 10)}cm"
-                setTextColor(Color.parseColor("#18202E")); textSize = 12f; setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#EAF2FF")); textSize = 12f; setTypeface(typeface, Typeface.BOLD)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(8); layoutParams = lp
             })
             // Barre visuelle
             val visual = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; weightSum = L
-                background = strokedBg(Color.parseColor("#F2F5FB"), 6, Color.parseColor("#D7DDEA"))
+                background = strokedBg(Color.parseColor("#0B1326"), 6, Color.parseColor("#243456"))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(36)); lp.topMargin = dp(4); layoutParams = lp
             }
             bar.cuts.forEachIndexed { ci2, cut ->
@@ -552,12 +546,12 @@ class ZavatraActivity : AppCompatActivity() {
                 })
                 // petite ligne de séparation entre les pièces
                 if (ci2 < bar.cuts.size - 1 || waste > 10) visual.addView(View(this).apply {
-                    setBackgroundColor(Color.parseColor("#FFFFFF"))
+                    setBackgroundColor(Color.parseColor("#05070E"))
                     layoutParams = LinearLayout.LayoutParams(dp(2), ViewGroup.LayoutParams.MATCH_PARENT)
                 })
             }
             if (waste > 10) visual.addView(View(this).apply {
-                setBackgroundColor(Color.parseColor("#DDE3F0"))
+                setBackgroundColor(Color.parseColor("#1A2440"))
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, waste.toFloat())
             })
             block.addView(visual)
@@ -572,7 +566,7 @@ class ZavatraActivity : AppCompatActivity() {
             for ((lenMm, pc) in grouped) {
                 chipRow.addView(chip("${numCm(lenMm / 10.0)}cm : ${pc.first} pcs", pc.second))
             }
-            if (waste > 10) chipRow.addView(chip("Chute ${r2(waste / 10)}cm", Color.parseColor("#6A7488")))
+            if (waste > 10) chipRow.addView(chip("Chute ${r2(waste / 10)}cm", Color.parseColor("#8A97C2")))
             block.addView(HorizontalScrollView(this).apply {
                 isHorizontalScrollBarEnabled = false; addView(chipRow)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -587,7 +581,7 @@ class ZavatraActivity : AppCompatActivity() {
         for (it in items) {
             val rowv = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-                background = strokedBg(Color.parseColor("#FFFFFF"), 12, Color.parseColor("#D7DDEA"))
+                background = strokedBg(Color.parseColor("#0E1730"), 12, Color.parseColor("#243456"))
                 setPadding(dp(12), dp(10), dp(12), dp(10))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(6); layoutParams = lp
@@ -596,11 +590,11 @@ class ZavatraActivity : AppCompatActivity() {
                 orientation = LinearLayout.VERTICAL
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             }
-            txt.addView(TextView(this).apply { text = it.first; setTextColor(Color.parseColor("#18202E")); textSize = 14f; setTypeface(typeface, Typeface.BOLD) })
-            txt.addView(TextView(this).apply { text = it.second; setTextColor(Color.parseColor("#6A7488")); textSize = 11f })
+            txt.addView(TextView(this).apply { text = it.first; setTextColor(Color.parseColor("#EAF2FF")); textSize = 14f; setTypeface(typeface, Typeface.BOLD) })
+            txt.addView(TextView(this).apply { text = it.second; setTextColor(Color.parseColor("#8A97C2")); textSize = 11f })
             rowv.addView(txt)
             rowv.addView(TextView(this).apply {
-                text = "${it.third} pcs"; setTextColor(Color.parseColor("#0E9E72")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
+                text = "${it.third} pcs"; setTextColor(Color.parseColor("#27FFC4")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
             })
             card.addView(rowv)
         }
@@ -623,14 +617,14 @@ class ZavatraActivity : AppCompatActivity() {
 
     /* ════════ HELPERS UI ════════ */
     private fun note(text: String, color: String) = TextView(this).apply {
-        this.text = text; setTextColor(Color.parseColor("#18202E")); textSize = 12f
-        background = strokedBg(withA(Color.parseColor(color), 0x22), 12, Color.parseColor(color))
+        this.text = text; setTextColor(Color.parseColor(color)); textSize = 12f
+        background = strokedBg(Color.parseColor("#0E1730"), 12, Color.parseColor(color))
         setPadding(dp(12), dp(10), dp(12), dp(10))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(8); layoutParams = lp
     }
     private fun sectionTitle(t: String) = TextView(this).apply {
-        text = t; setTextColor(Color.parseColor("#18202E")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+        text = t; setTextColor(Color.parseColor("#EAF2FF")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(12); layoutParams = lp
     }
@@ -641,7 +635,7 @@ class ZavatraActivity : AppCompatActivity() {
     }
     private fun chip(text: String, color: Int) = TextView(this).apply {
         this.text = text; setTextColor(color); textSize = 10f; setTypeface(typeface, Typeface.BOLD)
-        background = strokedBg(Color.parseColor("#FFFFFF"), 10, color)
+        background = strokedBg(Color.parseColor("#0E1730"), 10, color)
         setPadding(dp(8), dp(4), dp(8), dp(4))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.marginEnd = dp(6); layoutParams = lp

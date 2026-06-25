@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Gestion professionnelle aluminium"
-            android:textColor="#6A7488"
+            android:textColor="#A9A4C7"
             android:textSize="13sp" />
 
         <!-- Carte -->
@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            app:cardBackgroundColor="#FFFFFF"
+            app:cardBackgroundColor="#0F1830"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
             xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -81,7 +81,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Creer un compte"
-                        android:textColor="#6A7488" />
+                        android:textColor="#A9A4C7" />
                 </LinearLayout>
 
                 <!-- Message erreur -->
@@ -113,7 +113,7 @@
                         android:inputType="textEmailAddress"
                         android:paddingHorizontal="14dp"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#8A93A8" />
+                        android:textColorHint="#7C77A0" />
 
                     <EditText
                         android:id="@+id/loginPassword"
@@ -125,7 +125,7 @@
                         android:inputType="textPassword"
                         android:paddingHorizontal="14dp"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#8A93A8" />
+                        android:textColorHint="#7C77A0" />
 
                     <Button
                         android:id="@+id/btnLogin"
@@ -156,7 +156,7 @@
                         android:inputType="textPersonName"
                         android:paddingHorizontal="14dp"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#8A93A8" />
+                        android:textColorHint="#7C77A0" />
 
                     <EditText
                         android:id="@+id/regEmail"
@@ -168,7 +168,7 @@
                         android:inputType="textEmailAddress"
                         android:paddingHorizontal="14dp"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#8A93A8" />
+                        android:textColorHint="#7C77A0" />
 
                     <Spinner
                         android:id="@+id/regSociete"
@@ -188,7 +188,7 @@
                         android:inputType="textPassword"
                         android:paddingHorizontal="14dp"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#8A93A8" />
+                        android:textColorHint="#7C77A0" />
 
                     <EditText
                         android:id="@+id/regConfirm"
@@ -200,7 +200,7 @@
                         android:inputType="textPassword"
                         android:paddingHorizontal="14dp"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#8A93A8" />
+                        android:textColorHint="#7C77A0" />
 
                     <Button
                         android:id="@+id/btnRegister"

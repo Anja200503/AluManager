@@ -54,7 +54,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E9EDF5"
+        android:background="#0C1426"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="14dp"
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Longueur barre (cm)"
-            android:textColor="#6A7488"
+            android:textColor="#8A97C2"
             android:textSize="13sp" />
 
         <EditText
@@ -76,7 +76,7 @@
             android:gravity="center"
             android:inputType="number"
             android:text="580"
-            android:textColor="#18202E"
+            android:textColor="#EAF2FF"
             android:textSize="14sp" />
 
         <TextView

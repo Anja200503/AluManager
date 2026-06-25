@@ -11,8 +11,8 @@
                 android:type="linear"
                 android:startX="0" android:startY="0"
                 android:endX="108" android:endY="108"
-                android:startColor="#FFFFFF"
-                android:endColor="#EEF1F7" />
+                android:startColor="#0C1430"
+                android:endColor="#060912" />
         </aapt:attr>
     </path>
     <!-- Icone usine néon -->

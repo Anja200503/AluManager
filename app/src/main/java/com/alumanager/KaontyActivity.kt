@@ -158,7 +158,7 @@ class KaontyActivity : AppCompatActivity() {
         })
         if (ops.isNullOrEmpty()) {
             b.listContainer.addView(TextView(this).apply {
-                text = "Aucune opération"; setTextColor(Color.parseColor("#97A0B2")); textSize = 12f
+                text = "Aucune opération"; setTextColor(Color.parseColor("#5A688F")); textSize = 12f
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(6); layoutParams = lp
             }); return
@@ -171,7 +171,7 @@ class KaontyActivity : AppCompatActivity() {
         val amtColor = if (isIn) "#27FFC4" else "#FF4D9D"
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            background = strokedBg(Color.parseColor("#FFFFFF"), 14, Color.parseColor(catAccent))
+            background = strokedBg(Color.parseColor("#0E1730"), 14, Color.parseColor(catAccent))
             setPadding(dp(14), dp(12), dp(14), dp(12))
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(10); layoutParams = lp
@@ -183,11 +183,11 @@ class KaontyActivity : AppCompatActivity() {
         }
         info.addView(TextView(this).apply {
             text = o.optString("label").ifBlank { if (isIn) "Versement" else "Sortie" }
-            setTextColor(Color.parseColor("#18202E")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#EAF2FF")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
         })
         val ts = o.optLong("ts"); val timeStr = if (ts > 0) timeFmt.format(Date(ts)) else ""
         info.addView(TextView(this).apply {
-            text = timeStr; setTextColor(Color.parseColor("#6A7488")); textSize = 11f
+            text = timeStr; setTextColor(Color.parseColor("#8A97C2")); textSize = 11f
         })
         row.addView(info)
         row.addView(TextView(this).apply {
@@ -195,7 +195,7 @@ class KaontyActivity : AppCompatActivity() {
             setTextColor(Color.parseColor(amtColor)); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
         })
         row.addView(TextView(this).apply {
-            text = "  ✕"; setTextColor(Color.parseColor("#6A7488")); textSize = 16f; setPadding(dp(8), 0, 0, 0)
+            text = "  ✕"; setTextColor(Color.parseColor("#8A97C2")); textSize = 16f; setPadding(dp(8), 0, 0, 0)
             setOnClickListener { confirmDelete(o) }
         })
         return row
@@ -205,7 +205,7 @@ class KaontyActivity : AppCompatActivity() {
     private fun showAdd(type: String) {
         val pad = dp(16)
         val v = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(pad, dp(8), pad, 0) }
-        v.addView(TextView(this).apply { text = "Catégorie"; setTextColor(Color.parseColor("#6A7488")); textSize = 12f })
+        v.addView(TextView(this).apply { text = "Catégorie"; setTextColor(Color.parseColor("#8A97C2")); textSize = 12f })
         var cat = CAT_ALU
         val seg = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -214,10 +214,10 @@ class KaontyActivity : AppCompatActivity() {
         }
         lateinit var aluBtn: TextView; lateinit var pltBtn: TextView
         fun refresh() {
-            aluBtn.background = strokedBg(Color.parseColor(if (cat == CAT_ALU) "#DCF2FA" else "#F2F5FB"), 12, Color.parseColor(if (cat == CAT_ALU) accentAlu else "#D7DDEA"))
-            aluBtn.setTextColor(Color.parseColor(if (cat == CAT_ALU) accentAlu else "#6A7488"))
-            pltBtn.background = strokedBg(Color.parseColor(if (cat == CAT_PLT) "#FFF1D6" else "#F2F5FB"), 12, Color.parseColor(if (cat == CAT_PLT) accentPlt else "#D7DDEA"))
-            pltBtn.setTextColor(Color.parseColor(if (cat == CAT_PLT) accentPlt else "#6A7488"))
+            aluBtn.background = strokedBg(Color.parseColor(if (cat == CAT_ALU) "#13314A" else "#0B1326"), 12, Color.parseColor(if (cat == CAT_ALU) accentAlu else "#243456"))
+            aluBtn.setTextColor(Color.parseColor(if (cat == CAT_ALU) accentAlu else "#8A97C2"))
+            pltBtn.background = strokedBg(Color.parseColor(if (cat == CAT_PLT) "#3A2E12" else "#0B1326"), 12, Color.parseColor(if (cat == CAT_PLT) accentPlt else "#243456"))
+            pltBtn.setTextColor(Color.parseColor(if (cat == CAT_PLT) accentPlt else "#8A97C2"))
         }
         aluBtn = TextView(this).apply {
             text = "🔩 Aluminium"; gravity = Gravity.CENTER; textSize = 14f; setTypeface(typeface, Typeface.BOLD)
@@ -324,9 +324,9 @@ class KaontyActivity : AppCompatActivity() {
 
     private fun field(hint: String) = EditText(this).apply {
         this.hint = hint
-        setTextColor(Color.parseColor("#18202E")); setHintTextColor(Color.parseColor("#97A0B2"))
+        setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
         setPadding(dp(12), dp(12), dp(12), dp(12))
-        background = strokedBg(Color.parseColor("#F2F5FB"), 12, Color.parseColor("#D7DDEA"))
+        background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(10); layoutParams = lp
     }

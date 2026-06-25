@@ -70,9 +70,9 @@ class OptiCoupeActivity : AppCompatActivity() {
     }
 
     private fun field(weight: Float) = EditText(this).apply {
-        setTextColor(Color.parseColor("#18202E")); setHintTextColor(Color.parseColor("#97A0B2"))
+        setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
         setPadding(dp(10), dp(10), dp(10), dp(10)); textSize = 14f
-        background = strokedBg(Color.parseColor("#F2F5FB"), 10, Color.parseColor("#D7DDEA"))
+        background = strokedBg(Color.parseColor("#0B1326"), 10, Color.parseColor("#243456"))
         layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, weight).apply { marginEnd = dp(8) }
     }
 
@@ -115,7 +115,7 @@ class OptiCoupeActivity : AppCompatActivity() {
         val s = res.stats
         b.results.addView(TextView(this).apply {
             text = "✅ ${s.nbBarres} barre(s) • efficacité ${s.pctEfficacite}% • chute totale ${num(s.totalWaste.toDouble() / SCALE)} • ${s.nbPatrons} patron(s)"
-            setTextColor(Color.parseColor("#0E9E72")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#27FFC4")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(16); layoutParams = lp
         })
@@ -139,7 +139,7 @@ class OptiCoupeActivity : AppCompatActivity() {
         for (p in pats.values.sortedByDescending { it.count }) {
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
-                background = strokedBg(Color.parseColor("#FFFFFF"), 14, Color.parseColor("#D7DDEA"))
+                background = strokedBg(Color.parseColor("#0E1730"), 14, Color.parseColor("#243456"))
                 setPadding(dp(12), dp(10), dp(12), dp(10))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(10); layoutParams = lp
@@ -147,11 +147,11 @@ class OptiCoupeActivity : AppCompatActivity() {
             val wasteOk = leU <= 0 || p.waste <= leU
             val header = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
             header.addView(TextView(this).apply {
-                text = "Patron ${idx++}"; setTextColor(Color.parseColor("#18202E")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+                text = "Patron ${idx++}"; setTextColor(Color.parseColor("#EAF2FF")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             })
             header.addView(TextView(this).apply {
-                text = "× ${p.count} barre(s)"; setTextColor(Color.parseColor("#0E86C9")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+                text = "× ${p.count} barre(s)"; setTextColor(Color.parseColor("#21E6FF")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             })
             card.addView(header)
 
@@ -160,7 +160,7 @@ class OptiCoupeActivity : AppCompatActivity() {
             p.cuts.forEach { agg[it] = (agg[it] ?: 0) + 1 }
             card.addView(TextView(this).apply {
                 text = agg.entries.joinToString("  +  ") { "${num(it.key.toDouble() / SCALE)} ×${it.value}" }
-                setTextColor(Color.parseColor("#44506A")); textSize = 13f
+                setTextColor(Color.parseColor("#C7D2F2")); textSize = 13f
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(4); layoutParams = lp
             })
@@ -168,7 +168,7 @@ class OptiCoupeActivity : AppCompatActivity() {
             // barre visuelle
             val visual = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; weightSum = loU.toFloat()
-                background = strokedBg(Color.parseColor("#F2F5FB"), 6, Color.parseColor("#D7DDEA"))
+                background = strokedBg(Color.parseColor("#0B1326"), 6, Color.parseColor("#243456"))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(26)); lp.topMargin = dp(6); layoutParams = lp
             }
             for (c in p.cuts) {
@@ -182,7 +182,7 @@ class OptiCoupeActivity : AppCompatActivity() {
             val usedU = p.cuts.sum()
             val resteU = (loU - usedU).coerceAtLeast(0)
             if (resteU > 0) visual.addView(View(this).apply {
-                setBackgroundColor(Color.parseColor("#DDE3F0"))
+                setBackgroundColor(Color.parseColor("#1A2440"))
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, resteU.toFloat())
             })
             card.addView(visual)
@@ -190,7 +190,7 @@ class OptiCoupeActivity : AppCompatActivity() {
             card.addView(TextView(this).apply {
                 text = "Utilisé ${num(usedU.toDouble() / SCALE)} / ${num(loU.toDouble() / SCALE)}  •  chute ${num(p.waste / SCALE)}" +
                         (if (!wasteOk) "  ⚠ > Le" else "")
-                setTextColor(Color.parseColor(if (wasteOk) "#6A7488" else "#FFC34D")); textSize = 12f
+                setTextColor(Color.parseColor(if (wasteOk) "#8A97C2" else "#FFC34D")); textSize = 12f
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(4); layoutParams = lp
             })

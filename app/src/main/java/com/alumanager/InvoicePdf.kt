@@ -28,7 +28,7 @@ object InvoicePdf {
         var c = page.canvas
         var y: Float
 
-        val title = Paint().apply { color = Color.parseColor("#F2F5FB"); textSize = 24f; isFakeBoldText = true; isAntiAlias = true }
+        val title = Paint().apply { color = Color.parseColor("#1A1730"); textSize = 24f; isFakeBoldText = true; isAntiAlias = true }
         val brand = Paint().apply { color = Color.parseColor("#4A42D6"); textSize = 16f; isFakeBoldText = true; isAntiAlias = true; textAlign = Paint.Align.RIGHT }
         val sub = Paint().apply { color = Color.GRAY; textSize = 9f; isAntiAlias = true; textAlign = Paint.Align.RIGHT }
         val lbl = Paint().apply { color = Color.GRAY; textSize = 9f; isAntiAlias = true }
