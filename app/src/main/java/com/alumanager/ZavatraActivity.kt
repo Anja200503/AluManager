@@ -519,12 +519,27 @@ class ZavatraActivity : AppCompatActivity() {
         res.bars.forEachIndexed { idx, bar ->
             val waste = if (bar.realWaste > 0) bar.realWaste else bar.waste
             val usedPct = Math.round((L - waste) / L * 100).toInt()
-            block.addView(TextView(this).apply {
-                text = "Barre ${idx + 1}  —  ${bar.cuts.size} pièce(s) · utilisé ${usedPct}% · reste ${r2(waste / 10)}cm"
+            // En-tête cliquable : replie / déplie le détail de la barre (animé)
+            val baseTitle = "Barre ${idx + 1}  —  ${bar.cuts.size} pièce(s) · utilisé ${usedPct}% · reste ${r2(waste / 10)}cm"
+            val detail = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+            val header = TextView(this).apply {
+                text = "▾  $baseTitle"
                 setTextColor(Color.parseColor("#EAF2FF")); textSize = 12f; setTypeface(typeface, Typeface.BOLD)
+                setPadding(dp(2), dp(4), dp(2), dp(4))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(8); layoutParams = lp
-            })
+            }
+            header.setOnClickListener {
+                val show = detail.visibility != View.VISIBLE
+                android.transition.TransitionManager.beginDelayedTransition(
+                    block, android.transition.AutoTransition().apply { duration = 220 })
+                detail.visibility = if (show) View.VISIBLE else View.GONE
+                header.text = (if (show) "▾  " else "▸  ") + baseTitle
+            }
+            block.addView(header)
             // Barre visuelle
             val visual = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; weightSum = L
@@ -554,7 +569,7 @@ class ZavatraActivity : AppCompatActivity() {
                 setBackgroundColor(Color.parseColor("#1A2440"))
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, waste.toFloat())
             })
-            block.addView(visual)
+            detail.addView(visual)
             // Chips : pièces de CETTE barre, agrégées par longueur (102cm : 3 pcs)
             val chipRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
             val grouped = LinkedHashMap<Int, Pair<Int, Int>>() // lenMm -> (count, color)
@@ -567,11 +582,12 @@ class ZavatraActivity : AppCompatActivity() {
                 chipRow.addView(chip("${numCm(lenMm / 10.0)}cm : ${pc.first} pcs", pc.second))
             }
             if (waste > 10) chipRow.addView(chip("Chute ${r2(waste / 10)}cm", Color.parseColor("#8A97C2")))
-            block.addView(HorizontalScrollView(this).apply {
+            detail.addView(HorizontalScrollView(this).apply {
                 isHorizontalScrollBarEnabled = false; addView(chipRow)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(5); layoutParams = lp
             })
+            block.addView(detail)
         }
         card.addView(block)
     }
