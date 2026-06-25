@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base spatiale -->
-    <color name="bg_deep">#ECEFF5</color>
-    <color name="bg_grad_top">#F4F7FC</color>
+    <color name="bg_deep">#060912</color>
+    <color name="bg_grad_top">#0C1430</color>
     <color name="surface">#111A33</color>
     <color name="surface_2">#0C1426</color>
 
