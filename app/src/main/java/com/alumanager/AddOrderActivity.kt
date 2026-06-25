@@ -103,7 +103,7 @@ class AddOrderActivity : AppCompatActivity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(8)) }
 
         fun section(t: String) = root.addView(TextView(this).apply {
-            text = t; setTextColor(Color.parseColor("#21E6FF")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+            text = t; setTextColor(Color.parseColor("#0E86C9")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(14); layoutParams = lp
         })
@@ -305,7 +305,7 @@ class AddOrderActivity : AppCompatActivity() {
         }
         val addRowBtn = TextView(this).apply {
             text = "+ Ajouter dimension"
-            setTextColor(Color.parseColor("#21E6FF"))
+            setTextColor(Color.parseColor("#0E86C9"))
             textSize = 13f
             setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
@@ -414,7 +414,7 @@ class AddOrderActivity : AppCompatActivity() {
                     val tv = TextView(this).apply {
                         text = if (OrderData.unitPrice(prod, dim) > 0)
                             "${fmt(OrderData.rowTotal(prod, dim))} Ar" else "—"
-                        setTextColor(Color.parseColor("#27FFC4"))
+                        setTextColor(Color.parseColor("#0E9E72"))
                         textSize = 13f
                         setTypeface(typeface, Typeface.BOLD)
                         gravity = Gravity.END
@@ -651,7 +651,7 @@ class AddOrderActivity : AppCompatActivity() {
         ll.addView(tb)
         ll.addView(TextView(this).apply {
             text = "›"
-            setTextColor(Color.parseColor("#21E6FF"))
+            setTextColor(Color.parseColor("#0E86C9"))
             textSize = 24f
             setPadding(dp(4), 0, dp(4), 0)
         })
@@ -904,7 +904,7 @@ class AddOrderActivity : AppCompatActivity() {
     }
 
     private fun label(t: String) = TextView(this).apply {
-        text = t; setTextColor(Color.parseColor("#21E6FF"))
+        text = t; setTextColor(Color.parseColor("#0E86C9"))
         textSize = 15f; setTypeface(typeface, Typeface.BOLD); setPadding(0, 0, 0, dp(8))
     }
 

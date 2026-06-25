@@ -139,7 +139,7 @@ class CommandeActivity : AppCompatActivity() {
         val head = row()
         head.addView(TextView(this).apply {
             text = "🔖 ${c.optString("reference")}"
-            setTextColor(Color.parseColor("#21E6FF"))
+            setTextColor(Color.parseColor("#0E86C9"))
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
@@ -297,7 +297,7 @@ class CommandeActivity : AppCompatActivity() {
             }
             pc.addView(TextView(this).apply {
                 text = "Sous-total : ${fmt(d(p, "total_ar"))} Ar"
-                setTextColor(Color.parseColor("#27FFC4")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#0E9E72")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(6); layoutParams = lp
             })
@@ -305,7 +305,7 @@ class CommandeActivity : AppCompatActivity() {
         }
         root.addView(TextView(this).apply {
             text = "TOTAL : ${fmt(d(c, "total_ar"))} Ar\nAvance : ${fmt(d(c, "avance_ar"))} Ar   Reste : ${fmt(d(c, "reste_ar"))} Ar"
-            setTextColor(Color.parseColor("#21E6FF")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#0E86C9")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(12); layoutParams = lp
         })
@@ -492,7 +492,7 @@ class CommandeActivity : AppCompatActivity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(8)) }
         for (g in FormulaConfig.GROUPS) {
             root.addView(TextView(this).apply {
-                text = "▸ ${g.title}"; setTextColor(Color.parseColor("#21E6FF")); textSize = 14f
+                text = "▸ ${g.title}"; setTextColor(Color.parseColor("#0E86C9")); textSize = 14f
                 setTypeface(typeface, Typeface.BOLD)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(16); layoutParams = lp

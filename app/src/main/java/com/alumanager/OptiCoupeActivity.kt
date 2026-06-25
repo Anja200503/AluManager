@@ -115,7 +115,7 @@ class OptiCoupeActivity : AppCompatActivity() {
         val s = res.stats
         b.results.addView(TextView(this).apply {
             text = "✅ ${s.nbBarres} barre(s) • efficacité ${s.pctEfficacite}% • chute totale ${num(s.totalWaste.toDouble() / SCALE)} • ${s.nbPatrons} patron(s)"
-            setTextColor(Color.parseColor("#27FFC4")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#0E9E72")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(16); layoutParams = lp
         })
@@ -151,7 +151,7 @@ class OptiCoupeActivity : AppCompatActivity() {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             })
             header.addView(TextView(this).apply {
-                text = "× ${p.count} barre(s)"; setTextColor(Color.parseColor("#21E6FF")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+                text = "× ${p.count} barre(s)"; setTextColor(Color.parseColor("#0E86C9")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             })
             card.addView(header)
 

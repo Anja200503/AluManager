@@ -60,6 +60,12 @@ class ZavatraActivity : AppCompatActivity() {
     private fun fmtAr(v: Double): String = "%,d".format(Math.round(v)).replace(",", " ")
     private fun d(o: JSONObject, k: String) = o.optString(k, "0").toDoubleOrNull() ?: 0.0
     private fun withA(color: Int, a: Int) = (a shl 24) or (color and 0x00FFFFFF)
+    private fun darken(c: Int, f: Float): Int {
+        val r = ((c shr 16 and 0xFF) * (1 - f)).toInt()
+        val g = ((c shr 8 and 0xFF) * (1 - f)).toInt()
+        val bl = ((c and 0xFF) * (1 - f)).toInt()
+        return (0xFF shl 24) or (r shl 16) or (g shl 8) or bl
+    }
 
     private fun render() {
         b.content.removeAllViews()
@@ -118,7 +124,7 @@ class ZavatraActivity : AppCompatActivity() {
         })
         head.addView(TextView(this).apply {
             text = "${fmtAr(d(prod, "total_ar"))} Ar"
-            setTextColor(Color.parseColor("#27FFC4")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#0E9E72")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
         })
         card.addView(head)
         val cfgVals = cfg.keys().asSequence().map { cfg.optString(it) }.filter { it.isNotEmpty() }.joinToString(" · ")
@@ -497,7 +503,7 @@ class ZavatraActivity : AppCompatActivity() {
         }
         val hdr = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         hdr.addView(TextView(this).apply {
-            text = "🪚 $label"; setTextColor(ci); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            text = "🪚 $label"; setTextColor(darken(ci, 0.42f)); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         })
         hdr.addView(TextView(this).apply {
@@ -594,7 +600,7 @@ class ZavatraActivity : AppCompatActivity() {
             txt.addView(TextView(this).apply { text = it.second; setTextColor(Color.parseColor("#6A7488")); textSize = 11f })
             rowv.addView(txt)
             rowv.addView(TextView(this).apply {
-                text = "${it.third} pcs"; setTextColor(Color.parseColor("#27FFC4")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
+                text = "${it.third} pcs"; setTextColor(Color.parseColor("#0E9E72")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
             })
             card.addView(rowv)
         }
@@ -617,8 +623,8 @@ class ZavatraActivity : AppCompatActivity() {
 
     /* ════════ HELPERS UI ════════ */
     private fun note(text: String, color: String) = TextView(this).apply {
-        this.text = text; setTextColor(Color.parseColor(color)); textSize = 12f
-        background = strokedBg(Color.parseColor("#FFFFFF"), 12, Color.parseColor(color))
+        this.text = text; setTextColor(Color.parseColor("#18202E")); textSize = 12f
+        background = strokedBg(withA(Color.parseColor(color), 0x22), 12, Color.parseColor(color))
         setPadding(dp(12), dp(10), dp(12), dp(10))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(8); layoutParams = lp

@@ -98,7 +98,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔩 ALUMINIUM"
-                android:textColor="#21E6FF"
+                android:textColor="#0E86C9"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="0 Ar"
-                android:textColor="#21E6FF"
+                android:textColor="#0E86C9"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -152,7 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🟫 PLATEAUX"
-                android:textColor="#FFC34D"
+                android:textColor="#B26A00"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="0 Ar"
-                android:textColor="#FFC34D"
+                android:textColor="#B26A00"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
