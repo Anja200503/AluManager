@@ -1,6 +1,7 @@
 package com.alumanager
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -69,7 +70,12 @@ object InvoicePdf {
         val legalP = Paint().apply { color = Color.parseColor("#333333"); textSize = 8f; isFakeBoldText = true; isAntiAlias = true }
 
         y = M
-        drawLogo(c, M, y, 58f)
+        val logoBmp = try { BitmapFactory.decodeResource(ctx.resources, R.drawable.logo_societe) } catch (e: Exception) { null }
+        if (logoBmp != null) {
+            c.drawBitmap(logoBmp, null, RectF(M, y, M + 58f, y + 58f), Paint().apply { isFilterBitmap = true; isAntiAlias = true })
+        } else {
+            drawLogo(c, M, y, 58f)
+        }
         c.drawText("FACTURE", W - M, y + 18, titleR)
         val infoX = M + 70f
         c.drawText("ALU VERRE  •  Qualité", infoX, y + 14, brandLeft)
