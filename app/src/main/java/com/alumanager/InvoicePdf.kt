@@ -1,8 +1,10 @@
 package com.alumanager
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
 import org.json.JSONObject
 import java.io.File
@@ -60,12 +62,26 @@ object InvoicePdf {
             return yy + 28f
         }
 
-        /* ── En-tête ── */
+        /* ── En-tête société ── */
+        val brandLeft = Paint().apply { color = Color.parseColor("#1565C0"); textSize = 16f; isFakeBoldText = true; isAntiAlias = true }
+        val titleR = Paint(title).apply { textAlign = Paint.Align.RIGHT }
+        val descP = Paint().apply { color = Color.parseColor("#555555"); textSize = 7.5f; isAntiAlias = true }
+        val legalP = Paint().apply { color = Color.parseColor("#333333"); textSize = 8f; isFakeBoldText = true; isAntiAlias = true }
+
         y = M
-        c.drawText("FACTURE", M, y + 18, title)
-        c.drawText("ALU MANAGER", W - M, y + 10, brand)
-        c.drawText("Gestion professionnelle aluminium", W - M, y + 24, sub)
-        y += 44f
+        drawLogo(c, M, y, 58f)
+        c.drawText("FACTURE", W - M, y + 18, titleR)
+        val infoX = M + 70f
+        c.drawText("ALU VERRE  •  Qualité", infoX, y + 14, brandLeft)
+        // Description de la société (retour à la ligne auto)
+        val descTxt = "MENUISERIE EN ALUMINIUM : PORTE, FENETRE, PROJETANT, RIDEAUX METALLIQUE, MUR VITRE, INOX, MIVAROTRA FITARATRA ISANKARAZANY"
+        var dy = y + 26f
+        for (ln in wrapText(descTxt, descP, W - M - infoX)) { c.drawText(ln, infoX, dy, descP); dy += 9.5f }
+        // Identifiants légaux
+        c.drawText("NIF : 500 3419 663     STAT : 16221 13 2019 00098", infoX, dy + 1f, legalP); dy += 11f
+        c.drawText("RCS : IMAMO/2026/A/000 01", infoX, dy, legalP); dy += 6f
+
+        y = Math.max(y + 62f, dy)
         c.drawLine(M, y, W - M, y, rule); y += 18f
 
         c.drawText("Référence : ${cmd.optString("reference")}", M, y, txtB)
@@ -133,7 +149,7 @@ object InvoicePdf {
         c.drawText("${fmt(reste)} Ar", xTot - 6, y + 16, headTxR)
         y += 44f
 
-        c.drawText("Merci de votre confiance — ALU MANAGER", M, H - M, lbl)
+        c.drawText("Merci de votre confiance — ALU VERRE Qualité  •  NIF 500 3419 663 · STAT 16221 13 2019 00098", M, H - M, lbl)
 
         doc.finishPage(page)
         val dir = File(ctx.cacheDir, "factures"); dir.mkdirs()
@@ -145,4 +161,42 @@ object InvoicePdf {
     }
 
     private fun num(v: Double) = if (v == Math.floor(v)) v.toInt().toString() else ((Math.round(v * 100) / 100.0).toString())
+
+    /** Découpe un texte en lignes tenant dans maxW. */
+    private fun wrapText(text: String, paint: Paint, maxW: Float): List<String> {
+        val words = text.split(" ")
+        val lines = ArrayList<String>()
+        var cur = ""
+        for (w in words) {
+            val test = if (cur.isEmpty()) w else "$cur $w"
+            if (paint.measureText(test) <= maxW) cur = test
+            else { if (cur.isNotEmpty()) lines.add(cur); cur = w }
+        }
+        if (cur.isNotEmpty()) lines.add(cur)
+        return lines
+    }
+
+    /** Emblème ALU VERRE : fenêtre bleue (haut), arc magenta (bas), anneau. */
+    private fun drawLogo(c: Canvas, x: Float, y: Float, s: Float) {
+        val cx = x + s / 2; val cy = y + s / 2; val r = s / 2 - 1f
+        val oval = RectF(cx - r, cy - r, cx + r, cy + r)
+        // arc magenta (bas)
+        val magenta = Paint().apply { color = Color.parseColor("#C2118F"); isAntiAlias = true }
+        c.drawArc(oval, 28f, 124f, true, magenta)
+        // fenêtre bleue 2×2 (haut)
+        val blue = Paint().apply { color = Color.parseColor("#1565C0"); isAntiAlias = true }
+        val ww = s * 0.42f
+        val wx = cx - ww / 2; val wy = cy - r * 0.55f
+        val cg = ww * 0.1f; val cs = (ww - cg) / 2
+        c.drawRect(wx, wy, wx + cs, wy + cs, blue)
+        c.drawRect(wx + cs + cg, wy, wx + ww, wy + cs, blue)
+        c.drawRect(wx, wy + cs + cg, wx + cs, wy + ww, blue)
+        c.drawRect(wx + cs + cg, wy + cs + cg, wx + ww, wy + ww, blue)
+        // anneau
+        val ring = Paint().apply {
+            style = Paint.Style.STROKE; strokeWidth = 2.4f
+            color = Color.parseColor("#2E7DFF"); isAntiAlias = true
+        }
+        c.drawCircle(cx, cy, r, ring)
+    }
 }
