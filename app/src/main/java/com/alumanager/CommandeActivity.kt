@@ -139,29 +139,29 @@ class CommandeActivity : AppCompatActivity() {
         val head = row()
         head.addView(TextView(this).apply {
             text = "🔖 ${c.optString("reference")}"
-            setTextColor(Color.parseColor("#21E6FF"))
+            setTextColor(Color.parseColor("#1E88E5"))
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         })
         head.addView(TextView(this).apply {
             text = c.optString("statut", "confirmee")
-            setTextColor(Color.parseColor("#8A97C2"))
+            setTextColor(Color.parseColor("#6B7686"))
             textSize = 11f
         })
         card.addView(head)
         // Client + lieu
-        card.addView(line("👤 ${c.optString("client_nom")}", "#EAF2FF", 15f, true, dp(8)))
-        card.addView(line("📍 ${c.optString("client_lieu")}", "#8A97C2", 13f, false, dp(2)))
+        card.addView(line("👤 ${c.optString("client_nom")}", "#1F2733", 15f, true, dp(8)))
+        card.addView(line("📍 ${c.optString("client_lieu")}", "#6B7686", 13f, false, dp(2)))
         // Meta
         val np = c.optString("nb_produits", "0")
-        card.addView(line("📅 ${fmtDate(c.optString("date_commande"))}   🚚 ${fmtDate(c.optString("date_livraison"))}", "#8A97C2", 12f, false, dp(8)))
-        card.addView(line("📦 $np produit(s)   💰 ${fmt(d(c, "total_ar"))} Ar", "#EAF2FF", 13f, false, dp(4)))
+        card.addView(line("📅 ${fmtDate(c.optString("date_commande"))}   🚚 ${fmtDate(c.optString("date_livraison"))}", "#6B7686", 12f, false, dp(8)))
+        card.addView(line("📦 $np produit(s)   💰 ${fmt(d(c, "total_ar"))} Ar", "#1F2733", 13f, false, dp(4)))
         // Badge reste
         val reste = d(c, "reste_ar")
         card.addView(TextView(this).apply {
             text = if (reste <= 0) "✅ Soldé" else "⏳ Reste : ${fmt(reste)} Ar"
-            setTextColor(if (reste <= 0) Color.parseColor("#27FFC4") else Color.parseColor("#FFC34D"))
+            setTextColor(if (reste <= 0) Color.parseColor("#2E9E5B") else Color.parseColor("#E0A020"))
             textSize = 12f
             setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -170,17 +170,17 @@ class CommandeActivity : AppCompatActivity() {
         })
         // Footer : boutons (2 lignes)
         val f1 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14) }
-        f1.addView(actionBtn("📄 Détail", "#21E6FF") { showDetail(c) })
+        f1.addView(actionBtn("📄 Détail", "#1E88E5") { showDetail(c) })
         f1.addView(spacer())
-        f1.addView(actionBtn("🧾 Facture PDF", "#27FFC4") { showInvoice(c) })
+        f1.addView(actionBtn("🧾 Facture PDF", "#2E9E5B") { showInvoice(c) })
         card.addView(f1)
         val f2 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8) }
-        f2.addView(actionBtn("🔧 Zavatra", "#FFC34D") { openZavatra(c) })
+        f2.addView(actionBtn("🔧 Zavatra", "#E0A020") { openZavatra(c) })
         f2.addView(spacer())
-        f2.addView(actionBtn("🗑️ Supprimer", "#FF4D9D") { showDeleteConfirm(c) })
+        f2.addView(actionBtn("🗑️ Supprimer", "#C2118F") { showDeleteConfirm(c) })
         card.addView(f2)
         val f3 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8) }
-        f3.addView(actionBtn("✏️ Modifier la commande", "#8B5CFF") { openEdit(c) })
+        f3.addView(actionBtn("✏️ Modifier la commande", "#1565C0") { openEdit(c) })
         card.addView(f3)
         return card
     }
@@ -210,7 +210,7 @@ class CommandeActivity : AppCompatActivity() {
             setTypeface(typeface, Typeface.BOLD)
             gravity = Gravity.CENTER
             setPadding(dp(8), dp(10), dp(8), dp(10))
-            background = strokedBg(Color.parseColor("#0E1730"), 12, Color.parseColor(color))
+            background = strokedBg(Color.parseColor("#FFFFFF"), 12, Color.parseColor(color))
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             setOnClickListener { onClick() }
         }
@@ -228,7 +228,7 @@ class CommandeActivity : AppCompatActivity() {
     private fun doDelete(id: String) {
         val progress = AlertDialog.Builder(this, R.style.NeonDialog)
             .setView(TextView(this).apply {
-                text = "  Suppression…"; setTextColor(Color.parseColor("#EAF2FF")); setPadding(dp(20), dp(28), dp(20), dp(28))
+                text = "  Suppression…"; setTextColor(Color.parseColor("#1F2733")); setPadding(dp(20), dp(28), dp(20), dp(28))
             }).setCancelable(false).create()
         progress.show()
         Thread {
@@ -256,26 +256,26 @@ class CommandeActivity : AppCompatActivity() {
         }
         root.addView(TextView(this).apply {
             text = "👤 ${c.optString("client_nom")}  •  📍 ${c.optString("client_lieu")}"
-            setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+            setTextColor(Color.parseColor("#6B7686")); textSize = 12f
         })
         val produits = c.optJSONArray("produits") ?: JSONArray()
         for (i in 0 until produits.length()) {
             val p = produits.optJSONObject(i) ?: continue
             val pc = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
-                background = strokedBg(Color.parseColor("#0E1730"), 14, Color.parseColor("#243456"))
+                background = strokedBg(Color.parseColor("#FFFFFF"), 14, Color.parseColor("#E2E7EF"))
                 setPadding(dp(12), dp(10), dp(12), dp(10))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(10); layoutParams = lp
             }
             pc.addView(TextView(this).apply {
                 text = "${i + 1}. ${p.optString("product_label")}"
-                setTextColor(Color.parseColor("#EAF2FF")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#1F2733")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
             })
             val cfg = p.optJSONObject("config_parsed")
             if (cfg != null && cfg.length() > 0) {
                 val parts = cfg.keys().asSequence().map { cfg.optString(it) }.filter { it.isNotEmpty() }.joinToString(" · ")
-                pc.addView(TextView(this).apply { text = parts; setTextColor(Color.parseColor("#8A97C2")); textSize = 11f })
+                pc.addView(TextView(this).apply { text = parts; setTextColor(Color.parseColor("#6B7686")); textSize = 11f })
             }
             val dims = p.optJSONArray("dimensions") ?: JSONArray()
             for (j in 0 until dims.length()) {
@@ -290,14 +290,14 @@ class CommandeActivity : AppCompatActivity() {
                 }
                 pc.addView(TextView(this).apply {
                     text = "   • $dimTxt  =  ${fmt(d(dm, "prix_total"))} Ar"
-                    setTextColor(Color.parseColor("#C7D2F2")); textSize = 12f
+                    setTextColor(Color.parseColor("#445064")); textSize = 12f
                     val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                     lp.topMargin = dp(4); layoutParams = lp
                 })
             }
             pc.addView(TextView(this).apply {
                 text = "Sous-total : ${fmt(d(p, "total_ar"))} Ar"
-                setTextColor(Color.parseColor("#27FFC4")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#2E9E5B")); textSize = 13f; setTypeface(typeface, Typeface.BOLD)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(6); layoutParams = lp
             })
@@ -305,7 +305,7 @@ class CommandeActivity : AppCompatActivity() {
         }
         root.addView(TextView(this).apply {
             text = "TOTAL : ${fmt(d(c, "total_ar"))} Ar\nAvance : ${fmt(d(c, "avance_ar"))} Ar   Reste : ${fmt(d(c, "reste_ar"))} Ar"
-            setTextColor(Color.parseColor("#21E6FF")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#1E88E5")); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(12); layoutParams = lp
         })
@@ -362,7 +362,7 @@ class CommandeActivity : AppCompatActivity() {
 
         val calc = TextView(this).apply {
             text = "Calculer la coupe"
-            setTextColor(Color.parseColor("#08101F")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.parseColor("#FFFFFF")); textSize = 15f; setTypeface(typeface, Typeface.BOLD)
             gravity = Gravity.CENTER
             setBackgroundResource(R.drawable.btn_primary)
             setPadding(0, dp(14), 0, dp(14))
@@ -377,17 +377,17 @@ class CommandeActivity : AppCompatActivity() {
             val pieces = extractPieces(c)
             results.removeAllViews()
             if (pieces.isEmpty()) {
-                results.addView(line("⚠️ Aucune dimension exploitable dans cette commande.", "#FFC34D", 13f, false, 0))
+                results.addView(line("⚠️ Aucune dimension exploitable dans cette commande.", "#E0A020", 13f, false, 0))
                 return@setOnClickListener
             }
-            results.addView(line("Calcul Gilmore-Gomory…", "#8A97C2", 13f, false, 0))
+            results.addView(line("Calcul Gilmore-Gomory…", "#6B7686", 13f, false, 0))
             Thread {
                 var res: CuttingStock.Result? = null; var err: String? = null
                 try { res = CuttingStock.solve(pieces, barCm * 10, kerf) }
                 catch (e: Exception) { err = e.localizedMessage }
                 runOnUiThread {
                     results.removeAllViews()
-                    if (err != null) results.addView(line("❌ $err", "#FF4D9D", 13f, false, 0))
+                    if (err != null) results.addView(line("❌ $err", "#C2118F", 13f, false, 0))
                     else renderCoupe(results, res!!)
                 }
             }.start()
@@ -404,9 +404,9 @@ class CommandeActivity : AppCompatActivity() {
         this.hint = hint
         setText(value)
         inputType = InputType.TYPE_CLASS_NUMBER
-        setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
+        setTextColor(Color.parseColor("#1F2733")); setHintTextColor(Color.parseColor("#98A2B3"))
         setPadding(dp(12), dp(12), dp(12), dp(12))
-        background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+        background = strokedBg(Color.parseColor("#F4F6F9"), 12, Color.parseColor("#E2E7EF"))
         val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp.topMargin = dp(8); layoutParams = lp
     }
@@ -434,21 +434,21 @@ class CommandeActivity : AppCompatActivity() {
         val s = res.stats
         // Stats
         val statsRow = row()
-        statsRow.addView(coupeStat(s.nbBarres.toString(), "Barres", "#21E6FF"))
-        statsRow.addView(coupeStat(s.nbPieces.toString(), "Pièces", "#EAF2FF"))
-        statsRow.addView(coupeStat("${s.pctEfficacite}%", "Efficacité", "#27FFC4"))
-        statsRow.addView(coupeStat("${s.pctChute}%", "Chute", "#FF4D9D"))
+        statsRow.addView(coupeStat(s.nbBarres.toString(), "Barres", "#1E88E5"))
+        statsRow.addView(coupeStat(s.nbPieces.toString(), "Pièces", "#1F2733"))
+        statsRow.addView(coupeStat("${s.pctEfficacite}%", "Efficacité", "#2E9E5B"))
+        statsRow.addView(coupeStat("${s.pctChute}%", "Chute", "#C2118F"))
         container.addView(statsRow)
-        container.addView(line("${s.nbPatrons} patron(s) • barre ${s.barLength / 10}cm • trait ${s.kerf}mm", "#8A97C2", 11f, false, dp(6)))
+        container.addView(line("${s.nbPatrons} patron(s) • barre ${s.barLength / 10}cm • trait ${s.kerf}mm", "#6B7686", 11f, false, dp(6)))
 
         val L = s.barLength.toFloat()
         res.bars.forEachIndexed { idx, bar ->
             val waste = if (bar.realWaste > 0) bar.realWaste else bar.waste
-            container.addView(line("Barre ${idx + 1}  •  ${bar.cuts.size} pièce(s)  •  chute ${Math.round(waste)}mm", "#C7D2F2", 12f, false, dp(12)))
+            container.addView(line("Barre ${idx + 1}  •  ${bar.cuts.size} pièce(s)  •  chute ${Math.round(waste)}mm", "#445064", 12f, false, dp(12)))
             val visual = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 weightSum = L
-                background = strokedBg(Color.parseColor("#0B1326"), 6, Color.parseColor("#243456"))
+                background = strokedBg(Color.parseColor("#F4F6F9"), 6, Color.parseColor("#E2E7EF"))
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(26))
                 lp.topMargin = dp(4); layoutParams = lp
             }
@@ -461,12 +461,12 @@ class CommandeActivity : AppCompatActivity() {
                 })
                 // trait de scie
                 visual.addView(View(this).apply {
-                    setBackgroundColor(Color.parseColor("#060912"))
+                    setBackgroundColor(Color.parseColor("#F4F6F9"))
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, s.kerf.toFloat())
                 })
             }
             if (waste > 10) visual.addView(View(this).apply {
-                setBackgroundColor(Color.parseColor("#1A2440"))
+                setBackgroundColor(Color.parseColor("#E7ECF4"))
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, waste.toFloat())
             })
             container.addView(visual)
@@ -481,7 +481,7 @@ class CommandeActivity : AppCompatActivity() {
         ll.addView(TextView(this).apply {
             text = value; setTextColor(Color.parseColor(color)); textSize = 17f; setTypeface(typeface, Typeface.BOLD)
         })
-        ll.addView(TextView(this).apply { text = label; setTextColor(Color.parseColor("#8A97C2")); textSize = 10f })
+        ll.addView(TextView(this).apply { text = label; setTextColor(Color.parseColor("#6B7686")); textSize = 10f })
         return ll
     }
 
@@ -492,14 +492,14 @@ class CommandeActivity : AppCompatActivity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(8)) }
         for (g in FormulaConfig.GROUPS) {
             root.addView(TextView(this).apply {
-                text = "▸ ${g.title}"; setTextColor(Color.parseColor("#21E6FF")); textSize = 14f
+                text = "▸ ${g.title}"; setTextColor(Color.parseColor("#1E88E5")); textSize = 14f
                 setTypeface(typeface, Typeface.BOLD)
                 val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 lp.topMargin = dp(16); layoutParams = lp
             })
             for (p in g.params) {
                 root.addView(TextView(this).apply {
-                    text = p.label; setTextColor(Color.parseColor("#8A97C2")); textSize = 12f
+                    text = p.label; setTextColor(Color.parseColor("#6B7686")); textSize = 12f
                     val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                     lp.topMargin = dp(8); layoutParams = lp
                 })
@@ -508,9 +508,9 @@ class CommandeActivity : AppCompatActivity() {
                     setText(if (cur == Math.floor(cur)) cur.toInt().toString() else cur.toString().replace('.', ','))
                     inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                     keyListener = android.text.method.DigitsKeyListener.getInstance("0123456789.,")
-                    setTextColor(Color.parseColor("#EAF2FF")); setHintTextColor(Color.parseColor("#5A688F"))
+                    setTextColor(Color.parseColor("#1F2733")); setHintTextColor(Color.parseColor("#98A2B3"))
                     setPadding(dp(12), dp(10), dp(12), dp(10))
-                    background = strokedBg(Color.parseColor("#0B1326"), 12, Color.parseColor("#243456"))
+                    background = strokedBg(Color.parseColor("#F4F6F9"), 12, Color.parseColor("#E2E7EF"))
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 }
                 root.addView(et); fields[p.key] = et

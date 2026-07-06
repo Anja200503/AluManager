@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.AluManager" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.AluManager" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/neon_violet</item>
         <item name="colorPrimaryVariant">@color/neon_cyan</item>
-        <item name="colorOnPrimary">#08101F</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorAccent">@color/neon_cyan</item>
         <item name="android:windowBackground">@color/bg_deep</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -18,7 +18,7 @@
         <item name="android:windowExitAnimation">@anim/dialog_out</item>
     </style>
 
-    <style name="NeonDialog" parent="Theme.MaterialComponents.Dialog.Alert">
+    <style name="NeonDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="colorPrimary">@color/neon_cyan</item>
         <item name="colorAccent">@color/neon_cyan</item>
         <item name="colorOnSurface">@color/text_hi</item>
@@ -55,18 +55,14 @@
     <style name="HStatVal">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/neon_cyan</item>
+        <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">19sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:shadowColor">#8021E6FF</item>
-        <item name="android:shadowRadius">14</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">0</item>
     </style>
     <style name="HStatLbl">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/text_mu</item>
+        <item name="android:textColor">#DCEAFB</item>
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.03</item>
     </style>
@@ -119,7 +115,7 @@
     <style name="OStatVal">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/neon_cyan</item>
+        <item name="android:textColor">#1565C0</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
     </style>

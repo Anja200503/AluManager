@@ -52,7 +52,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0C1426"
+        android:background="#EEF1F6"
         android:orientation="horizontal"
         android:paddingVertical="14dp">
 
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Bon de commande"
-            android:textColor="#EAF2FF"
+            android:textColor="#1F2733"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -125,7 +125,7 @@
                 android:layout_marginTop="60dp"
                 android:gravity="center"
                 android:text="Aucun produit\n\nAppuyez sur + Ajouter pour commencer"
-                android:textColor="#8A97C2"
+                android:textColor="#6B7686"
                 android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>
@@ -135,7 +135,7 @@
         android:id="@+id/summaryBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0C1426"
+        android:background="#EEF1F6"
         android:elevation="8dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -152,7 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total General"
-                android:textColor="#8A97C2"
+                android:textColor="#6B7686"
                 android:textSize="12sp" />
 
             <TextView
@@ -160,7 +160,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 Ar"
-                android:textColor="#21E6FF"
+                android:textColor="#1E88E5"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
