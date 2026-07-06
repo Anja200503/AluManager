@@ -57,6 +57,7 @@ class AddOrderActivity : AppCompatActivity() {
         b.btnAddProduct.setOnClickListener { showProductWizard() }
         b.btnValidate.setOnClickListener { showClientDialog() }
         b.btnSettings.setOnClickListener { showPriceSettings() }
+        BottomNav.setup(this, "commande")
 
         renderAll()
     }

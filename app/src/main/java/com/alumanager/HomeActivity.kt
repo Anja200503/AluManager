@@ -37,8 +37,8 @@ class HomeActivity : AppCompatActivity() {
         // Panneau compte / deconnexion
         binding.btnAccount.setOnClickListener { showAccountDialog(name, user?.email ?: "—", societe) }
 
-        // Navigation permanente (aucun onglet actif sur l'accueil)
-        BottomNav.setup(this, "")
+        // Navigation permanente
+        BottomNav.setup(this, "home")
     }
 
     private fun decodeSociete(photoUrl: Uri?): String {

@@ -125,4 +125,23 @@
         <item name="android:textColor">@color/text_mu</item>
         <item name="android:textSize">11sp</item>
     </style>
+
+    <!-- ============ BOTTOM NAV ============ -->
+    <style name="NavTab">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+    <style name="NavTabLbl">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">#6B7686</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

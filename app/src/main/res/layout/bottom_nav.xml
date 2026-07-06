@@ -2,55 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bottomNav"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="62dp"
     android:background="@drawable/bottom_bar_bg"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/navPlateaux"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="PLATEAUX"
-        android:textColor="#6B7686"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.02" />
+    <LinearLayout android:id="@+id/navHome" style="@style/NavTab">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_home" />
+        <TextView style="@style/NavTabLbl" android:text="Accueil" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/navCommande"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="COMMANDE"
-        android:textColor="#6B7686"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.02" />
+    <LinearLayout android:id="@+id/navPlateaux" style="@style/NavTab">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_plateaux" />
+        <TextView style="@style/NavTabLbl" android:text="Plateaux" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/navPresence"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="PRÉSENCE"
-        android:textColor="#6B7686"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.02" />
+    <LinearLayout android:id="@+id/navCommande" style="@style/NavTab">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_commande" />
+        <TextView style="@style/NavTabLbl" android:text="Commande" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/navKaonty"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="KAONTY"
-        android:textColor="#6B7686"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.02" />
+    <LinearLayout android:id="@+id/navPresence" style="@style/NavTab">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_presence" />
+        <TextView style="@style/NavTabLbl" android:text="Présence" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/navKaonty" style="@style/NavTab">
+        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_kaonty" />
+        <TextView style="@style/NavTabLbl" android:text="Kaonty" />
+    </LinearLayout>
 </LinearLayout>

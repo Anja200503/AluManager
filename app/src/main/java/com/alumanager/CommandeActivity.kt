@@ -44,7 +44,10 @@ class CommandeActivity : AppCompatActivity() {
         b.btnBack.setOnClickListener { finish() }
         b.btnRefresh.setOnClickListener { load() }
         b.btnFormules.setOnClickListener { showFormulaSettings() }
-        b.fabAdd.setOnClickListener { startActivity(Intent(this, AddOrderActivity::class.java)) }
+        b.fabAdd.setOnClickListener {
+            startActivity(Intent(this, AddOrderActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
         BottomNav.setup(this, "commande")
         b.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
