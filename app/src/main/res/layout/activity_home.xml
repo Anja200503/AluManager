@@ -1,184 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_space"
-    android:fillViewport="true"
-    android:scrollbars="none">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
 
-        <!-- ================= HERO ================= -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/hero_bg"
-            android:orientation="vertical"
-            android:paddingHorizontal="22dp"
-            android:paddingTop="44dp"
-            android:paddingBottom="30dp">
+            android:orientation="vertical">
 
+            <!-- ================= HERO ================= -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="54dp"
-                    android:layout_height="54dp"
-                    android:background="@drawable/avatar_circle"
-                    android:gravity="center"
-                    android:text="🏭"
-                    android:textSize="24sp" />
+                android:background="@drawable/hero_bg"
+                android:orientation="vertical"
+                android:paddingHorizontal="22dp"
+                android:paddingTop="44dp"
+                android:paddingBottom="30dp">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/heroGreeting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bonjour"
+                            android:textColor="#DCEAFB"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/heroCompany"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ALU VERRE"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <TextView
-                        android:id="@+id/heroGreeting"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Bonjour 👋"
-                        android:textColor="#E0DCFF"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/heroCompany"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ALU MANAGER"
+                        android:id="@+id/btnAccount"
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/avatar_circle"
+                        android:gravity="center"
+                        android:text="A"
                         android:textColor="#FFFFFF"
-                        android:textSize="21sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/btnAccount"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
-                    android:background="@drawable/avatar_circle"
-                    android:gravity="center"
-                    android:text="👤"
-                    android:textSize="20sp" />
+                    android:id="@+id/heroDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="—"
+                    android:textColor="#DCEAFB"
+                    android:textSize="13sp" />
+
+                <!-- Stats -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/stat_pill"
+                    android:orientation="horizontal"
+                    android:paddingVertical="14dp">
+
+                    <LinearLayout style="@style/HStat">
+                        <TextView android:id="@+id/hsPlateaux" style="@style/HStatVal" android:text="—" />
+                        <TextView style="@style/HStatLbl" android:text="Plateaux" />
+                    </LinearLayout>
+
+                    <LinearLayout style="@style/HStat">
+                        <TextView android:id="@+id/hsCommandes" style="@style/HStatVal" android:text="—" />
+                        <TextView style="@style/HStatLbl" android:text="Commandes" />
+                    </LinearLayout>
+
+                    <LinearLayout style="@style/HStat">
+                        <TextView android:id="@+id/hsPresence" style="@style/HStatVal" android:text="—" />
+                        <TextView style="@style/HStatLbl" android:text="Présence" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
-                android:id="@+id/heroDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="—"
-                android:textColor="#E0DCFF"
-                android:textSize="13sp" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:text="Choisissez une section ci-dessous"
+                android:textColor="#6B7686"
+                android:textSize="14sp" />
 
-            <!-- Stats -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/stat_pill"
-                android:orientation="horizontal"
-                android:paddingVertical="14dp">
-
-                <LinearLayout style="@style/HStat">
-                    <TextView style="@style/HStatVal" android:text="1 248" />
-                    <TextView style="@style/HStatLbl" android:text="Plateaux" />
-                </LinearLayout>
-
-                <LinearLayout style="@style/HStat">
-                    <TextView style="@style/HStatVal" android:text="34" />
-                    <TextView style="@style/HStatLbl" android:text="Commandes" />
-                </LinearLayout>
-
-                <LinearLayout style="@style/HStat">
-                    <TextView style="@style/HStatVal" android:text="12/15" />
-                    <TextView style="@style/HStatLbl" android:text="Présence" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-        <!-- ================= MENU ================= -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
-            android:layout_marginTop="24dp"
-            android:text="MENU PRINCIPAL"
-            android:textColor="#6B7686"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.08" />
+    <include layout="@layout/bottom_nav" />
 
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:padding="14dp"
-            android:layout_marginTop="4dp">
-
-            <!-- PLATEAUX -->
-            <LinearLayout android:id="@+id/cardPlateaux" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_indigo" android:text="🪟" />
-                <TextView style="@style/QCardLbl" android:text="PLATEAUX" />
-                <TextView style="@style/QCardSub" android:text="Stock &amp; vitres" />
-            </LinearLayout>
-
-            <!-- AJOUTE DE COMMANDE -->
-            <LinearLayout android:id="@+id/cardAjoute" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_green" android:text="➕" />
-                <TextView style="@style/QCardLbl" android:text="AJOUTE COMMANDE" />
-                <TextView style="@style/QCardSub" android:text="Nouvelle commande" />
-            </LinearLayout>
-
-            <!-- COMMANDE -->
-            <LinearLayout android:id="@+id/cardCommande" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_amber" android:text="📋" />
-                <TextView style="@style/QCardLbl" android:text="COMMANDE" />
-                <TextView style="@style/QCardSub" android:text="Liste &amp; suivi" />
-            </LinearLayout>
-
-            <!-- PRESENCE -->
-            <LinearLayout android:id="@+id/cardPresence" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_sky" android:text="👥" />
-                <TextView style="@style/QCardLbl" android:text="PRÉSENCE" />
-                <TextView style="@style/QCardSub" android:text="Personnel du jour" />
-            </LinearLayout>
-
-            <!-- KAONTY -->
-            <LinearLayout android:id="@+id/cardKaonty" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_green" android:text="💰" />
-                <TextView style="@style/QCardLbl" android:text="KAONTY" />
-                <TextView style="@style/QCardSub" android:text="Versement &amp; sortie" />
-            </LinearLayout>
-
-            <!-- DIRECTEUR IA -->
-            <LinearLayout android:id="@+id/cardDirecteur" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_indigo" android:text="🧠" />
-                <TextView style="@style/QCardLbl" android:text="DIRECTEUR IA" />
-                <TextView style="@style/QCardSub" android:text="Analyse &amp; conseils" />
-            </LinearLayout>
-
-            <!-- OPTI COUPE -->
-            <LinearLayout android:id="@+id/cardOptiCoupe" style="@style/QCard">
-                <TextView style="@style/QCardIco" android:background="@drawable/badge_amber" android:text="✂️" />
-                <TextView style="@style/QCardLbl" android:text="OPTI COUPE" />
-                <TextView style="@style/QCardSub" android:text="Optimiser la chute" />
-            </LinearLayout>
-
-        </GridLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

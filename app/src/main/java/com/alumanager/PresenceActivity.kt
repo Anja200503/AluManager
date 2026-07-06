@@ -14,5 +14,6 @@ class PresenceActivity : AppCompatActivity() {
         b = ActivityPresenceBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.btnBack.setOnClickListener { finish() }
+        BottomNav.setup(this, "presence")
     }
 }

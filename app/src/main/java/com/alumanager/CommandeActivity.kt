@@ -44,6 +44,8 @@ class CommandeActivity : AppCompatActivity() {
         b.btnBack.setOnClickListener { finish() }
         b.btnRefresh.setOnClickListener { load() }
         b.btnFormules.setOnClickListener { showFormulaSettings() }
+        b.fabAdd.setOnClickListener { startActivity(Intent(this, AddOrderActivity::class.java)) }
+        BottomNav.setup(this, "commande")
         b.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
@@ -90,7 +92,7 @@ class CommandeActivity : AppCompatActivity() {
             } catch (e: Exception) { err = e.localizedMessage ?: "Erreur réseau" }
             runOnUiThread {
                 if (err != null) {
-                    b.emptyState.text = "⚠️ $err"
+                    b.emptyState.text = "$err"
                     b.emptyState.visibility = View.VISIBLE
                 } else {
                     all = commandes
@@ -118,7 +120,7 @@ class CommandeActivity : AppCompatActivity() {
             ) filtered.add(c)
         }
         if (filtered.isEmpty()) {
-            b.emptyState.text = if (all.length() == 0) "📋 Aucune commande" else "Aucun résultat"
+            b.emptyState.text = if (all.length() == 0) "Aucune commande" else "Aucun résultat"
             b.emptyState.visibility = View.VISIBLE
             b.listContainer.addView(b.emptyState)
             return
@@ -138,7 +140,7 @@ class CommandeActivity : AppCompatActivity() {
         // En-tete : reference + statut
         val head = row()
         head.addView(TextView(this).apply {
-            text = "🔖 ${c.optString("reference")}"
+            text = "${c.optString("reference")}"
             setTextColor(Color.parseColor("#1E88E5"))
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
@@ -151,16 +153,16 @@ class CommandeActivity : AppCompatActivity() {
         })
         card.addView(head)
         // Client + lieu
-        card.addView(line("👤 ${c.optString("client_nom")}", "#1F2733", 15f, true, dp(8)))
-        card.addView(line("📍 ${c.optString("client_lieu")}", "#6B7686", 13f, false, dp(2)))
+        card.addView(line("${c.optString("client_nom")}", "#1F2733", 15f, true, dp(8)))
+        card.addView(line("${c.optString("client_lieu")}", "#6B7686", 13f, false, dp(2)))
         // Meta
         val np = c.optString("nb_produits", "0")
-        card.addView(line("📅 ${fmtDate(c.optString("date_commande"))}   🚚 ${fmtDate(c.optString("date_livraison"))}", "#6B7686", 12f, false, dp(8)))
-        card.addView(line("📦 $np produit(s)   💰 ${fmt(d(c, "total_ar"))} Ar", "#1F2733", 13f, false, dp(4)))
+        card.addView(line("${fmtDate(c.optString("date_commande"))}   ${fmtDate(c.optString("date_livraison"))}", "#6B7686", 12f, false, dp(8)))
+        card.addView(line("$np produit(s)   ${fmt(d(c, "total_ar"))} Ar", "#1F2733", 13f, false, dp(4)))
         // Badge reste
         val reste = d(c, "reste_ar")
         card.addView(TextView(this).apply {
-            text = if (reste <= 0) "✅ Soldé" else "⏳ Reste : ${fmt(reste)} Ar"
+            text = if (reste <= 0) "Soldé" else "Reste : ${fmt(reste)} Ar"
             setTextColor(if (reste <= 0) Color.parseColor("#2E9E5B") else Color.parseColor("#E0A020"))
             textSize = 12f
             setTypeface(typeface, Typeface.BOLD)
@@ -170,17 +172,17 @@ class CommandeActivity : AppCompatActivity() {
         })
         // Footer : boutons (2 lignes)
         val f1 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14) }
-        f1.addView(actionBtn("📄 Détail", "#1E88E5") { showDetail(c) })
+        f1.addView(actionBtn("Détail", "#1E88E5") { showDetail(c) })
         f1.addView(spacer())
-        f1.addView(actionBtn("🧾 Facture PDF", "#2E9E5B") { showInvoice(c) })
+        f1.addView(actionBtn("Facture PDF", "#2E9E5B") { showInvoice(c) })
         card.addView(f1)
         val f2 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8) }
-        f2.addView(actionBtn("🔧 Zavatra", "#E0A020") { openZavatra(c) })
+        f2.addView(actionBtn("Zavatra", "#E0A020") { openZavatra(c) })
         f2.addView(spacer())
-        f2.addView(actionBtn("🗑️ Supprimer", "#C2118F") { showDeleteConfirm(c) })
+        f2.addView(actionBtn("Supprimer", "#C2118F") { showDeleteConfirm(c) })
         card.addView(f2)
         val f3 = row().apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8) }
-        f3.addView(actionBtn("✏️ Modifier la commande", "#1565C0") { openEdit(c) })
+        f3.addView(actionBtn("Modifier la commande", "#1565C0") { openEdit(c) })
         card.addView(f3)
         return card
     }
@@ -255,7 +257,7 @@ class CommandeActivity : AppCompatActivity() {
             orientation = LinearLayout.VERTICAL; setPadding(dp(18), dp(8), dp(18), dp(8))
         }
         root.addView(TextView(this).apply {
-            text = "👤 ${c.optString("client_nom")}  •  📍 ${c.optString("client_lieu")}"
+            text = "${c.optString("client_nom")}  •  ${c.optString("client_lieu")}"
             setTextColor(Color.parseColor("#6B7686")); textSize = 12f
         })
         val produits = c.optJSONArray("produits") ?: JSONArray()
@@ -377,7 +379,7 @@ class CommandeActivity : AppCompatActivity() {
             val pieces = extractPieces(c)
             results.removeAllViews()
             if (pieces.isEmpty()) {
-                results.addView(line("⚠️ Aucune dimension exploitable dans cette commande.", "#E0A020", 13f, false, 0))
+                results.addView(line("Aucune dimension exploitable dans cette commande.", "#E0A020", 13f, false, 0))
                 return@setOnClickListener
             }
             results.addView(line("Calcul Gilmore-Gomory…", "#6B7686", 13f, false, 0))
@@ -387,7 +389,7 @@ class CommandeActivity : AppCompatActivity() {
                 catch (e: Exception) { err = e.localizedMessage }
                 runOnUiThread {
                     results.removeAllViews()
-                    if (err != null) results.addView(line("❌ $err", "#C2118F", 13f, false, 0))
+                    if (err != null) results.addView(line("$err", "#C2118F", 13f, false, 0))
                     else renderCoupe(results, res!!)
                 }
             }.start()
@@ -517,7 +519,7 @@ class CommandeActivity : AppCompatActivity() {
             }
         }
         AlertDialog.Builder(this, R.style.NeonDialog)
-            .setTitle("⚙️ Paramètres des formules")
+            .setTitle("Paramètres des formules")
             .setView(ScrollView(this).apply { addView(root) })
             .setPositiveButton("Enregistrer") { _, _ ->
                 val map = HashMap<String, Double>()
@@ -526,7 +528,7 @@ class CommandeActivity : AppCompatActivity() {
                     if (v != null) map[k] = v
                 }
                 FormulaConfig.save(this, map)
-                Toast.makeText(this, "Formules mises à jour ✓", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Formules mises à jour ", Toast.LENGTH_SHORT).show()
             }
             .setNeutralButton("Réinitialiser") { _, _ ->
                 FormulaConfig.reset(this)

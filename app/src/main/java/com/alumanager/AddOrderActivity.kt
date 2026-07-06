@@ -132,7 +132,7 @@ class AddOrderActivity : AppCompatActivity() {
         AUT_LBL.forEach { (k, lbl) -> row("abp_$k", lbl, OrderData.autresBasePrice[k] ?: 0.0) }
 
         AlertDialog.Builder(this, R.style.NeonDialog)
-            .setTitle("⚙️ Paramètres de prix")
+            .setTitle("Paramètres de prix")
             .setView(wrapScroll(root))
             .setPositiveButton("Enregistrer") { _, _ ->
                 val e = prefsPrix().edit()
@@ -150,7 +150,7 @@ class AddOrderActivity : AppCompatActivity() {
                 }
                 e.apply()
                 renderAll()
-                Toast.makeText(this, "Prix mis à jour ✓", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Prix mis à jour ", Toast.LENGTH_SHORT).show()
             }
             .setNeutralButton("Réinitialiser") { _, _ ->
                 FEN_DEF.forEach { (k, v) -> OrderData.fenetreBasePrices[k] = v }
@@ -588,11 +588,6 @@ class AddOrderActivity : AppCompatActivity() {
     }
 
     /* ─── Images produit (fichiers res/drawable/prod_<id>.png|jpg|webp) ─── */
-    private val productEmoji = mapOf(
-        "fenetre" to "🪟", "lavarangana" to "🛡️", "porte" to "🚪",
-        "rideau" to "🏪", "vitrine" to "🏬"
-    )
-
     private fun productImageRes(pid: String): Int =
         resources.getIdentifier("prod_$pid", "drawable", packageName)
 
@@ -622,9 +617,11 @@ class AddOrderActivity : AppCompatActivity() {
             })
         } else {
             ll.addView(TextView(this).apply {
-                text = productEmoji[pid] ?: "📦"
+                text = label.trim().split(" ").firstOrNull()?.take(3)?.uppercase() ?: "?"
                 gravity = Gravity.CENTER
-                textSize = 34f
+                textSize = 20f
+                setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#1565C0"))
                 background = circleBg(
                     Color.parseColor(OrderData.productColor[pid] ?: "#EAF1FB"),
                     Color.parseColor("#33FFFFFF")
@@ -889,10 +886,10 @@ class AddOrderActivity : AppCompatActivity() {
     private fun showSuccess(ref: String, nom: String, total: Double, avance: Double, reste: Double) {
         val msg = buildString {
             append("Reference : $ref\n\n")
-            append("👤 Client : $nom\n")
-            append("💰 Total : ${fmt(total)} Ar\n")
-            append("✅ Avance : ${fmt(avance)} Ar\n")
-            append("⏳ Reste : ${fmt(reste)} Ar")
+            append("Client : $nom\n")
+            append("Total : ${fmt(total)} Ar\n")
+            append("Avance : ${fmt(avance)} Ar\n")
+            append("Reste : ${fmt(reste)} Ar")
         }
         AlertDialog.Builder(this, R.style.NeonDialog)
             .setTitle(if (editId > 0) "Commande modifiée !" else "Commande enregistree !")

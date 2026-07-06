@@ -1,129 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_space"
-    android:orientation="vertical">
+    android:background="@drawable/bg_space">
 
-    <!-- Barre du haut -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/hero_bg"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="30dp"
-        android:paddingBottom="14dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/btnBack"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/avatar_circle"
-            android:gravity="center"
-            android:text="‹"
-            android:textColor="#FFFFFF"
-            android:textSize="26sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:text="Commandes"
-            android:textColor="#FFFFFF"
-            android:textSize="19sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/btnFormules"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/avatar_circle"
-            android:gravity="center"
-            android:text="⚙"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/btnRefresh"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="@drawable/avatar_circle"
-            android:gravity="center"
-            android:text="⟳"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <!-- Stats -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#EEF1F6"
-        android:orientation="horizontal"
-        android:paddingVertical="14dp">
-
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statNb" style="@style/OStatVal" android:text="0" />
-            <TextView style="@style/OStatLbl" android:text="Commandes" />
-        </LinearLayout>
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statCA" style="@style/OStatVal" android:text="0" />
-            <TextView style="@style/OStatLbl" android:text="Total Ar" />
-        </LinearLayout>
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statAv" style="@style/OStatVal" android:text="0" />
-            <TextView style="@style/OStatLbl" android:text="Avance" />
-        </LinearLayout>
-        <LinearLayout style="@style/OStat">
-            <TextView android:id="@+id/statRe" style="@style/OStatVal" android:text="0" />
-            <TextView style="@style/OStatLbl" android:text="Reste" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Recherche -->
-    <EditText
-        android:id="@+id/searchInput"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="12dp"
-        android:background="@drawable/field_bg"
-        android:hint="Rechercher (client, référence, lieu)…"
-        android:inputType="text"
-        android:paddingHorizontal="16dp"
-        android:textColor="#1F2733"
-        android:textColorHint="#98A2B3"
-        android:textSize="14sp" />
-
-    <!-- Liste -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:scrollbars="none">
-
+        <!-- Barre du haut -->
         <LinearLayout
-            android:id="@+id/listContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:background="@drawable/hero_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingHorizontal="12dp"
-            android:paddingBottom="20dp">
+            android:paddingTop="30dp"
+            android:paddingBottom="14dp">
 
             <TextView
-                android:id="@+id/emptyState"
+                android:id="@+id/btnBack"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/avatar_circle"
+                android:gravity="center"
+                android:text="‹"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:text="Commandes"
+                android:textColor="#FFFFFF"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnFormules"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/avatar_circle"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="Formules"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnRefresh"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/avatar_circle"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="Actualiser"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Stats -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#EEF1F6"
+            android:orientation="horizontal"
+            android:paddingVertical="14dp">
+
+            <LinearLayout style="@style/OStat">
+                <TextView android:id="@+id/statNb" style="@style/OStatVal" android:text="0" />
+                <TextView style="@style/OStatLbl" android:text="Commandes" />
+            </LinearLayout>
+            <LinearLayout style="@style/OStat">
+                <TextView android:id="@+id/statCA" style="@style/OStatVal" android:text="0" />
+                <TextView style="@style/OStatLbl" android:text="Total Ar" />
+            </LinearLayout>
+            <LinearLayout style="@style/OStat">
+                <TextView android:id="@+id/statAv" style="@style/OStatVal" android:text="0" />
+                <TextView style="@style/OStatLbl" android:text="Avance" />
+            </LinearLayout>
+            <LinearLayout style="@style/OStat">
+                <TextView android:id="@+id/statRe" style="@style/OStatVal" android:text="0" />
+                <TextView style="@style/OStatLbl" android:text="Reste" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Recherche -->
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/field_bg"
+            android:hint="Rechercher (client, référence, lieu)…"
+            android:inputType="text"
+            android:paddingHorizontal="16dp"
+            android:textColor="#1F2733"
+            android:textColorHint="#98A2B3"
+            android:textSize="14sp" />
+
+        <!-- Liste -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/listContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
-                android:gravity="center"
-                android:text="Chargement…"
-                android:textColor="#6B7686"
-                android:textSize="15sp" />
-        </LinearLayout>
-    </ScrollView>
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingBottom="90dp">
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/emptyState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="70dp"
+                    android:gravity="center"
+                    android:text="Chargement…"
+                    android:textColor="#6B7686"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <include layout="@layout/bottom_nav" />
+
+    </LinearLayout>
+
+    <!-- Bouton flottant : ajouter une commande -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="74dp"
+        android:contentDescription="Ajouter une commande"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="#1565C0"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:tint="#FFFFFF" />
+
+</FrameLayout>

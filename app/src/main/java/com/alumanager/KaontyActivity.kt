@@ -52,6 +52,7 @@ class KaontyActivity : AppCompatActivity() {
         b.btnBack.setOnClickListener { finish() }
         b.btnIn.setOnClickListener { showAdd("in") }
         b.btnOut.setOnClickListener { showAdd("out") }
+        BottomNav.setup(this, "kaonty")
         b.btnPrevDay.setOnClickListener { shiftDay(-1) }
         b.btnNextDay.setOnClickListener { shiftDay(1) }
         b.dateLabel.setOnClickListener { pickDate() }
@@ -105,7 +106,7 @@ class KaontyActivity : AppCompatActivity() {
         val today = dayFmt.format(Date())
         val d = dayFmt.parse(selectedDate) ?: Date()
         val txt = dispFmt.format(d).replaceFirstChar { it.uppercase() }
-        b.dateLabel.text = "📅 " + (if (selectedDate == today) "Aujourd'hui — $txt" else txt)
+        b.dateLabel.text = "" + (if (selectedDate == today) "Aujourd'hui — $txt" else txt)
     }
     private fun shiftDay(delta: Int) {
         val c = Calendar.getInstance(); c.time = dayFmt.parse(selectedDate) ?: Date()
@@ -146,8 +147,8 @@ class KaontyActivity : AppCompatActivity() {
         b.listContainer.removeAllViews()
         val total = (byCat[CAT_ALU]?.size ?: 0) + (byCat[CAT_PLT]?.size ?: 0)
         if (total == 0) { b.emptyState.text = "Aucune opération à cette date"; b.listContainer.addView(b.emptyState); return }
-        renderSection("🔩 ALUMINIUM", accentAlu, byCat[CAT_ALU])
-        renderSection("🟫 PLATEAUX", accentPlt, byCat[CAT_PLT])
+        renderSection("ALUMINIUM", accentAlu, byCat[CAT_ALU])
+        renderSection("PLATEAUX", accentPlt, byCat[CAT_PLT])
     }
 
     private fun renderSection(title: String, accent: String, ops: List<JSONObject>?) {
@@ -176,7 +177,7 @@ class KaontyActivity : AppCompatActivity() {
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             lp.topMargin = dp(10); layoutParams = lp
         }
-        row.addView(TextView(this).apply { text = if (isIn) "⬇️" else "⬆️"; textSize = 20f; setPadding(0, 0, dp(12), 0) })
+        row.addView(TextView(this).apply { text = if (isIn) "" else ""; textSize = 20f; setPadding(0, 0, dp(12), 0) })
         val info = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
@@ -220,13 +221,13 @@ class KaontyActivity : AppCompatActivity() {
             pltBtn.setTextColor(Color.parseColor(if (cat == CAT_PLT) accentPlt else "#6B7686"))
         }
         aluBtn = TextView(this).apply {
-            text = "🔩 Aluminium"; gravity = Gravity.CENTER; textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            text = "Aluminium"; gravity = Gravity.CENTER; textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             setPadding(dp(10), dp(12), dp(10), dp(12))
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             setOnClickListener { cat = CAT_ALU; refresh() }
         }
         pltBtn = TextView(this).apply {
-            text = "🟫 Plateaux"; gravity = Gravity.CENTER; textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            text = "Plateaux"; gravity = Gravity.CENTER; textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             setPadding(dp(10), dp(12), dp(10), dp(12))
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(10) }
             setOnClickListener { cat = CAT_PLT; refresh() }
@@ -241,7 +242,7 @@ class KaontyActivity : AppCompatActivity() {
         v.addView(montant); v.addView(libelle)
 
         AlertDialog.Builder(this, R.style.NeonDialog)
-            .setTitle((if (type == "in") "➕ Versement" else "➖ Sortie") + " — " + selectedDate)
+            .setTitle((if (type == "in") "Versement" else "Sortie") + " — " + selectedDate)
             .setView(v)
             .setPositiveButton("Enregistrer") { _, _ ->
                 val amt = montant.text.toString().replace(',', '.').toDoubleOrNull() ?: 0.0

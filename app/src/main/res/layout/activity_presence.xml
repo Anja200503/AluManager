@@ -42,8 +42,10 @@
         android:layout_weight="1"
         android:gravity="center"
         android:padding="24dp"
-        android:text="🚧\n\nPage Présence vide\n\nLes fonctionnalités arriveront prochainement"
+        android:text="Page Présence\n\nLes fonctionnalités arriveront prochainement"
         android:textColor="#6B7686"
         android:textSize="16sp" />
+
+    <include layout="@layout/bottom_nav" />
 
 </LinearLayout>

@@ -205,10 +205,10 @@ class ZavatraActivity : AppCompatActivity() {
         renderCoupeGroup(card, "BATI $suffix", "#1E88E5", bati, barCm)
         renderCoupeGroup(card, "OUVRANT $suffix", "#1565C0", ouvr, barCm)
         renderCoupeGroup(card, "ACROSAGE $suffix", "#E0A020", acr, barCm)
-        renderAccItems(card, "🔩 Accessoires — $suffix (Qty:$totQty)", listOf(
-            Triple("🔒 Serrure $suffix", "$totQty × 2", totQty * 2),
-            Triple("⚙️ Roulette $suffix", "$totQty × 4", totQty * 4),
-            Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4)
+        renderAccItems(card, "Accessoires — $suffix (Qty:$totQty)", listOf(
+            Triple("Serrure $suffix", "$totQty × 2", totQty * 2),
+            Triple("Roulette $suffix", "$totQty × 4", totQty * 4),
+            Triple("Vis de pose", "$totQty × 4", totQty * 4)
         ))
     }
 
@@ -258,10 +258,10 @@ class ZavatraActivity : AppCompatActivity() {
         renderCoupeGroup(card, "OUVRANT PORTE", "#1565C0", ouvr, barCm)
         renderCoupeGroup(card, "INTERMÉDIAIRE", "#E0A020", inter, barCm)
         if (isDV) renderCoupeGroup(card, "BARDAGE", "#C2118F", bard, barCm)
-        renderAccItems(card, "🔩 Accessoires — Porte 1V $typeLabel (Qty:$totQty)", listOf(
-            Triple("🔒 Serrure Porte", "$totQty × 1", totQty),
-            Triple("🔗 Charnière", "$totQty × 3", totQty * 3),
-            Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4)
+        renderAccItems(card, "Accessoires — Porte 1V $typeLabel (Qty:$totQty)", listOf(
+            Triple("Serrure Porte", "$totQty × 1", totQty),
+            Triple("Charnière", "$totQty × 3", totQty * 3),
+            Triple("Vis de pose", "$totQty × 4", totQty * 4)
         ))
     }
 
@@ -338,9 +338,9 @@ class ZavatraActivity : AppCompatActivity() {
         ))
         renderCoupeGroup(card, "BATI PROJETANT", "#1E88E5", bati, barCm)
         renderCoupeGroup(card, "OUVRANT PROJETANT", "#1565C0", ouvr, barCm)
-        val acc = mutableListOf(Triple("🔧 Poignée Projetant", "$totQty × 1", totQty))
-        compas.forEach { (t, q) -> acc.add(Triple("🛠️ Compas $t", "selon H", q)) }
-        renderAccItems(card, "🔩 Accessoires — Projetant (Qty:$totQty)", acc)
+        val acc = mutableListOf(Triple("Poignée Projetant", "$totQty × 1", totQty))
+        compas.forEach { (t, q) -> acc.add(Triple("Compas $t", "selon H", q)) }
+        renderAccItems(card, "Accessoires — Projetant (Qty:$totQty)", acc)
     }
 
     /* ════════ NACO ════════ */
@@ -362,7 +362,7 @@ class ZavatraActivity : AppCompatActivity() {
             val lameL = r2(l - f("naco_lame_l")); val lameQty = qty * nb
             totQty += qty
             bati.add(Entry(batiH, qty * 2, ref, di, "H")); bati.add(Entry(batiL, qty * 2, ref, di, "L"))
-            acc.add(Triple("🏷️ Lame Naco de $nb ($ref)", "$qty × 2", qty * 2))
+            acc.add(Triple("Lame Naco de $nb ($ref)", "$qty × 2", qty * 2))
             rows.add(col to listOf(ref, numCm(h), numCm(l), qty.toString(),
                 numCm(batiH), "${qty * 2}", numCm(batiL), "${qty * 2}",
                 "$nb", numCm(f("naco_lame_h")), numCm(lameL), "$lameQty"))
@@ -376,8 +376,8 @@ class ZavatraActivity : AppCompatActivity() {
             rows
         ))
         renderCoupeGroup(card, "BATI NACO", "#1E88E5", bati, barCm)
-        acc.add(Triple("🔧 Vis de pose", "$totQty × 4", totQty * 4))
-        renderAccItems(card, "🔩 Accessoires — Naco (Qty:$totQty)", acc)
+        acc.add(Triple("Vis de pose", "$totQty × 4", totQty * 4))
+        renderAccItems(card, "Accessoires — Naco (Qty:$totQty)", acc)
     }
 
     /* ════════ TABLE SIMPLE ════════ */
@@ -497,7 +497,7 @@ class ZavatraActivity : AppCompatActivity() {
         }
         val hdr = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         hdr.addView(TextView(this).apply {
-            text = "🪚 $label"; setTextColor(ci); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
+            text = "$label"; setTextColor(ci); textSize = 14f; setTypeface(typeface, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         })
         hdr.addView(TextView(this).apply {

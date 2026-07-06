@@ -28,6 +28,7 @@ class HomeActivity : AppCompatActivity() {
 
         binding.heroGreeting.text = "Bonjour, $name"
         if (societe.isNotEmpty()) binding.heroCompany.text = societe
+        binding.btnAccount.text = name.trim().take(1).uppercase().ifBlank { "A" }
 
         // Date du jour en francais
         val fmt = SimpleDateFormat("EEEE d MMMM yyyy", Locale.FRENCH)
@@ -36,27 +37,8 @@ class HomeActivity : AppCompatActivity() {
         // Panneau compte / deconnexion
         binding.btnAccount.setOnClickListener { showAccountDialog(name, user?.email ?: "—", societe) }
 
-        // Cartes du menu (les autres ecrans arrivent aux prochaines etapes)
-        val soon = "Cet ecran arrive a la prochaine etape 🚧"
-        binding.cardPlateaux.setOnClickListener { toast(soon) }
-        binding.cardCommande.setOnClickListener {
-            startActivity(Intent(this, CommandeActivity::class.java))
-        }
-        binding.cardPresence.setOnClickListener {
-            startActivity(Intent(this, PresenceActivity::class.java))
-        }
-        binding.cardKaonty.setOnClickListener {
-            startActivity(Intent(this, KaontyActivity::class.java))
-        }
-        binding.cardDirecteur.setOnClickListener {
-            startActivity(Intent(this, DirecteurActivity::class.java))
-        }
-        binding.cardOptiCoupe.setOnClickListener {
-            startActivity(Intent(this, OptiCoupeActivity::class.java))
-        }
-        binding.cardAjoute.setOnClickListener {
-            startActivity(Intent(this, AddOrderActivity::class.java))
-        }
+        // Navigation permanente (aucun onglet actif sur l'accueil)
+        BottomNav.setup(this, "")
     }
 
     private fun decodeSociete(photoUrl: Uri?): String {
@@ -68,9 +50,9 @@ class HomeActivity : AppCompatActivity() {
 
     private fun showAccountDialog(name: String, email: String, societe: String) {
         val msg = buildString {
-            append("👤  $name\n\n")
-            append("✉️  $email\n\n")
-            if (societe.isNotEmpty()) append("🏢  $societe")
+            append("$name\n\n")
+            append("$email")
+            if (societe.isNotEmpty()) append("\n\n$societe")
         }
         AlertDialog.Builder(this, R.style.NeonDialog)
             .setTitle("Mon compte")
