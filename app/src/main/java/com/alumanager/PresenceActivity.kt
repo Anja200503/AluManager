@@ -1,5 +1,6 @@
 package com.alumanager
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.alumanager.databinding.ActivityPresenceBinding
@@ -15,5 +16,9 @@ class PresenceActivity : AppCompatActivity() {
         setContentView(b.root)
         b.btnBack.setOnClickListener { finish() }
         BottomNav.setup(this, "presence")
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent); setIntent(intent); BottomNav.reenter(this)
     }
 }

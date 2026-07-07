@@ -44,10 +44,7 @@ class CommandeActivity : AppCompatActivity() {
         b.btnBack.setOnClickListener { finish() }
         b.btnRefresh.setOnClickListener { load() }
         b.btnFormules.setOnClickListener { showFormulaSettings() }
-        b.fabAdd.setOnClickListener {
-            startActivity(Intent(this, AddOrderActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        }
+        b.fabAdd.setOnClickListener { BottomNav.open(this, AddOrderActivity::class.java, 1) }
         BottomNav.setup(this, "commande")
         b.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
@@ -62,6 +59,10 @@ class CommandeActivity : AppCompatActivity() {
         super.onResume()
         // Recharger au retour (ex. après modification d'une commande), sauf au tout 1er affichage.
         if (firstResume) firstResume = false else load()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent); setIntent(intent); BottomNav.reenter(this)
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()

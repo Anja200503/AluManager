@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="62dp"
     android:background="@drawable/bottom_bar_bg"
+    android:elevation="14dp"
     android:orientation="horizontal">
 
     <LinearLayout android:id="@+id/navHome" style="@style/NavTab">

@@ -41,6 +41,10 @@ class HomeActivity : AppCompatActivity() {
         BottomNav.setup(this, "home")
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent); setIntent(intent); BottomNav.reenter(this)
+    }
+
     private fun decodeSociete(photoUrl: Uri?): String {
         val s = photoUrl?.toString() ?: return ""
         return if (s.startsWith("https://societe/")) {

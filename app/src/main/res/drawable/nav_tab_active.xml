@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- indicateur haut -->
-    <item android:gravity="top" android:height="3dp">
-        <shape android:shape="rectangle">
-            <solid android:color="#1565C0" />
-        </shape>
-    </item>
-    <!-- teinte légère -->
-    <item android:top="3dp">
-        <shape android:shape="rectangle">
-            <solid android:color="#EAF2FC" />
-        </shape>
-    </item>
-</layer-list>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="10dp"
+    android:insetRight="10dp"
+    android:insetTop="8dp"
+    android:insetBottom="8dp">
+    <shape android:shape="rectangle">
+        <solid android:color="#E7F0FB" />
+        <corners android:radius="16dp" />
+    </shape>
+</inset>

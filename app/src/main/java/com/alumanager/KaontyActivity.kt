@@ -1,6 +1,7 @@
 package com.alumanager
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -65,6 +66,10 @@ class KaontyActivity : AppCompatActivity() {
         updateDateLabel()
         render()
         syncFromServer()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent); setIntent(intent); BottomNav.reenter(this)
     }
 
     private fun simpleWatcher(onText: (String) -> Unit) = object : android.text.TextWatcher {
