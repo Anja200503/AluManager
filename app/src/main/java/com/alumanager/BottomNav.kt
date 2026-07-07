@@ -1,6 +1,8 @@
 package com.alumanager
 
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
@@ -18,27 +20,36 @@ import androidx.appcompat.app.AppCompatActivity
 object BottomNav {
 
     const val EXTRA_DIR = "nav_slide_dir"
-    private const val ON = 0xFF1565C0.toInt()
     private const val OFF = 0xFF6B7686.toInt()
 
-    private data class Tab(val key: String, val id: Int, val cls: Class<*>?)
+    private data class Tab(val key: String, val id: Int, val cls: Class<*>?, val color: Int)
 
     private val tabs = listOf(
-        Tab("home", R.id.navHome, HomeActivity::class.java),
-        Tab("plateaux", R.id.navPlateaux, null),
-        Tab("commande", R.id.navCommande, CommandeActivity::class.java),
-        Tab("presence", R.id.navPresence, PresenceActivity::class.java),
-        Tab("kaonty", R.id.navKaonty, KaontyActivity::class.java)
+        Tab("home", R.id.navHome, HomeActivity::class.java, 0xFF5B5BD6.toInt()),
+        Tab("plateaux", R.id.navPlateaux, null, 0xFF0EA5C4.toInt()),
+        Tab("commande", R.id.navCommande, CommandeActivity::class.java, 0xFF2563EB.toInt()),
+        Tab("presence", R.id.navPresence, PresenceActivity::class.java, 0xFF8B5CF6.toInt()),
+        Tab("kaonty", R.id.navKaonty, KaontyActivity::class.java, 0xFF12A150.toInt())
     )
 
     fun setup(a: AppCompatActivity, active: String) {
+        val density = a.resources.displayMetrics.density
+        fun px(v: Int) = (v * density).toInt()
         val fromIdx = tabs.indexOfFirst { it.key == active }
         tabs.forEachIndexed { idx, t ->
             val tab = a.findViewById<LinearLayout>(t.id) ?: return@forEachIndexed
             val on = t.key == active
-            (tab.getChildAt(0) as? ImageView)?.setColorFilter(if (on) ON else OFF)
-            (tab.getChildAt(1) as? TextView)?.setTextColor(if (on) ON else OFF)
-            tab.setBackgroundResource(if (on) R.drawable.nav_tab_active else 0)
+            (tab.getChildAt(0) as? ImageView)?.setColorFilter(if (on) t.color else OFF)
+            (tab.getChildAt(1) as? TextView)?.setTextColor(if (on) t.color else OFF)
+            if (on) {
+                val pill = GradientDrawable().apply {
+                    cornerRadius = px(16).toFloat()
+                    setColor((0x22 shl 24) or (t.color and 0x00FFFFFF))
+                }
+                tab.background = InsetDrawable(pill, px(10), px(8), px(10), px(8))
+            } else {
+                tab.background = null
+            }
             tab.setOnClickListener { if (!on) navigate(a, t, fromIdx, idx) }
         }
         animateEnter(a)

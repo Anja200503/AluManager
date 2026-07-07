@@ -21,7 +21,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/hero_bg"
+                android:background="@drawable/hero_indigo"
                 android:orientation="vertical"
                 android:paddingHorizontal="22dp"
                 android:paddingTop="44dp"
@@ -107,11 +107,45 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="40dp"
-                android:text="Choisissez une section ci-dessous"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="22dp"
+                android:text="ACCÈS RAPIDE"
                 android:textColor="#6B7686"
-                android:textSize="14sp" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:padding="14dp"
+                android:layout_marginTop="2dp">
+
+                <LinearLayout android:id="@+id/tileCommande" style="@style/HomeTile" android:background="@drawable/tile_commande">
+                    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ic_commande" android:tint="#FFFFFF" />
+                    <TextView style="@style/HomeTileLbl" android:text="COMMANDE" />
+                    <TextView style="@style/HomeTileSub" android:text="Liste &amp; suivi" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/tileKaonty" style="@style/HomeTile" android:background="@drawable/tile_kaonty">
+                    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ic_kaonty" android:tint="#FFFFFF" />
+                    <TextView style="@style/HomeTileLbl" android:text="KAONTY" />
+                    <TextView style="@style/HomeTileSub" android:text="Caisse du jour" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/tilePresence" style="@style/HomeTile" android:background="@drawable/tile_presence">
+                    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ic_presence" android:tint="#FFFFFF" />
+                    <TextView style="@style/HomeTileLbl" android:text="PRÉSENCE" />
+                    <TextView style="@style/HomeTileSub" android:text="Personnel" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/tilePlateaux" style="@style/HomeTile" android:background="@drawable/tile_plateaux">
+                    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ic_plateaux" android:tint="#FFFFFF" />
+                    <TextView style="@style/HomeTileLbl" android:text="PLATEAUX" />
+                    <TextView style="@style/HomeTileSub" android:text="Stock" />
+                </LinearLayout>
+            </GridLayout>
 
         </LinearLayout>
     </ScrollView>

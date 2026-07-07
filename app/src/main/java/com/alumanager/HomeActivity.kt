@@ -37,6 +37,12 @@ class HomeActivity : AppCompatActivity() {
         // Panneau compte / deconnexion
         binding.btnAccount.setOnClickListener { showAccountDialog(name, user?.email ?: "—", societe) }
 
+        // Tuiles d'accès rapide
+        binding.tileCommande.setOnClickListener { BottomNav.open(this, CommandeActivity::class.java, 1) }
+        binding.tileKaonty.setOnClickListener { BottomNav.open(this, KaontyActivity::class.java, 1) }
+        binding.tilePresence.setOnClickListener { BottomNav.open(this, PresenceActivity::class.java, 1) }
+        binding.tilePlateaux.setOnClickListener { toast("PLATEAUX : bientôt disponible") }
+
         // Navigation permanente
         BottomNav.setup(this, "home")
     }

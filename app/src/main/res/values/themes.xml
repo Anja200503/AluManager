@@ -126,6 +126,37 @@
         <item name="android:textSize">11sp</item>
     </style>
 
+    <!-- ============ TUILES ACCUEIL ============ -->
+    <style name="HomeTile">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">118dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">start|top</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+    <style name="HomeTileLbl">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+    <style name="HomeTileSub">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:textColor">#EAF1FF</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <!-- ============ BOTTOM NAV ============ -->
     <style name="NavTab">
         <item name="android:layout_width">0dp</item>
