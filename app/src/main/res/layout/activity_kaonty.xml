@@ -242,7 +242,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="12dp"
-            android:paddingBottom="20dp">
+            android:paddingBottom="20dp"
+            android:layoutAnimation="@anim/layout_fall_down">
 
             <TextView
                 android:id="@+id/emptyState"

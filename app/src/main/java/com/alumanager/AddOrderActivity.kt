@@ -57,6 +57,7 @@ class AddOrderActivity : AppCompatActivity() {
         b.btnAddProduct.setOnClickListener { showProductWizard() }
         b.btnValidate.setOnClickListener { showClientDialog() }
         b.btnSettings.setOnClickListener { showPriceSettings() }
+        Anim.pressScale(b.btnAddProduct, b.btnValidate)
         BottomNav.setup(this, "commande")
 
         renderAll()
@@ -178,6 +179,7 @@ class AddOrderActivity : AppCompatActivity() {
             }
             b.summaryBar.visibility = View.VISIBLE
         }
+        b.productsContainer.scheduleLayoutAnimation()
         updateStats()
     }
 

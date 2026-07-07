@@ -54,6 +54,7 @@ class KaontyActivity : AppCompatActivity() {
         b.btnIn.setOnClickListener { showAdd("in") }
         b.btnOut.setOnClickListener { showAdd("out") }
         BottomNav.setup(this, "kaonty")
+        Anim.pressScale(b.btnIn, b.btnOut)
         b.btnPrevDay.setOnClickListener { shiftDay(-1) }
         b.btnNextDay.setOnClickListener { shiftDay(1) }
         b.dateLabel.setOnClickListener { pickDate() }
@@ -154,6 +155,7 @@ class KaontyActivity : AppCompatActivity() {
         if (total == 0) { b.emptyState.text = "Aucune opération à cette date"; b.listContainer.addView(b.emptyState); return }
         renderSection("ALUMINIUM", accentAlu, byCat[CAT_ALU])
         renderSection("PLATEAUX", accentPlt, byCat[CAT_PLT])
+        b.listContainer.scheduleLayoutAnimation()
     }
 
     private fun renderSection(title: String, accent: String, ops: List<JSONObject>?) {

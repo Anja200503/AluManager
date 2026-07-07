@@ -51,6 +51,7 @@ object BottomNav {
                 tab.background = null
             }
             tab.setOnClickListener { if (!on) navigate(a, t, fromIdx, idx) }
+            Anim.pressScale(tab)
         }
         animateEnter(a)
     }

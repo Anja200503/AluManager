@@ -45,6 +45,7 @@ class CommandeActivity : AppCompatActivity() {
         b.btnRefresh.setOnClickListener { load() }
         b.btnFormules.setOnClickListener { showFormulaSettings() }
         b.fabAdd.setOnClickListener { BottomNav.open(this, AddOrderActivity::class.java, 1) }
+        Anim.pressScale(b.fabAdd)
         BottomNav.setup(this, "commande")
         b.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
@@ -130,6 +131,7 @@ class CommandeActivity : AppCompatActivity() {
             return
         }
         filtered.forEach { b.listContainer.addView(buildCard(it)) }
+        b.listContainer.scheduleLayoutAnimation()
     }
 
     private fun buildCard(c: JSONObject): View {

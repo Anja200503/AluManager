@@ -42,6 +42,7 @@ class HomeActivity : AppCompatActivity() {
         binding.tileKaonty.setOnClickListener { BottomNav.open(this, KaontyActivity::class.java, 1) }
         binding.tilePresence.setOnClickListener { BottomNav.open(this, PresenceActivity::class.java, 1) }
         binding.tilePlateaux.setOnClickListener { toast("PLATEAUX : bientôt disponible") }
+        Anim.pressScale(binding.tileCommande, binding.tileKaonty, binding.tilePresence, binding.tilePlateaux)
 
         // Navigation permanente
         BottomNav.setup(this, "home")

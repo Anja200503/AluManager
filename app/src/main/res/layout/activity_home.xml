@@ -120,7 +120,8 @@
                 android:layout_height="wrap_content"
                 android:columnCount="2"
                 android:padding="14dp"
-                android:layout_marginTop="2dp">
+                android:layout_marginTop="2dp"
+                android:layoutAnimation="@anim/layout_fall_down">
 
                 <LinearLayout android:id="@+id/tileCommande" style="@style/HomeTile" android:background="@drawable/tile_commande">
                     <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ic_commande" android:tint="#FFFFFF" />
